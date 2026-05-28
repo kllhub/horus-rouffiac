@@ -51,7 +51,7 @@
   /* HERO */
   .horus-hero { position:relative; background:var(--nuit); border-bottom:1px solid var(--bord2); overflow:hidden; }
   .horus-hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px); background-size:40px 40px; pointer-events:none; }
-  .hero-inner { max-width:1100px; margin:0 auto; padding:64px 32px 56px; display:grid; grid-template-columns:1fr 320px; gap:60px; align-items:center; position:relative; z-index:1; }
+  .hero-inner { max-width:1100px; margin:0 auto; padding:48px 32px 40px; display:grid; grid-template-columns:1fr 220px; gap:48px; align-items:start; position:relative; z-index:1; }
   .eye-pulse { animation:pulse-ring 3s ease-in-out infinite; }
   @keyframes pulse-ring { 0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.06)} }
   .eye-iris  { animation:iris-glow 3s ease-in-out infinite; }
@@ -202,7 +202,7 @@
   <div class="hero-inner">
     <div class="hero-content">
       <p class="hero-tagline">Commune de Rouffiac-Tolosan · Vigilance citoyenne</p>
-      <h1 class="hero-title">HORUS<br><em>voit pour vous.</em></h1>
+      <h1 class="hero-title">HORUS <em>voit pour vous.</em></h1>
       <p class="hero-subtitle">La plateforme de sécurité participative de votre commune — signalement, suivi et coordination avec les forces de l'ordre en temps réel.</p>
       <div class="hero-stats">
         <div><div class="stat-val" id="stat-alertes">0</div><div class="stat-lab">alertes ce mois</div></div>
@@ -219,7 +219,7 @@
       </div>
     </div>
     <div class="horus-eye-wrap">
-      <svg width="260" height="260" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="180" height="180" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#C9A84C" stop-opacity=".15"/><stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/></radialGradient>
           <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#E8C97A"/><stop offset="60%" stop-color="#C9A84C"/><stop offset="100%" stop-color="#8B6914"/></radialGradient>
@@ -267,9 +267,6 @@
     <button class="filter-btn" onclick="filterAlerts(this,'prevention')">📢 Prévention</button>
   </div>
   <div class="alerts-grid" id="alerts-grid"></div>
-  <div style="text-align:center">
-    <button class="btn-ghost" onclick="showToast('Application HORUS complète — bientôt disponible.')" style="margin:0 auto">Voir toutes les alertes dans HORUS →</button>
-  </div>
 </section>
 
 <!-- CARTE LEAFLET -->
