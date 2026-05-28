@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HORUS · Hors-ligne</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#0D1117; color:#F0EDE6; font-family:'Outfit',sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center; }
+  svg.eye { margin-bottom:32px; opacity:.6; }
+  h1 { font-family:'Cinzel',serif; font-size:28px; color:#C9A84C; margin-bottom:12px; letter-spacing:.05em; }
+  p  { font-size:15px; color:#8B949E; line-height:1.7; max-width:320px; margin-bottom:28px; }
+  button { background:#C9A84C; color:#0D1117; border:none; border-radius:24px; padding:12px 28px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600; cursor:pointer; }
+  .cached { margin-top:24px; font-size:13px; color:#6E7681; }
+</style>
+</head>
+<body>
+  <svg class="eye" width="80" height="80" viewBox="0 0 80 80" fill="none">
+    <path d="M10 40 Q25 20 40 20 Q55 20 70 40 Q55 60 40 60 Q25 60 10 40Z" fill="#0D1117" stroke="#C9A84C" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="12" fill="#C9A84C" opacity=".4"/>
+    <circle cx="40" cy="40" r="5" fill="#C9A84C"/>
+  </svg>
+  <h1>Hors connexion</h1>
+  <p>HORUS ne peut pas atteindre le serveur. Les alertes mises en cache restent disponibles.</p>
+  <button onclick="location.href='/'">Réessayer</button>
+  <p class="cached">Vos signalements en attente seront envoyés automatiquement à la reconnexion.</p>
+</body>
+</html>

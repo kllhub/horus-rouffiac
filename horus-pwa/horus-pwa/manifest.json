@@ -1,0 +1,38 @@
+{
+  "name": "HORUS – Vigilance Rouffiac-Tolosan",
+  "short_name": "HORUS",
+  "description": "Plateforme de vigilance citoyenne de Rouffiac-Tolosan",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0D1117",
+  "theme_color": "#0D1117",
+  "lang": "fr",
+  "categories": ["utilities", "government"],
+  "icons": [
+    { "src": "icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-128.png",  "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Signaler un incident",
+      "short_name": "Signaler",
+      "description": "Ouvrir le formulaire de signalement",
+      "url": "/index.html?action=signaler",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Alertes récentes",
+      "short_name": "Alertes",
+      "url": "/index.html?tab=feed",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    { "src": "screenshots/feed.png", "sizes": "390x844", "type": "image/png", "label": "Fil des alertes" },
+    { "src": "screenshots/map.png",  "sizes": "390x844", "type": "image/png", "label": "Carte des incidents" }
+  ]
+}

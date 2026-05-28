@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HORUS">
+<meta name="description" content="Plateforme de vigilance citoyenne – Rouffiac-Tolosan">
+<title>HORUS · Rouffiac-Tolosan</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════ */
+:root {
+  --nuit:    #0D1117;
+  --nuit2:   #161B22;
+  --nuit3:   #21262D;
+  --or:      #C9A84C;
+  --or2:     #E8C97A;
+  --blanc:   #F0EDE6;
+  --gris:    #8B949E;
+  --gris2:   #6E7681;
+  --rouge:   #E05555;
+  --vert:    #3FB950;
+  --bleu:    #58A6FF;
+  --bord:    rgba(201,168,76,.18);
+  --bord2:   rgba(201,168,76,.35);
+  --r:       8px;
+  --r2:      14px;
+  --r3:      24px;
+  --nav-h:   64px;
+  --safe-b:  env(safe-area-inset-bottom, 0px);
+  --safe-t:  env(safe-area-inset-top, 0px);
+}
+
+/* ══════════════════════════════════════════
+   BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; }
+body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blanc); }
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+#app { display:flex; flex-direction:column; height:100%; }
+
+/* Top bar */
+.topbar {
+  flex-shrink:0;
+  background:var(--nuit);
+  border-bottom:1px solid var(--bord);
+  padding: calc(var(--safe-t) + 10px) 16px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:relative; z-index:50;
+}
+.topbar-brand {
+  font-family:'Cinzel',serif;
+  font-size:18px; font-weight:700;
+  color:var(--or); letter-spacing:.12em;
+  display:flex; align-items:center; gap:8px;
+}
+.topbar-brand svg { flex-shrink:0; }
+.topbar-right { display:flex; gap:8px; align-items:center; }
+
+/* Notif badge */
+.notif-btn { position:relative; background:var(--nuit3); border:1px solid var(--bord); border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:17px; }
+.notif-badge { position:absolute; top:4px; right:4px; background:var(--rouge); color:#fff; border-radius:50%; width:14px; height:14px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--nuit); }
+
+/* Role chip */
+.role-chip { font-size:11px; font-weight:600; padding:3px 10px; border-radius:12px; border:1px solid; }
+
+/* Scroll area */
+.scroll-area { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+.scroll-area::-webkit-scrollbar { display:none; }
+
+/* Bottom nav */
+.bottom-nav {
+  flex-shrink:0;
+  background:var(--nuit2);
+  border-top:1px solid var(--bord);
+  display:flex;
+  padding-bottom: var(--safe-b);
+}
+.nav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:10px 4px; border:none; background:transparent; cursor:pointer;
+  color:var(--gris2); font-family:'Outfit',sans-serif; font-size:10px; font-weight:500;
+  transition:color .15s; position:relative;
+}
+.nav-btn.active { color:var(--or); }
+.nav-btn.active::after { content:''; position:absolute; top:0; left:20%; right:20%; height:2px; background:var(--or); border-radius:0 0 2px 2px; }
+.nav-icon { font-size:20px; line-height:1; }
+
+/* FAB signalement */
+.fab {
+  position:fixed; bottom:calc(var(--nav-h) + var(--safe-b) + 16px); right:16px;
+  width:52px; height:52px; border-radius:50%;
+  background:var(--rouge); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 16px rgba(224,85,85,.45);
+  font-size:22px; z-index:40;
+  transition:transform .15s, box-shadow .15s;
+}
+.fab:active { transform:scale(.93); box-shadow:0 2px 8px rgba(224,85,85,.3); }
+
+/* ══════════════════════════════════════════
+   VIEWS
+══════════════════════════════════════════ */
+.view { display:none; padding:16px 16px calc(var(--nav-h) + 80px); }
+.view.active { display:block; }
+#view-map { display:none; padding:0; }
+#view-map.active { display:flex; flex-direction:column; }
+
+/* ══════════════════════════════════════════
+   COMMON COMPONENTS
+══════════════════════════════════════════ */
+.section-label {
+  font-family:'Cinzel',serif;
+  font-size:11px; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--or); margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--bord); }
+
+/* Cards */
+.card {
+  background:var(--nuit2); border:1px solid var(--bord);
+  border-radius:var(--r2); padding:16px;
+  margin-bottom:10px; position:relative; overflow:hidden;
+  transition:border-color .18s;
+}
+.card:active { border-color:var(--bord2); }
+.card-accent { position:absolute; left:0; top:0; bottom:0; width:3px; }
+
+/* Pills */
+.pill {
+  display:inline-flex; align-items:center; gap:4px;
+  border-radius:20px; padding:2px 10px;
+  font-size:11px; font-weight:600;
+}
+
+/* Urgency dot */
+.dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.dot.haute   { background:var(--rouge); box-shadow:0 0 5px var(--rouge); }
+.dot.moyenne { background:var(--or); }
+.dot.basse   { background:var(--vert); }
+.dot.info    { background:var(--bleu); }
+
+/* Filters scroll */
+.filter-row { display:flex; gap:7px; overflow-x:auto; padding-bottom:4px; margin-bottom:16px; scrollbar-width:none; }
+.filter-row::-webkit-scrollbar { display:none; }
+.ftag {
+  flex-shrink:0; background:var(--nuit2); border:1px solid var(--bord);
+  border-radius:20px; padding:5px 14px; font-size:12px; font-weight:500;
+  color:var(--gris); cursor:pointer; font-family:'Outfit',sans-serif;
+  transition:all .15s; white-space:nowrap;
+}
+.ftag.active { background:rgba(201,168,76,.12); border-color:var(--or); color:var(--or); }
+
+/* Stats row */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:20px; }
+.stat-box { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r); padding:12px 8px; text-align:center; }
+.stat-n { font-family:'Cinzel',serif; font-size:22px; font-weight:700; color:var(--or); line-height:1; }
+.stat-l { font-size:9px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+
+/* FDO badge */
+.fdo-tag { font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; border:1px solid; }
+.fdo-tag.gend { border-color:#4a6da7; color:#7ba0d4; background:rgba(74,109,167,.15); }
+.fdo-tag.pm   { border-color:#3575c4; color:var(--bleu); background:rgba(53,117,196,.15); }
+.fdo-tag.asvp { border-color:#b45309; color:#fbbf24; background:rgba(180,83,9,.15); }
+
+/* Avis officiel */
+.avis-block { background:rgba(30,58,95,.15); border:1px solid rgba(74,109,167,.3); border-radius:var(--r); padding:10px 12px; margin-top:10px; }
+.avis-author { font-size:11px; font-weight:700; color:#7ba0d4; margin-bottom:4px; }
+.avis-text { font-size:12px; color:var(--gris); line-height:1.55; }
+
+/* ══════════════════════════════════════════
+   MAP
+══════════════════════════════════════════ */
+#horus-map { flex:1; min-height:0; }
+.map-legend {
+  position:absolute; bottom:calc(var(--nav-h) + var(--safe-b) + 76px); left:12px;
+  background:rgba(13,17,23,.9); border:1px solid var(--bord); border-radius:var(--r);
+  padding:8px 12px; font-size:11px; color:var(--gris); z-index:30;
+  backdrop-filter:blur(4px);
+}
+.map-legend div { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.map-legend div:last-child { margin-bottom:0; }
+
+/* Leaflet popup dark */
+.leaflet-popup-content-wrapper { background:#1a1f2e !important; border:1px solid var(--bord2) !important; border-radius:var(--r2) !important; color:var(--blanc) !important; box-shadow:0 8px 32px rgba(0,0,0,.6) !important; }
+.leaflet-popup-tip { background:#1a1f2e !important; }
+.leaflet-popup-content { margin:12px 14px !important; font-family:'Outfit',sans-serif; }
+.leaflet-popup-close-button { color:var(--gris) !important; font-size:18px !important; }
+.leaflet-control-zoom a { background:var(--nuit2) !important; color:var(--or) !important; border-color:var(--bord) !important; }
+.leaflet-control-zoom a:hover { background:var(--nuit3) !important; }
+.leaflet-control-attribution { background:rgba(13,17,23,.8) !important; color:var(--gris2) !important; font-size:9px !important; }
+.leaflet-control-attribution a { color:var(--gris) !important; }
+.leaflet-container { background:var(--nuit) !important; }
+
+/* ══════════════════════════════════════════
+   MODALS & PANELS
+══════════════════════════════════════════ */
+.overlay {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+  align-items:flex-end; justify-content:center;
+}
+.overlay.open { display:flex; }
+
+.sheet {
+  background:var(--nuit2); border:1px solid var(--bord2);
+  border-radius:20px 20px 0 0; width:100%; max-width:600px;
+  padding:24px 20px calc(24px + var(--safe-b));
+  max-height:92vh; overflow-y:auto;
+  animation:sheet-up .25s ease;
+}
+@keyframes sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
+
+.sheet-handle { width:36px; height:4px; background:var(--bord2); border-radius:2px; margin:0 auto 20px; }
+.sheet-title { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--blanc); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+
+/* Form */
+.form-group { margin-bottom:14px; }
+.form-label { display:block; font-size:11px; font-weight:600; color:var(--gris); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+.form-input, .form-select, .form-textarea {
+  width:100%; background:var(--nuit3); border:1.5px solid var(--bord);
+  border-radius:var(--r); padding:11px 14px;
+  font-family:'Outfit',sans-serif; font-size:14px; color:var(--blanc);
+  outline:none; transition:border-color .15s; appearance:none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--or); }
+.form-textarea { resize:vertical; min-height:90px; line-height:1.6; }
+.form-select option { background:var(--nuit2); }
+
+/* Buttons */
+.btn { display:flex; align-items:center; justify-content:center; gap:7px; border:none; border-radius:var(--r3); padding:13px 20px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600; cursor:pointer; width:100%; margin-top:8px; transition:opacity .15s, transform .1s; }
+.btn:active { transform:scale(.98); opacity:.9; }
+.btn-gold { background:var(--or); color:var(--nuit); }
+.btn-danger { background:var(--rouge); color:#fff; }
+.btn-success { background:var(--vert); color:#fff; }
+.btn-outline { background:transparent; color:var(--or); border:1.5px solid var(--bord2); }
+.btn-sm { padding:8px 16px; font-size:12px; width:auto; border-radius:12px; margin-top:0; }
+
+/* AI analysis result */
+.ai-result { background:rgba(201,168,76,.07); border:1px solid var(--bord); border-radius:var(--r2); padding:14px; margin-bottom:14px; }
+.ai-result-title { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:var(--blanc); margin-bottom:10px; }
+.ai-conseil { font-size:12px; color:var(--gris); line-height:1.6; margin-top:8px; }
+
+/* Note urgence */
+.note-box { background:rgba(224,85,85,.08); border:1px solid rgba(224,85,85,.25); border-radius:var(--r); padding:10px 14px; font-size:12px; color:#f87171; margin-bottom:14px; line-height:1.6; }
+
+/* Notif panel */
+.notif-panel { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); overflow:hidden; }
+.notif-item { padding:13px 16px; border-bottom:1px solid var(--bord); display:flex; gap:12px; align-items:flex-start; }
+.notif-item:last-child { border-bottom:none; }
+.notif-item.unread { background:rgba(201,168,76,.05); }
+.notif-icon { font-size:20px; flex-shrink:0; }
+.notif-text { font-size:13px; font-weight:600; color:var(--blanc); margin-bottom:2px; }
+.notif-sub  { font-size:11px; color:var(--gris2); }
+.unread-dot { width:7px; height:7px; border-radius:50%; background:var(--or); flex-shrink:0; margin-top:4px; }
+
+/* Toast */
+.toast {
+  position:fixed; bottom:calc(var(--nav-h) + var(--safe-b) + 12px); left:50%;
+  transform:translateX(-50%) translateY(16px);
+  background:var(--nuit2); border:1px solid var(--or);
+  border-radius:var(--r3); padding:10px 20px;
+  font-size:13px; font-weight:500; color:var(--or);
+  opacity:0; transition:opacity .25s, transform .25s; z-index:300; white-space:nowrap;
+  pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Install prompt */
+.install-bar {
+  display:none; background:rgba(201,168,76,.1); border-bottom:1px solid var(--bord2);
+  padding:10px 16px; align-items:center; justify-content:space-between; gap:12px;
+  flex-shrink:0;
+}
+.install-bar.visible { display:flex; }
+.install-bar p { font-size:12px; color:var(--blanc); line-height:1.4; }
+.install-bar p strong { color:var(--or); }
+.install-bar button { flex-shrink:0; background:var(--or); color:var(--nuit); border:none; border-radius:16px; padding:7px 16px; font-size:12px; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; }
+.install-bar .close-install { background:none; border:none; color:var(--gris); font-size:20px; cursor:pointer; padding:0; flex-shrink:0; }
+
+/* ══════════════════════════════════════════
+   ROLE SWITCHER (demo only)
+══════════════════════════════════════════ */
+.role-demo { background:var(--nuit3); border-radius:var(--r2); padding:14px; margin-bottom:16px; }
+.role-demo-label { font-size:11px; color:var(--gris2); font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+.role-btns { display:flex; gap:6px; flex-wrap:wrap; }
+.role-btn { padding:5px 12px; border-radius:14px; border:1.5px solid var(--bord); background:transparent; color:var(--gris); font-family:'Outfit',sans-serif; font-size:11px; font-weight:600; cursor:pointer; transition:all .15s; }
+.role-btn.active { border-color:var(--or); color:var(--or); background:rgba(201,168,76,.1); }
+
+/* Moderation actions */
+.mod-actions { display:flex; gap:8px; margin-top:12px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Install prompt -->
+  <div class="install-bar" id="install-bar">
+    <p>Installez <strong>HORUS</strong> sur votre écran d'accueil pour un accès rapide et les notifications.</p>
+    <button id="install-btn">Installer</button>
+    <button class="close-install" onclick="document.getElementById('install-bar').classList.remove('visible')">×</button>
+  </div>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M2 12 Q7 5 12 5 Q17 5 22 12 Q17 19 12 19 Q7 19 2 12Z" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="3.5" fill="#C9A84C"/>
+        <circle cx="12" cy="12" r="1.5" fill="#0D1117"/>
+      </svg>
+      HORUS
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn" id="notif-btn" onclick="openNotifs()">
+        🔔
+        <div class="notif-badge" id="notif-badge">2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll area -->
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- ── VIEW : FEED ── -->
+    <div class="view active" id="view-feed">
+      <!-- Role demo switcher -->
+      <div class="role-demo">
+        <div class="role-demo-label">Simuler le rôle</div>
+        <div class="role-btns">
+          <button class="role-btn active" onclick="setRole('habitant',this)">Habitant</button>
+          <button class="role-btn" onclick="setRole('referent',this)">Référent ⭐</button>
+          <button class="role-btn" onclick="setRole('moderateur',this)">Modérateur 🛡</button>
+          <button class="role-btn" onclick="setRole('gendarmerie',this)">Gendarmerie ⚖️</button>
+          <button class="role-btn" onclick="setRole('pm',this)">Police Mun. 🔵</button>
+          <button class="role-btn" onclick="setRole('asvp',this)">ASVP 🟡</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-n" id="s-alertes">7</div><div class="stat-l">Alertes</div></div>
+        <div class="stat-box"><div class="stat-n" id="s-attente" style="color:var(--rouge)">2</div><div class="stat-l">En attente</div></div>
+        <div class="stat-box"><div class="stat-n" id="s-fdo" style="color:var(--bleu)">3</div><div class="stat-l">FDO actifs</div></div>
+        <div class="stat-box"><div class="stat-n" id="s-resolus" style="color:var(--vert)">4</div><div class="stat-l">Résolus</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-row" id="filter-row">
+        <div class="ftag active" onclick="filterFeed(this,'tous')">Tous</div>
+        <div class="ftag" onclick="filterFeed(this,'intrusion')">🚨 Intrusion</div>
+        <div class="ftag" onclick="filterFeed(this,'rodeur')">👤 Rôdeur</div>
+        <div class="ftag" onclick="filterFeed(this,'vehicule')">🚗 Véhicule</div>
+        <div class="ftag" onclick="filterFeed(this,'degradation')">🔨 Dégradation</div>
+        <div class="ftag" onclick="filterFeed(this,'prevention')">📢 Prévention</div>
+      </div>
+
+      <div class="section-label">Alertes récentes</div>
+      <div id="feed-list"></div>
+    </div>
+
+    <!-- ── VIEW : MAP ── -->
+    <div class="view" id="view-map">
+      <div id="horus-map"></div>
+      <div class="map-legend">
+        <div><span class="dot haute"></span> Haute urgence</div>
+        <div><span class="dot moyenne"></span> Moyenne</div>
+        <div><span class="dot basse"></span> Basse / Prévention</div>
+        <div><span class="dot" style="background:#4a6da7"></span> FDO</div>
+      </div>
+    </div>
+
+    <!-- ── VIEW : QUARTIERS ── -->
+    <div class="view" id="view-quartiers">
+      <div class="section-label">6 quartiers</div>
+      <div id="quartiers-list"></div>
+      <div class="section-label" style="margin-top:8px">Référents</div>
+      <div id="referents-list"></div>
+    </div>
+
+    <!-- ── VIEW : MON ESPACE ── -->
+    <div class="view" id="view-espace">
+      <div id="espace-content"></div>
+    </div>
+
+  </div><!-- end scroll-area -->
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="nav-feed" onclick="goTab('feed')">
+      <span class="nav-icon">📋</span>Alertes
+    </button>
+    <button class="nav-btn" id="nav-map" onclick="goTab('map')">
+      <span class="nav-icon">🗺</span>Carte
+    </button>
+    <button class="nav-btn" id="nav-quartiers" onclick="goTab('quartiers')">
+      <span class="nav-icon">🏘</span>Quartiers
+    </button>
+    <button class="nav-btn" id="nav-espace" onclick="goTab('espace')">
+      <span class="nav-icon" id="espace-icon">👤</span><span id="espace-label">Espace</span>
+    </button>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" onclick="openSignal()" title="Signaler un incident">🚨</button>
+
+</div><!-- end app -->
+
+<!-- ══════════════════════════════════════════
+     MODAL : SIGNALEMENT
+══════════════════════════════════════════ -->
+<div class="overlay" id="overlay-signal" onclick="closeOnBg(event,'overlay-signal')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="signal-title">🚨 Signaler un incident</div>
+
+    <!-- Step 1 : form -->
+    <div id="signal-step1">
+      <div class="form-group">
+        <label class="form-label">Quartier</label>
+        <select class="form-select" id="f-quartier">
+          <option value="">Sélectionner…</option>
+          <option>Centre-Bourg</option>
+          <option>Louradou</option>
+          <option>Castelviel</option>
+          <option>Charlary</option>
+          <option>Tartaloche</option>
+          <option>Pigassou</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="f-desc" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation…"></textarea>
+      </div>
+      <div class="note-box">⚠️ Urgence immédiate → <strong>17</strong> (Police) ou <strong>112</strong></div>
+      <button class="btn btn-gold" id="analyze-btn" onclick="analyzeAlert()">
+        <span id="analyze-label">✨ Analyser avec l'IA →</span>
+      </button>
+    </div>
+
+    <!-- Step 2 : confirm -->
+    <div id="signal-step2" style="display:none">
+      <div class="ai-result" id="ai-result"></div>
+      <div style="background:rgba(201,168,76,.07);border:1px solid var(--bord);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--gris);margin-bottom:14px">
+        ⏳ Votre signalement sera soumis à validation avant publication.
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="backToStep1()">← Modifier</button>
+        <button class="btn btn-danger btn-sm" style="flex:2" onclick="submitSignal()">Envoyer 🚨</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL : NOTIFICATIONS
+══════════════════════════════════════════ -->
+<div class="overlay" id="overlay-notifs" onclick="closeOnBg(event,'overlay-notifs')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="sheet-title" style="margin-bottom:0">Notifications</div>
+      <button class="btn btn-outline btn-sm" onclick="markAllRead()">Tout lu</button>
+    </div>
+    <div class="notif-panel" id="notif-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL : MODÉRATION
+══════════════════════════════════════════ -->
+<div class="overlay" id="overlay-mod" onclick="closeOnBg(event,'overlay-mod')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🛡 Modérer ce signalement</div>
+    <div id="mod-card-preview" style="margin-bottom:16px"></div>
+    <div class="mod-actions">
+      <button class="btn btn-outline" style="flex:1;border-color:var(--rouge);color:var(--rouge)" onclick="moderateAlert('rejected')">✕ Rejeter</button>
+      <button class="btn btn-success" style="flex:2" onclick="moderateAlert('approved')">✓ Valider et publier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const QUARTIERS = [
+  { key:"centre",     label:"Centre-Bourg", color:"#7c3aed", lat:43.6664, lng:1.5261, ref:"Paul D.",    phone:"06 98 76 54 32" },
+  { key:"louradou",   label:"Louradou",     color:"#2563eb", lat:43.6720, lng:1.5310, ref:"Marie L.",   phone:"06 12 34 56 78" },
+  { key:"castelviel", label:"Castelviel",   color:"#0891b2", lat:43.6590, lng:1.5340, ref:"Sophie R.",  phone:"06 55 44 33 22" },
+  { key:"charlary",   label:"Charlary",     color:"#16a34a", lat:43.6690, lng:1.5180, ref:"Nadine B.",  phone:"06 77 88 99 00" },
+  { key:"tartaloche", label:"Tartaloche",   color:"#d97706", lat:43.6610, lng:1.5190, ref:"Thierry M.", phone:"06 11 22 33 44" },
+  { key:"pigassou",   label:"Pigassou",     color:"#e11d48", lat:43.6560, lng:1.5270, ref:"Karim A.",   phone:"06 00 00 00 00" },
+];
+
+const ROLES_CFG = {
+  habitant:    { label:"Habitant",          badge:"👤",  color:"#6b7280", isFdo:false },
+  referent:    { label:"Référent",          badge:"⭐",  color:"#d97706", isFdo:false },
+  moderateur:  { label:"Modérateur",        badge:"🛡",  color:"#2563eb", isFdo:false },
+  gendarmerie: { label:"Gendarmerie",       badge:"⚖️",  color:"#1e3a5f", isFdo:true,
+    canSeePending:true, canSeeDeclarant:true, canTakeCharge:true, canClose:true, canPostAvis:true, canSeeHistory:true },
+  pm:          { label:"Police Municipale", badge:"🔵",  color:"#1d4ed8", isFdo:true,
+    canSeePending:true, canSeeDeclarant:true, canTakeCharge:true, canClose:true, canPostAvis:true, canSeeHistory:false },
+  asvp:        { label:"ASVP",             badge:"🟡",  color:"#b45309", isFdo:true,
+    canSeePending:true, canSeeDeclarant:true, canTakeCharge:true, canClose:false, canPostAvis:false, canSeeHistory:false },
+};
+
+let currentRole = "habitant";
+let currentFilter = "tous";
+let modTargetId = null;
+let map = null;
+let mapInited = false;
+
+let ALERTS = [
+  { id:1,  userId:"marie",   role:"referent",    cat:"rodeur",      urg:"haute",   status:"approved", quartier:"Louradou",     rue:"Ch. Louradou",       time:"Il y a 12 min", ts:Date.now()-12*60000,  fdo:null,   takenBy:null, confirmations:["sophie"], resolved:false, avis:[], lat:43.6718, lng:1.5308, desc:"Homme en capuche noire observant les maisons depuis 20 min." },
+  { id:2,  userId:"paul",    role:"referent",    cat:"vehicule",    urg:"moyenne",  status:"approved", quartier:"Centre-Bourg", rue:"Grande Rue",          time:"Il y a 1h",    ts:Date.now()-3600000,   fdo:"gend", takenBy:"gend1", confirmations:[], resolved:false, avis:[{author:"Adj. Martinet",role:"gendarmerie",text:"Patrouille effectuée. Véhicule identifié.",ts:Date.now()-3000000}], lat:43.6661, lng:1.5258, desc:"Camionnette blanche immatriculée 31 garée depuis 3 jours." },
+  { id:3,  userId:"thierry", role:"referent",    cat:"intrusion",   urg:"haute",   status:"approved", quartier:"Tartaloche",   rue:"Ch. de Tartaloche",   time:"Il y a 2h",    ts:Date.now()-7200000,   fdo:"gend", takenBy:"gend1", confirmations:["nadine"], resolved:false, avis:[], lat:43.6612, lng:1.5192, desc:"Traces de forçage sur portail au n°7. Plaque relevée: 31-AZ-xxx." },
+  { id:4,  userId:"marie",   role:"referent",    cat:"prevention",  urg:"info",    status:"approved", quartier:"Louradou",     rue:"Secteur Louradou",    time:"Il y a 5h",    ts:Date.now()-18000000,  fdo:null,   takenBy:null, confirmations:[], resolved:false, avis:[], lat:43.6722, lng:1.5312, desc:"Suite aux incidents récents, pensez à vérifier serrures et portails." },
+  { id:5,  userId:"sophie",  role:"referent",    cat:"degradation", urg:"basse",   status:"pending",  quartier:"Castelviel",   rue:"Imp. de Castelviel",  time:"Il y a 6h",    ts:Date.now()-21600000,  fdo:"pm",   takenBy:"pm1", confirmations:[], resolved:false, avis:[{author:"Agent Duval",role:"pm",text:"Verbalisé à 10h30. Mise en fourrière si non dégagé.",ts:Date.now()-18000000}], lat:43.6588, lng:1.5338, desc:"Nouveaux graffitis apparus cette nuit sur le mur du parking." },
+  { id:6,  userId:"nadine",  role:"referent",    cat:"escroquerie", urg:"haute",   status:"approved", quartier:"Charlary",     rue:"Allée de Charlary",   time:"Il y a 8h",    ts:Date.now()-28800000,  fdo:null,   takenBy:null, confirmations:["paul","marie"], resolved:false, avis:[], lat:43.6688, lng:1.5181, desc:"Faux agents EDF ont sonné chez plusieurs voisins. Ne pas ouvrir." },
+  { id:7,  userId:"you",     role:"habitant",    cat:"rodeur",      urg:"moyenne",  status:"pending",  quartier:"Pigassou",     rue:"Ch. de Pigassou",     time:"Il y a 10h",   ts:Date.now()-36000000,  fdo:null,   takenBy:null, confirmations:[], resolved:false, avis:[], lat:43.6562, lng:1.5272, desc:"Individu tournant autour des véhicules garés en soirée." },
+];
+
+let NOTIFS = [
+  { id:1, text:"Alerte haute urgence",       sub:"Rôdeur · Ch. Louradou",          icon:"🚨", read:false, ts:Date.now()-12*60000 },
+  { id:2, text:"Gendarmerie a pris en charge", sub:"Camionnette · Grande Rue",     icon:"⚖️",  read:false, ts:Date.now()-3600000 },
+  { id:3, text:"Message de prévention",      sub:"Louradou · Marie L.",            icon:"📢", read:true,  ts:Date.now()-18000000 },
+];
+
+const CAT_ICONS  = { intrusion:"🚨", rodeur:"👤", vehicule:"🚗", degradation:"🔨", prevention:"📢", escroquerie:"⚠️", autre:"📌" };
+const CAT_LABELS = { intrusion:"Intrusion", rodeur:"Rôdeur", vehicule:"Véhicule suspect", degradation:"Dégradation", prevention:"Prévention", escroquerie:"Escroquerie", autre:"Autre" };
+const URG_COLORS = { haute:"#E05555", moyenne:"#C9A84C", basse:"#3FB950", info:"#58A6FF" };
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+function goTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+  document.getElementById('scroll-area').scrollTop = 0;
+  if (tab === 'map' && !mapInited) initMap();
+  if (tab === 'quartiers') renderQuartiers();
+  if (tab === 'espace') renderEspace();
+}
+
+/* ═══════════════════════════════════════════
+   ROLE
+═══════════════════════════════════════════ */
+function setRole(role, btn) {
+  currentRole = role;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const cfg = ROLES_CFG[role];
+  // Update nav espace
+  document.getElementById('espace-icon').textContent = cfg.badge;
+  document.getElementById('espace-label').textContent = cfg.isFdo ? cfg.label.split(' ')[0] : cfg.label === 'Référent' ? 'Mon secteur' : cfg.label === 'Modérateur' ? 'Modération' : 'Mon espace';
+  // Topbar chip
+  renderFeed();
+  toast('Rôle : ' + cfg.label + ' ' + cfg.badge);
+}
+
+/* ═══════════════════════════════════════════
+   FEED
+═══════════════════════════════════════════ */
+function renderFeed() {
+  const cfg = ROLES_CFG[currentRole];
+  const showPending = cfg.isFdo || currentRole === 'moderateur';
+  const list = ALERTS.filter(a => {
+    if (a.status === 'rejected') return false;
+    if (a.status === 'pending' && !showPending) return false;
+    if (currentFilter !== 'tous' && a.cat !== currentFilter) return false;
+    return true;
+  });
+  document.getElementById('feed-list').innerHTML = list.map(a => alertCard(a, cfg)).join('');
+}
+
+function alertCard(a, cfg) {
+  const qColor = QUARTIERS.find(q => q.label === a.quartier)?.color || '#C9A84C';
+  const urgColor = URG_COLORS[a.urg] || '#C9A84C';
+  const takenUser = a.takenBy ? ({gend1:{name:"Adj. Martinet",role:"gendarmerie"}, pm1:{name:"Agent Duval",role:"pm"}}[a.takenBy]) : null;
+
+  const confirmBtn = (currentRole === 'referent' || currentRole === 'moderateur')
+    && !a.confirmations.includes('you') && a.userId !== 'you' && !a.resolved && a.status === 'approved'
+    ? `<button class="btn btn-outline btn-sm" onclick="confirmAlert(${a.id})">⭐ Confirmer</button>` : '';
+
+  const closeBtn = ((currentRole === 'referent' || currentRole === 'moderateur') || (cfg.isFdo && cfg.canClose))
+    && !a.resolved && a.status === 'approved'
+    ? `<button class="btn btn-outline btn-sm" style="color:var(--vert);border-color:var(--vert)" onclick="resolveAlert(${a.id})">✓ Clôturer</button>` : '';
+
+  const takeBtn = cfg.isFdo && cfg.canTakeCharge && !a.takenBy && !a.resolved
+    ? `<button class="btn btn-sm" style="background:var(--nuit3);border:1px solid var(--bord2);color:var(--blanc)" onclick="takeCharge(${a.id})">${cfg.badge} Prendre en charge</button>` : '';
+
+  const avisBtn = cfg.isFdo && cfg.canPostAvis
+    ? `<button class="btn btn-outline btn-sm" onclick="openAvisForm(${a.id})">📋 Avis officiel</button>` : '';
+
+  const modBtn = currentRole === 'moderateur' && a.status === 'pending'
+    ? `<button class="btn btn-sm" style="background:rgba(201,168,76,.12);color:var(--or);border:1px solid var(--bord2)" onclick="openMod(${a.id})">🛡 Modérer</button>` : '';
+
+  const declarant = cfg.isFdo && cfg.canSeeDeclarant
+    ? `<div style="background:rgba(30,58,95,.2);border:1px solid rgba(74,109,167,.2);border-radius:6px;padding:6px 10px;margin-top:8px;font-size:11px;color:#7ba0d4"><b>📋 Déclarant :</b> ${a.userId === 'you' ? 'Vous' : a.userId.charAt(0).toUpperCase() + a.userId.slice(1)} · Tél. disponible</div>` : '';
+
+  const avisHTML = a.avis.length > 0 ? a.avis.map(av =>
+    `<div class="avis-block"><div class="avis-author">${ROLES_CFG[av.role]?.badge||''} ${av.author} · ${fmtTime(av.ts)}</div><div class="avis-text">${av.text}</div></div>`
+  ).join('') : '';
+
+  const hasActions = confirmBtn || closeBtn || takeBtn || avisBtn || modBtn;
+
+  return `
+    <div class="card" style="border-left:3px solid ${urgColor}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill" style="background:${urgColor}18;color:${urgColor}">${CAT_ICONS[a.cat]||'📌'} ${CAT_LABELS[a.cat]}</span>
+          ${a.status === 'pending' ? `<span class="pill" style="background:rgba(240,159,0,.12);color:#f59e0b">⏳ En attente</span>` : ''}
+          ${a.resolved ? `<span class="pill" style="background:rgba(63,185,80,.12);color:var(--vert)">✓ Résolu</span>` : ''}
+          ${a.confirmations.length > 0 ? `<span class="pill" style="background:rgba(201,168,76,.1);color:var(--or)">⭐ ${a.confirmations.length}</span>` : ''}
+        </div>
+        <span style="font-size:11px;color:var(--gris2);flex-shrink:0;margin-left:6px">${a.time}</span>
+      </div>
+      <div style="font-weight:700;font-size:15px;color:var(--blanc);margin-bottom:4px">${a.desc.substring(0,60)}${a.desc.length>60?'…':''}</div>
+      <div style="font-size:12px;color:var(--gris2);margin-bottom:8px">
+        📍 ${a.rue} · <span style="color:${qColor};font-weight:600">${a.quartier}</span>
+        ${takenUser ? ` · <span class="fdo-tag ${takenUser.role === 'gendarmerie' ? 'gend' : 'pm'}">${ROLES_CFG[takenUser.role]?.badge} ${takenUser.name}</span>` : ''}
+      </div>
+      ${declarant}
+      ${avisHTML}
+      ${hasActions ? `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--bord)">${confirmBtn}${closeBtn}${takeBtn}${avisBtn}${modBtn}</div>` : ''}
+    </div>`;
+}
+
+function filterFeed(el, filter) {
+  document.querySelectorAll('.ftag').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = filter;
+  renderFeed();
+}
+
+/* ═══════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════ */
+function confirmAlert(id) {
+  ALERTS = ALERTS.map(a => a.id === id ? {...a, confirmations:[...a.confirmations,'you']} : a);
+  renderFeed();
+  pushNotif({ text:"Alerte confirmée", sub:"Votre confirmation a été enregistrée", icon:"⭐" });
+  toast("⭐ Alerte confirmée");
+}
+
+function resolveAlert(id) {
+  ALERTS = ALERTS.map(a => a.id === id ? {...a, resolved:true} : a);
+  renderFeed();
+  toast("✓ Alerte clôturée");
+}
+
+function takeCharge(id) {
+  const map2 = {gendarmerie:"gend1", pm:"pm1", asvp:"asvp1"};
+  const key = map2[currentRole] || 'gend1';
+  ALERTS = ALERTS.map(a => a.id === id ? {...a, takenBy:key, fdo:currentRole==='gendarmerie'?'gend':'pm'} : a);
+  renderFeed();
+  const cfg = ROLES_CFG[currentRole];
+  toast(`${cfg.badge} Prise en charge enregistrée`);
+  pushNotif({ text:`${cfg.label} a pris en charge une alerte`, sub: ALERTS.find(a=>a.id===id)?.rue||'', icon:cfg.badge });
+}
+
+// Avis officiel inline
+function openAvisForm(id) {
+  const alert = ALERTS.find(a => a.id === id);
+  if (!alert) return;
+  const existing = document.getElementById('avis-form-' + id);
+  if (existing) { existing.remove(); return; }
+  const cfg = ROLES_CFG[currentRole];
+  const div = document.createElement('div');
+  div.id = 'avis-form-' + id;
+  div.style.cssText = 'margin-top:10px;background:var(--nuit3);border-radius:var(--r);padding:12px;border:1px solid var(--bord)';
+  div.innerHTML = `
+    <textarea class="form-textarea" id="avis-text-${id}" placeholder="Rédigez votre avis officiel…" style="margin-bottom:8px;min-height:70px"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline btn-sm" style="flex:1" onclick="document.getElementById('avis-form-${id}').remove()">Annuler</button>
+      <button class="btn btn-sm" style="flex:2;background:#1e3a5f;color:#fff" onclick="submitAvis(${id})">Publier l'avis</button>
+    </div>`;
+  // insert after the card
+  const cards = document.querySelectorAll('#feed-list .card');
+  const idx = ALERTS.findIndex(a => a.id === id);
+  if (cards[idx]) cards[idx].after(div);
+}
+
+function submitAvis(id) {
+  const text = document.getElementById('avis-text-' + id)?.value?.trim();
+  if (!text) return;
+  const cfg = ROLES_CFG[currentRole];
+  ALERTS = ALERTS.map(a => a.id === id ? {...a, avis:[...a.avis, {author: currentRole === 'gendarmerie' ? 'Adj. Martinet' : 'Agent Duval', role:currentRole, text, ts:Date.now()}]} : a);
+  document.getElementById('avis-form-' + id)?.remove();
+  renderFeed();
+  toast("📋 Avis officiel publié");
+  pushNotif({ text:`Avis officiel · ${cfg.label}`, sub:text.substring(0,50), icon:"📋" });
+}
+
+/* ═══════════════════════════════════════════
+   MODÉRATION
+═══════════════════════════════════════════ */
+function openMod(id) {
+  modTargetId = id;
+  const a = ALERTS.find(x => x.id === id);
+  if (!a) return;
+  const qColor = QUARTIERS.find(q => q.label === a.quartier)?.color || '#C9A84C';
+  document.getElementById('mod-card-preview').innerHTML = `
+    <div class="card">
+      <div style="font-size:11px;color:${qColor};font-weight:600;margin-bottom:6px">${a.quartier} · ${a.rue}</div>
+      <div style="font-weight:700;font-size:14px;color:var(--blanc);margin-bottom:6px">${a.desc}</div>
+      <span class="pill" style="background:${URG_COLORS[a.urg]}18;color:${URG_COLORS[a.urg]}">${CAT_ICONS[a.cat]} ${CAT_LABELS[a.cat]}</span>
+    </div>`;
+  document.getElementById('overlay-mod').classList.add('open');
+}
+
+function moderateAlert(status) {
+  if (!modTargetId) return;
+  ALERTS = ALERTS.map(a => a.id === modTargetId ? {...a, status} : a);
+  document.getElementById('overlay-mod').classList.remove('open');
+  modTargetId = null;
+  renderFeed();
+  if (status === 'approved') {
+    const a = ALERTS.find(x => x.id === modTargetId);
+    triggerPushNotification(a);
+  }
+  toast(status === 'approved' ? '✓ Signalement validé et publié' : '✕ Signalement rejeté');
+}
+
+/* ═══════════════════════════════════════════
+   SIGNALEMENT
+═══════════════════════════════════════════ */
+let aiAnalysis = null;
+
+function openSignal() {
+  document.getElementById('signal-step1').style.display = 'block';
+  document.getElementById('signal-step2').style.display = 'none';
+  document.getElementById('f-quartier').value = '';
+  document.getElementById('f-desc').value = '';
+  aiAnalysis = null;
+  document.getElementById('overlay-signal').classList.add('open');
+}
+
+async function analyzeAlert() {
+  const quartier = document.getElementById('f-quartier').value;
+  const desc = document.getElementById('f-desc').value.trim();
+  if (!quartier || !desc) { toast('Remplissez tous les champs.'); return; }
+
+  const btn = document.getElementById('analyze-btn');
+  document.getElementById('analyze-label').textContent = '⏳ Analyse en cours…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:600,
+        system:`Analyse l'incident et retourne UNIQUEMENT un JSON valide sans markdown:
+- category: intrusion|rodeur|vehicule|degradation|escroquerie|autre
+- urgency: haute|moyenne|basse
+- title: max 65 chars
+- conseil: conseil pratique 1-2 phrases`,
+        messages:[{role:"user",content:`Incident à ${quartier}: "${desc}"`}]
+      })
+    });
+    const data = await res.json();
+    aiAnalysis = JSON.parse(data.content?.[0]?.text?.replace(/```json|```/g,'').trim() || '{}');
+  } catch(e) {
+    aiAnalysis = { category:"autre", urgency:"moyenne", title:desc.substring(0,60), conseil:"Restez vigilant et contactez les autorités si nécessaire." };
+  }
+
+  document.getElementById('analyze-label').textContent = '✨ Analyser avec l\'IA →';
+  btn.disabled = false;
+  showStep2(quartier, desc);
+}
+
+function showStep2(quartier, desc) {
+  const a = aiAnalysis;
+  const urgColor = URG_COLORS[a.urgency] || '#C9A84C';
+  document.getElementById('ai-result').innerHTML = `
+    <div style="font-size:10px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Analyse IA</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+      <span class="pill" style="background:${urgColor}18;color:${urgColor}">${CAT_ICONS[a.category]||'📌'} ${CAT_LABELS[a.category]||a.category}</span>
+      <span class="pill" style="background:${urgColor}18;color:${urgColor}">● Urgence ${a.urgency}</span>
+    </div>
+    <div class="ai-result-title">${a.title}</div>
+    <div class="ai-conseil">💡 ${a.conseil}</div>`;
+  document.getElementById('signal-step1').style.display = 'none';
+  document.getElementById('signal-step2').style.display = 'block';
+}
+
+function backToStep1() {
+  document.getElementById('signal-step1').style.display = 'block';
+  document.getElementById('signal-step2').style.display = 'none';
+}
+
+function submitSignal() {
+  const quartier = document.getElementById('f-quartier').value;
+  const desc = document.getElementById('f-desc').value.trim();
+  const q = QUARTIERS.find(x => x.label === quartier) || QUARTIERS[0];
+  const newAlert = {
+    id: Date.now(), userId:"you", role:currentRole,
+    cat: aiAnalysis?.category || 'autre',
+    urg: aiAnalysis?.urgency || 'moyenne',
+    status:"pending", quartier, rue:quartier,
+    time:"À l'instant", ts:Date.now(),
+    fdo:null, takenBy:null, confirmations:[], resolved:false, avis:[],
+    lat: q.lat + (Math.random()-.5)*.003,
+    lng: q.lng + (Math.random()-.5)*.003,
+    desc
+  };
+  ALERTS = [newAlert, ...ALERTS];
+  document.getElementById('overlay-signal').classList.remove('open');
+  renderFeed();
+  pushNotif({ text:"Signalement envoyé", sub:"En attente de validation", icon:"📤" });
+  toast("✓ Signalement transmis — en attente de validation");
+
+  // Auto-push si modérateur connecté (simulation)
+  if (currentRole === 'moderateur') {
+    setTimeout(() => triggerPushNotification(newAlert), 1500);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════ */
+function pushNotif(n) {
+  NOTIFS = [{ id:Date.now(), ...n, read:false, ts:Date.now() }, ...NOTIFS];
+  updateNotifBadge();
+  renderNotifs();
+}
+
+function updateNotifBadge() {
+  const unread = NOTIFS.filter(n => !n.read).length;
+  const badge = document.getElementById('notif-badge');
+  badge.textContent = unread;
+  badge.style.display = unread > 0 ? 'flex' : 'none';
+}
+
+function openNotifs() {
+  renderNotifs();
+  document.getElementById('overlay-notifs').classList.add('open');
+}
+
+function renderNotifs() {
+  document.getElementById('notif-list').innerHTML = NOTIFS.map(n => `
+    <div class="notif-item ${n.read ? '' : 'unread'}">
+      <span class="notif-icon">${n.icon}</span>
+      <div style="flex:1">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-sub">${n.sub} · ${fmtTime(n.ts)}</div>
+      </div>
+      ${!n.read ? '<div class="unread-dot"></div>' : ''}
+    </div>`).join('');
+}
+
+function markAllRead() {
+  NOTIFS = NOTIFS.map(n => ({...n, read:true}));
+  updateNotifBadge();
+  renderNotifs();
+}
+
+/* ═══════════════════════════════════════════
+   PUSH NOTIFICATION (Web Push API)
+═══════════════════════════════════════════ */
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') toast('🔔 Notifications activées');
+  }
+}
+
+function triggerPushNotification(alert) {
+  if (!alert) return;
+  pushNotif({
+    text: alert.urg === 'haute' ? '🚨 Alerte haute urgence' : 'Nouvelle alerte validée',
+    sub: (alert.desc||'').substring(0,50) + ' · ' + alert.quartier,
+    icon: CAT_ICONS[alert.cat] || '📌'
+  });
+  // Native browser notification
+  if (Notification.permission === 'granted') {
+    new Notification('HORUS · ' + (alert.quartier || 'Rouffiac-Tolosan'), {
+      body: (alert.desc||'').substring(0,80),
+      icon: 'icons/icon-192.png',
+      badge: 'icons/icon-72.png',
+      tag: 'horus-' + alert.id,
+      requireInteraction: alert.urg === 'haute',
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════
+   CARTE
+═══════════════════════════════════════════ */
+function initMap() {
+  mapInited = true;
+  map = L.map('horus-map', {
+    center:[43.6650, 1.5260], zoom:15,
+    zoomControl:true, attributionControl:true
+  });
+
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:19
+  }).addTo(map);
+
+  // Quartier circles
+  QUARTIERS.forEach(q => {
+    L.circleMarker([q.lat, q.lng], {
+      radius:20, fillColor:q.color, fillOpacity:.12,
+      color:q.color, weight:1.5, opacity:.5
+    }).addTo(map);
+  });
+
+  // Alert markers
+  const cfg = ROLES_CFG[currentRole];
+  ALERTS.filter(a => a.status === 'approved' || (cfg.canSeePending && a.status === 'pending')).forEach(a => {
+    const color = URG_COLORS[a.urg] || '#C9A84C';
+    const qColor = QUARTIERS.find(q => q.label === a.quartier)?.color || '#C9A84C';
+    const icon = L.divIcon({
+      html:`<div style="position:relative;width:34px;height:34px">
+        <div style="position:absolute;inset:4px;border-radius:50%;background:#161B22;border:2px solid ${color};display:flex;align-items:center;justify-content:center;font-size:13px">${CAT_ICONS[a.cat]||'📌'}</div>
+        ${a.takenBy?`<div style="position:absolute;top:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#4a6da7;border:1.5px solid #0D1117"></div>`:''}
+      </div>`,
+      className:'', iconSize:[34,34], iconAnchor:[17,17]
+    });
+    L.marker([a.lat, a.lng], {icon}).addTo(map)
+      .bindPopup(`<div style="min-width:180px">
+        <div style="font-size:11px;color:${qColor};font-weight:700;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em">${a.quartier}</div>
+        <div style="font-weight:700;font-size:13px;color:#F0EDE6;margin-bottom:4px">${a.desc.substring(0,70)}…</div>
+        <div style="font-size:11px;color:#8B949E">📍 ${a.rue} · ${a.time}</div>
+      </div>`);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   QUARTIERS VIEW
+═══════════════════════════════════════════ */
+function renderQuartiers() {
+  const counts = {};
+  ALERTS.filter(a=>a.status==='approved'&&!a.resolved).forEach(a => {
+    counts[a.quartier] = (counts[a.quartier]||0)+1;
+  });
+  document.getElementById('quartiers-list').innerHTML = QUARTIERS.map(q => `
+    <div class="card" style="display:flex;gap:14px;align-items:center">
+      <div style="width:10px;height:10px;border-radius:50%;background:${q.color};flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:15px;color:var(--blanc)">${q.label}</div>
+        <div style="font-size:12px;color:var(--gris2);margin-top:1px">${counts[q.label]||0} alerte${(counts[q.label]||0)!==1?'s':''} active${(counts[q.label]||0)!==1?'s':''}</div>
+      </div>
+      <div style="font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:${q.color}">${counts[q.label]||0}</div>
+    </div>`).join('');
+
+  document.getElementById('referents-list').innerHTML = QUARTIERS.map(q => `
+    <div class="card" style="display:flex;gap:14px;align-items:center">
+      <div style="width:38px;height:38px;border-radius:50%;background:${q.color}22;border:1.5px solid ${q.color}44;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:${q.color};flex-shrink:0">${q.ref.split(' ').map(w=>w[0]).join('')}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:14px;color:var(--blanc)">${q.ref} <span style="font-size:12px">⭐</span></div>
+        <div style="font-size:11px;color:${q.color};font-weight:600">${q.label}</div>
+      </div>
+      <a href="tel:${q.phone}" style="background:rgba(201,168,76,.1);border:1px solid var(--bord2);border-radius:12px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--or);text-decoration:none">📞</a>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════
+   ESPACE VIEW (adapté au rôle)
+═══════════════════════════════════════════ */
+function renderEspace() {
+  const cfg = ROLES_CFG[currentRole];
+  let html = '';
+
+  if (currentRole === 'habitant') {
+    html = `
+      <div class="section-label">Mon profil</div>
+      <div class="card">
+        <div style="font-size:14px;color:var(--gris);margin-bottom:16px">Habitant de Rouffiac-Tolosan</div>
+        <button class="btn btn-gold" onclick="requestNotifPermission();toast('🔔 Notifications activées !')">🔔 Activer les notifications</button>
+        <button class="btn btn-outline" style="margin-top:8px" onclick="openSignal()">🚨 Signaler un incident</button>
+      </div>
+      <div class="section-label" style="margin-top:8px">Mes signalements</div>
+      ${ALERTS.filter(a=>a.userId==='you').map(a=>alertCard(a,cfg)).join('') || '<div style="color:var(--gris);font-size:14px;padding:16px 0">Aucun signalement pour le moment.</div>'}`;
+  }
+
+  else if (currentRole === 'referent') {
+    const myQ = QUARTIERS.find(q => q.ref === 'Marie L.') || QUARTIERS[0];
+    const myAlerts = ALERTS.filter(a=>a.quartier===myQ.label&&a.status==='approved'&&!a.resolved);
+    const pending = ALERTS.filter(a=>a.quartier===myQ.label&&a.status==='pending');
+    html = `
+      <div style="background:linear-gradient(135deg,${myQ.color},${myQ.color}cc);border-radius:var(--r2);padding:18px;margin-bottom:16px">
+        <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px">⭐ ${myQ.label}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:14px">Votre secteur de référence</div>
+        <div style="display:flex;gap:12px">
+          ${[{v:myAlerts.length,l:'Actives'},{v:pending.length,l:'En attente'},{v:ALERTS.filter(a=>a.quartier===myQ.label&&a.resolved).length,l:'Résolues'}].map(s=>`
+          <div style="background:rgba(255,255,255,.15);border-radius:10px;padding:8px 12px;text-align:center;flex:1">
+            <div style="font-family:'Cinzel',serif;font-size:20px;font-weight:700;color:#fff">${s.v}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.7)">${s.l}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="section-label">Alertes de mon secteur</div>
+      ${myAlerts.map(a=>alertCard(a,cfg)).join('') || '<div style="color:var(--gris);font-size:14px;padding:8px 0">Aucune alerte active 🎉</div>'}`;
+  }
+
+  else if (currentRole === 'moderateur') {
+    const pending = ALERTS.filter(a=>a.status==='pending');
+    html = `
+      <div style="background:linear-gradient(135deg,#1d4ed8,#7c3aed);border-radius:var(--r2);padding:18px;margin-bottom:16px">
+        <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px">🛡 Modération</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.75)">${pending.length} signalement${pending.length!==1?'s':''} en attente de validation</div>
+      </div>
+      <div class="section-label">En attente</div>
+      ${pending.length > 0 ? pending.map(a=>alertCard(a,cfg)).join('') : '<div style="color:var(--gris);font-size:14px;padding:8px 0">Aucun signalement en attente ✓</div>'}
+      <div class="section-label" style="margin-top:8px">Validés récemment</div>
+      ${ALERTS.filter(a=>a.status==='approved').slice(0,3).map(a=>alertCard(a,cfg)).join('')}`;
+  }
+
+  else if (cfg.isFdo) {
+    const myAlerts = ALERTS.filter(a=>a.takenBy && (a.takenBy.startsWith(currentRole==='gendarmerie'?'gend':'pm')));
+    const active = ALERTS.filter(a=>a.status==='approved'&&!a.resolved);
+    const pending = cfg.canSeePending ? ALERTS.filter(a=>a.status==='pending') : [];
+    const fdoColors = { gendarmerie:"linear-gradient(135deg,#1e3a5f,#2d5a8e)", pm:"linear-gradient(135deg,#1d4ed8,#2563eb)", asvp:"linear-gradient(135deg,#b45309,#d97706)" };
+    html = `
+      <div style="background:${fdoColors[currentRole]||fdoColors.gendarmerie};border-radius:var(--r2);padding:18px;margin-bottom:16px">
+        <div style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:2px">${cfg.badge} ${cfg.label}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:14px">Rouffiac-Tolosan · Matricule 2025-01</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${[
+            {v:active.length,l:'Actives'},
+            {v:myAlerts.length,l:'Mes PEC'},
+            {v:pending.length,l:'En attente'},
+          ].map(s=>`<div style="background:rgba(255,255,255,.15);border-radius:8px;padding:8px 12px;text-align:center;flex:1"><div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#fff">${s.v}</div><div style="font-size:10px;color:rgba(255,255,255,.7)">${s.l}</div></div>`).join('')}
+        </div>
+      </div>
+      ${pending.length > 0 ? `<div class="section-label">⏳ En attente</div>${pending.map(a=>alertCard(a,cfg)).join('')}<div class="section-label" style="margin-top:8px">` : '<div class="section-label">'}Toutes les alertes actives</div>
+      ${active.map(a=>alertCard(a,cfg)).join('')}`;
+  }
+
+  document.getElementById('espace-content').innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function fmtTime(ts) {
+  const d = Date.now() - ts;
+  if (d < 60000) return 'À l\'instant';
+  if (d < 3600000) return `Il y a ${Math.floor(d/60000)} min`;
+  if (d < 86400000) return `Il y a ${Math.floor(d/3600000)}h`;
+  return `Il y a ${Math.floor(d/86400000)}j`;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function closeOnBg(e, id) {
+  if (e.target === document.getElementById(id))
+    document.getElementById(id).classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════
+   PWA INSTALL
+═══════════════════════════════════════════ */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-bar').classList.add('visible');
+});
+
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') toast('✓ HORUS installé sur votre écran d\'accueil');
+  deferredPrompt = null;
+  document.getElementById('install-bar').classList.remove('visible');
+});
+
+window.addEventListener('appinstalled', () => toast('✓ HORUS installé'));
+
+/* ═══════════════════════════════════════════
+   SERVICE WORKER REGISTRATION
+═══════════════════════════════════════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        console.log('[HORUS] SW enregistré:', reg.scope);
+        // Écoute les messages du SW pour les notifs
+        navigator.serviceWorker.addEventListener('message', e => {
+          if (e.data?.type === 'PUSH_NOTIF') pushNotif(e.data.payload);
+        });
+      })
+      .catch(err => console.warn('[HORUS] SW non disponible (normal en local):', err));
+  });
+}
+
+/* ═══════════════════════════════════════════
+   DEEP LINK (shortcut support)
+═══════════════════════════════════════════ */
+const params = new URLSearchParams(location.search);
+if (params.get('action') === 'signaler') setTimeout(openSignal, 500);
+if (params.get('tab') === 'feed') goTab('feed');
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderFeed();
+  updateNotifBadge();
+  requestNotifPermission();
+});
+</script>
+</body>
+</html>

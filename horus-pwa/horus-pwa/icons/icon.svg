@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="90" fill="#0D1117"/>
+  <rect width="512" height="512" rx="90" fill="none" stroke="#C9A84C" stroke-width="8"/>
+  <!-- Œil -->
+  <path d="M60 256 Q150 140 256 140 Q362 140 452 256 Q362 372 256 372 Q150 372 60 256Z" fill="none" stroke="#C9A84C" stroke-width="12"/>
+  <!-- Iris -->
+  <circle cx="256" cy="256" r="72" fill="#C9A84C" opacity="0.9"/>
+  <!-- Pupille -->
+  <circle cx="256" cy="256" r="36" fill="#0D1117"/>
+  <circle cx="256" cy="256" r="14" fill="#C9A84C"/>
+  <circle cx="268" cy="244" r="8" fill="#F5E9C8" opacity="0.8"/>
+  <!-- Cils décoratifs -->
+  <line x1="256" y1="140" x2="256" y2="100" stroke="#C9A84C" stroke-width="6" opacity="0.6"/>
+  <line x1="180" y1="165" x2="152" y2="132" stroke="#C9A84C" stroke-width="4" opacity="0.4"/>
+  <line x1="332" y1="165" x2="360" y2="132" stroke="#C9A84C" stroke-width="4" opacity="0.4"/>
+  <!-- HORUS text -->
+  <text x="256" y="440" text-anchor="middle" font-family="serif" font-size="60" font-weight="700" letter-spacing="14" fill="#C9A84C">HORUS</text>
+</svg>
