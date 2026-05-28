@@ -112,6 +112,25 @@
   .fdo-badge.gend { border-color:#4a6da7; color:#7ba0d4; background:rgba(74,109,167,.15); }
   .fdo-badge.pm   { border-color:#3575c4; color:var(--bleu); background:rgba(53,117,196,.15); }
 
+  /* RÉFÉRENTS */
+  .referents-section { max-width:1100px; margin:0 auto; padding:0 32px 48px; }
+  .referents-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .ref-card { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); padding:20px; display:flex; gap:16px; align-items:flex-start; transition:border-color .2s,transform .15s; }
+  .ref-card:hover { border-color:var(--bord2); transform:translateY(-2px); }
+  .ref-avatar { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:16px; font-weight:700; flex-shrink:0; }
+  .ref-info { flex:1; min-width:0; }
+  .ref-name { font-size:15px; font-weight:700; color:var(--blanc); margin-bottom:2px; }
+  .ref-quartier { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
+  .ref-role { font-size:12px; color:var(--gris); line-height:1.5; margin-bottom:12px; }
+  .ref-actions { display:flex; gap:8px; }
+  .ref-btn { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:6px 12px; border-radius:12px; border:1px solid; text-decoration:none; transition:background .15s; }
+  .ref-btn-call { color:var(--or); border-color:var(--bord2); background:transparent; }
+  .ref-btn-call:hover { background:rgba(201,168,76,.1); }
+  .ref-btn-signal { color:var(--blanc); border-color:transparent; background:rgba(201,168,76,.15); }
+  .ref-btn-signal:hover { background:rgba(201,168,76,.25); }
+  @media(max-width:900px) { .referents-grid { grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:500px) { .referents-grid { grid-template-columns:1fr; } }
+
   /* CARTE */
   .map-section { max-width:1100px; margin:0 auto; padding:0 32px 48px; }
   .map-container { border:1px solid var(--bord); border-radius:var(--r2); overflow:hidden; position:relative; }
@@ -211,7 +230,8 @@
         <div><div class="stat-val" id="stat-resolus">0</div><div class="stat-lab">incidents résolus</div></div>
       </div>
       <div class="hero-actions">
-        <a class="btn-ghost" href="#alertes">Voir toutes les alertes →</a>
+        <a class="btn-ghost" href="#referents">Référents de quartier →</a>
+        <a class="btn-ghost" href="#alertes">Alertes →</a>
       </div>
     </div>
     <div class="horus-eye-wrap" style="flex-direction:column;gap:20px">
@@ -251,6 +271,15 @@
     <a class="section-link" href="#alertes">Voir les alertes →</a>
   </div>
   <div class="secteurs-grid" id="quartiers-grid"></div>
+</section>
+
+<!-- RÉFÉRENTS -->
+<section class="referents-section" id="referents">
+  <div class="section-header">
+    <h2 class="section-title">Référents de quartier</h2>
+    <a class="section-link" href="#alertes">Voir les alertes →</a>
+  </div>
+  <div class="referents-grid" id="referents-grid"></div>
 </section>
 
 <!-- ALERTES -->
@@ -434,12 +463,12 @@ const RUES = [
 ];
 
 const QUARTIERS = [
-  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6655, lng:1.5175, alertes:5, ref:"Paul D." },
-  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6710, lng:1.5220, alertes:3, ref:"Marie L." },
-  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6585, lng:1.5255, alertes:4, ref:"Sophie R." },
-  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6685, lng:1.5095, alertes:2, ref:"Nadine B." },
-  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6605, lng:1.5105, alertes:6, ref:"Thierry M." },
-  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6555, lng:1.5185, alertes:4, ref:"Karim A." },
+  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6655, lng:1.5175, alertes:5, ref:"Paul D.",    phone:"06 98 76 54 32" },
+  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6710, lng:1.5220, alertes:3, ref:"Marie L.",   phone:"06 12 34 56 78" },
+  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6585, lng:1.5255, alertes:4, ref:"Sophie R.",  phone:"06 55 44 33 22" },
+  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6685, lng:1.5095, alertes:2, ref:"Nadine B.",  phone:"06 77 88 99 00" },
+  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6605, lng:1.5105, alertes:6, ref:"Thierry M.", phone:"06 11 22 33 44" },
+  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6555, lng:1.5185, alertes:4, ref:"Karim A.",   phone:"06 00 00 00 00" },
 ];
 
 const ALERTS = [
@@ -458,6 +487,32 @@ const URG_COLORS = { haute:"#E05555", moyenne:"#C9A84C", basse:"#3FB950", info:"
 
 let currentFilter = "tous";
 let map = null;
+
+function renderReferents() {
+  const alertCounts = {};
+  ALERTS.forEach(a => { alertCounts[a.quartier] = (alertCounts[a.quartier] || 0) + 1; });
+  document.getElementById("referents-grid").innerHTML = QUARTIERS.map(q => {
+    const initials = q.ref.split(' ').map(w => w[0]).join('');
+    const count = alertCounts[q.label] || 0;
+    return `
+    <div class="ref-card">
+      <div class="ref-avatar" style="background:${q.color}22;border:2px solid ${q.color}55;color:${q.color}">${initials}</div>
+      <div class="ref-info">
+        <div class="ref-name">${q.ref}</div>
+        <div class="ref-quartier" style="color:${q.color}">${q.label}</div>
+        <div class="ref-role">Référent de quartier · coordonne les signalements, relaie les alertes et fait le lien avec les forces de l'ordre.<br>
+          <span style="color:${count>0?'var(--rouge)':'var(--vert)'}">
+            ${count > 0 ? `${count} alerte${count>1?'s':''} active${count>1?'s':''}` : 'Aucune alerte active'}
+          </span>
+        </div>
+        <div class="ref-actions">
+          <a class="ref-btn ref-btn-call" href="tel:${q.phone.replace(/\s/g,'')}">📞 ${q.phone}</a>
+          <button class="ref-btn ref-btn-signal" onclick="openModal()">🚨 Signaler</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
 function renderQuartiers() {
   const grid = document.getElementById("quartiers-grid");
@@ -675,6 +730,7 @@ window.addEventListener('appinstalled', () => showToast('✓ HORUS installé'));
 
 document.addEventListener("DOMContentLoaded", () => {
   buildRueSelect();
+  renderReferents();
   renderQuartiers();
   renderAlerts();
   initMap();
