@@ -325,15 +325,15 @@
       Signaler un incident
     </div>
     <div class="form-group">
+      <label class="form-label">Rue</label>
+      <select class="form-select" id="f-rue" onchange="onRueChange()">
+        <option value="">Sélectionner une rue…</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label class="form-label">Quartier</label>
-      <select class="form-select" id="f-quartier">
-        <option value="">Sélectionner…</option>
-        <option>Centre-Bourg</option>
-        <option>Louradou</option>
-        <option>Castelviel</option>
-        <option>Charlary</option>
-        <option>Tartaloche</option>
-        <option>Pigassou</option>
+      <select class="form-select" id="f-quartier" style="background:var(--nuit3);color:var(--gris);cursor:default" disabled>
+        <option value="">Auto-rempli selon la rue</option>
       </select>
     </div>
     <div class="form-group">
@@ -361,6 +361,78 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+// ── Base rues → quartier (source : OpenStreetMap / Overpass) ──────
+const RUES = [
+  // Centre-Bourg
+  { rue:"Grande Rue",                           quartier:"Centre-Bourg" },
+  { rue:"Petite Rue",                           quartier:"Centre-Bourg" },
+  { rue:"Impasse de l'Église",                  quartier:"Centre-Bourg" },
+  { rue:"Impasse de Gardes",                    quartier:"Centre-Bourg" },
+  { rue:"Chemin du Barri",                      quartier:"Centre-Bourg" },
+  { rue:"Chemin du Château",                    quartier:"Centre-Bourg" },
+  { rue:"Impasse du Château de la Bergerie",    quartier:"Centre-Bourg" },
+  { rue:"Place des Ormeaux",                    quartier:"Centre-Bourg" },
+  { rue:"Rue du Moulin",                        quartier:"Centre-Bourg" },
+  { rue:"Chemin de Saint-Jean",                 quartier:"Centre-Bourg" },
+  { rue:"Route d'Albi",                         quartier:"Centre-Bourg" },
+  { rue:"Chemin de Montrabé",                   quartier:"Centre-Bourg" },
+  { rue:"Chemin de Pesquié",                    quartier:"Centre-Bourg" },
+  { rue:"Chemin des Pesquiès",                  quartier:"Centre-Bourg" },
+  { rue:"Clos de Rouffiac",                     quartier:"Centre-Bourg" },
+  { rue:"Impasse de l'Olivier",                 quartier:"Centre-Bourg" },
+  { rue:"Impasse des Jardins de Riverolles",    quartier:"Centre-Bourg" },
+  { rue:"Impasse du Clos du Loup",              quartier:"Centre-Bourg" },
+  { rue:"Impasse du Lac",                       quartier:"Centre-Bourg" },
+  { rue:"Le Clos d'Imbertis",                   quartier:"Centre-Bourg" },
+  { rue:"Route du Clos du Loup",                quartier:"Centre-Bourg" },
+  { rue:"Rue de l'Eden",                        quartier:"Centre-Bourg" },
+  { rue:"Rue de la Bergerie",                   quartier:"Centre-Bourg" },
+  { rue:"Rue des Jardins du Château",           quartier:"Centre-Bourg" },
+  { rue:"Rue du Clos de Malfre",                quartier:"Centre-Bourg" },
+  { rue:"Résidence Les Jardins Tolosans",       quartier:"Centre-Bourg" },
+  // Louradou
+  { rue:"Chemin Louradou",                      quartier:"Louradou" },
+  { rue:"Chemin de Louradou",                   quartier:"Louradou" },
+  { rue:"Impasse du Louradou",                  quartier:"Louradou" },
+  { rue:"Impasse des Terrasses du louradou",    quartier:"Louradou" },
+  { rue:"Impasse des vergers du louradou",      quartier:"Louradou" },
+  { rue:"Zone Commerciale du Louradou",         quartier:"Louradou" },
+  { rue:"Avenue de la Viste",                   quartier:"Louradou" },
+  { rue:"Avenue la Bisto",                      quartier:"Louradou" },
+  { rue:"Allée Guynemer",                       quartier:"Louradou" },
+  { rue:"Allée des Platanes",                   quartier:"Louradou" },
+  { rue:"Avenue Saint-Exupéry",                 quartier:"Louradou" },
+  { rue:"Place Blériot",                        quartier:"Louradou" },
+  { rue:"Place Mermoz",                         quartier:"Louradou" },
+  { rue:"Place Nungesser",                      quartier:"Louradou" },
+  { rue:"Place Roland Garros",                  quartier:"Louradou" },
+  { rue:"Rue Latécoère",                        quartier:"Louradou" },
+  { rue:"Rue Jacques Cartier",                  quartier:"Louradou" },
+  { rue:"Rue Louis Antoine de Bougainville",    quartier:"Louradou" },
+  { rue:"Rue Beausoleil",                       quartier:"Louradou" },
+  // Castelviel
+  { rue:"Chemin du Castelviel",                 quartier:"Castelviel" },
+  { rue:"Impasse de Castelviel",                quartier:"Castelviel" },
+  { rue:"Chemin des Garosses",                  quartier:"Castelviel" },
+  { rue:"Impasse des Garosses",                 quartier:"Castelviel" },
+  { rue:"Chemin de Pompignac",                  quartier:"Castelviel" },
+  // Charlary
+  { rue:"Allée de Charlary",                    quartier:"Charlary" },
+  { rue:"Impasse de Charlary",                  quartier:"Charlary" },
+  { rue:"Chemin des Margarits",                 quartier:"Charlary" },
+  { rue:"Chemin du Barrus",                     quartier:"Charlary" },
+  // Tartaloche
+  { rue:"Chemin de Tartaloche",                 quartier:"Tartaloche" },
+  { rue:"Chemin de Ramounelle",                 quartier:"Tartaloche" },
+  { rue:"Chemin des Vignettes",                 quartier:"Tartaloche" },
+  // Pigassou
+  { rue:"Chemin de Pigassou",                   quartier:"Pigassou" },
+  { rue:"Chemin du Cros",                       quartier:"Pigassou" },
+  { rue:"Chemin des Combes",                    quartier:"Pigassou" },
+  { rue:"Chemin de Hollande",                   quartier:"Pigassou" },
+  { rue:"Autoroute du Pastel",                  quartier:"Pigassou" },
+];
+
 const QUARTIERS = [
   { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6655, lng:1.5175, alertes:5, ref:"Paul D." },
   { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6710, lng:1.5220, alertes:3, ref:"Marie L." },
@@ -465,7 +537,7 @@ function addAlertMarker(alert, lat, lng) {
 }
 
 async function initMap() {
-  map = L.map("horus-map", { center:[43.6640, 1.5175], zoom:15, zoomControl:true, attributionControl:true });
+  map = L.map("horus-map", { center:[43.6639, 1.5249], zoom:15, zoomControl:true, attributionControl:true });
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom:19,
@@ -500,6 +572,40 @@ function focusQuartier(key) {
   }
 }
 
+function buildRueSelect() {
+  const sel = document.getElementById("f-rue");
+  const grouped = {};
+  RUES.forEach(r => {
+    if (!grouped[r.quartier]) grouped[r.quartier] = [];
+    grouped[r.quartier].push(r.rue);
+  });
+  const order = ["Centre-Bourg","Louradou","Castelviel","Charlary","Tartaloche","Pigassou"];
+  order.forEach(q => {
+    if (!grouped[q]) return;
+    const grp = document.createElement("optgroup");
+    grp.label = q;
+    grouped[q].sort().forEach(rue => {
+      const opt = document.createElement("option");
+      opt.value = rue;
+      opt.textContent = rue;
+      grp.appendChild(opt);
+    });
+    sel.appendChild(grp);
+  });
+}
+
+function onRueChange() {
+  const rue = document.getElementById("f-rue").value;
+  const match = RUES.find(r => r.rue === rue);
+  const qSel = document.getElementById("f-quartier");
+  if (match) {
+    qSel.innerHTML = `<option value="${match.quartier}">${match.quartier}</option>`;
+    qSel.value = match.quartier;
+  } else {
+    qSel.innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
+  }
+}
+
 function openModal() {
   document.getElementById("modal").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -508,12 +614,14 @@ function closeModal(e) { if (e.target === document.getElementById("modal")) clos
 function closeModalBtn() { document.getElementById("modal").classList.remove("open"); document.body.style.overflow = ""; }
 
 function submitSignalement() {
-  const q = document.getElementById("f-quartier").value;
-  const t = document.getElementById("f-type").value;
-  const d = document.getElementById("f-desc").value.trim();
-  if (!q || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
+  const rue = document.getElementById("f-rue").value;
+  const q   = document.getElementById("f-quartier").value;
+  const t   = document.getElementById("f-type").value;
+  const d   = document.getElementById("f-desc").value.trim();
+  if (!rue || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
   closeModalBtn();
-  document.getElementById("f-quartier").value = "";
+  document.getElementById("f-rue").value = "";
+  document.getElementById("f-quartier").innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
   document.getElementById("f-type").value = "";
   document.getElementById("f-desc").value = "";
   showToast("✓ Signalement transmis — en attente de validation.");
@@ -566,6 +674,7 @@ function triggerInstall() {
 window.addEventListener('appinstalled', () => showToast('✓ HORUS installé'));
 
 document.addEventListener("DOMContentLoaded", () => {
+  buildRueSelect();
   renderQuartiers();
   renderAlerts();
   initMap();
