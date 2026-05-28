@@ -211,14 +211,10 @@
         <div><div class="stat-val" id="stat-resolus">0</div><div class="stat-lab">incidents résolus</div></div>
       </div>
       <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-          Signaler un incident
-        </button>
         <a class="btn-ghost" href="#alertes">Voir toutes les alertes →</a>
       </div>
     </div>
-    <div class="horus-eye-wrap">
+    <div class="horus-eye-wrap" style="flex-direction:column;gap:20px">
       <svg width="180" height="180" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#C9A84C" stop-opacity=".15"/><stop offset="100%" stop-color="#C9A84C" stop-opacity="0"/></radialGradient>
@@ -240,6 +236,10 @@
         <line x1="100" y1="186" x2="80" y2="202" stroke="#C9A84C" stroke-width="1" opacity=".4"/>
         <text x="140" y="260" text-anchor="middle" font-family="'Cinzel',serif" font-size="18" font-weight="700" letter-spacing="10" fill="#C9A84C">HORUS</text>
       </svg>
+      <button class="btn-primary" onclick="openModal()" style="width:100%;justify-content:center">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Signaler un incident
+      </button>
     </div>
   </div>
 </section>
@@ -362,22 +362,22 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const QUARTIERS = [
-  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6664, lng:1.5261, alertes:5, ref:"Paul D." },
-  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6720, lng:1.5310, alertes:3, ref:"Marie L." },
-  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6590, lng:1.5340, alertes:4, ref:"Sophie R." },
-  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6690, lng:1.5180, alertes:2, ref:"Nadine B." },
-  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6610, lng:1.5190, alertes:6, ref:"Thierry M." },
-  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6560, lng:1.5270, alertes:4, ref:"Karim A." },
+  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6655, lng:1.5175, alertes:5, ref:"Paul D." },
+  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6710, lng:1.5220, alertes:3, ref:"Marie L." },
+  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6585, lng:1.5255, alertes:4, ref:"Sophie R." },
+  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6685, lng:1.5095, alertes:2, ref:"Nadine B." },
+  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6605, lng:1.5105, alertes:6, ref:"Thierry M." },
+  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6555, lng:1.5185, alertes:4, ref:"Karim A." },
 ];
 
 const ALERTS = [
-  { id:1, cat:"rodeur",      urg:"haute",   title:"Individu suspect ch. du Moulin",         desc:"Homme en capuche noire observant les maisons depuis 20 min, regardant dans plusieurs boîtes aux lettres.", quartier:"Louradou",    rue:"Ch. Louradou",      time:"Il y a 12 min", fdo:"gend", fdoLabel:"Gendarmerie", lat:43.6718, lng:1.5308 },
-  { id:2, cat:"vehicule",    urg:"moyenne",  title:"Camionnette garée depuis 3 jours",       desc:"Camionnette blanche immatriculée 31 devant le n°12. Personne ne la réclame, vitres teintées.",           quartier:"Centre-Bourg",rue:"Grande Rue",        time:"Il y a 1h",    fdo:null,   fdoLabel:null,          lat:43.6661, lng:1.5258 },
-  { id:3, cat:"intrusion",   urg:"haute",   title:"Tentative d'effraction ch. Tartaloche",  desc:"Traces de forçage sur portail. Plaque relevée: 31-AZ-xxx. Gendarmerie contactée.",                       quartier:"Tartaloche",  rue:"Ch. de Tartaloche", time:"Il y a 2h",    fdo:"gend", fdoLabel:"Gend.",       lat:43.6612, lng:1.5192 },
-  { id:4, cat:"prevention",  urg:"info",    title:"Rappel : sécurisez vos portails",        desc:"Suite aux incidents récents, pensez à vérifier serrures et portails. Votre référent reste disponible.", quartier:"Louradou",    rue:"Secteur Louradou",  time:"Il y a 5h",    fdo:null,   fdoLabel:null,          lat:43.6722, lng:1.5312 },
-  { id:5, cat:"degradation", urg:"basse",   title:"Tags sur le mur de l'impasse",           desc:"Nouveaux graffitis apparus cette nuit. À signaler à la mairie pour nettoyage rapide.",                   quartier:"Castelviel",  rue:"Imp. de Castelviel",time:"Il y a 6h",    fdo:"pm",   fdoLabel:"Police Mun.", lat:43.6588, lng:1.5338 },
-  { id:6, cat:"vehicule",    urg:"basse",   title:"Stationnement gênant ch. Charlary",      desc:"Véhicule en stationnement interdit verbalisé par la Police Municipale à 10h30.",                         quartier:"Charlary",    rue:"Allée de Charlary", time:"Il y a 8h",    fdo:"pm",   fdoLabel:"PM",          lat:43.6688, lng:1.5181 },
-  { id:7, cat:"rodeur",      urg:"moyenne",  title:"Individu observant les véhicules",       desc:"Homme seul tournant autour des voitures garées en soirée. Signalement transmis à la PM.",                quartier:"Pigassou",    rue:"Ch. de Pigassou",   time:"Il y a 10h",   fdo:"pm",   fdoLabel:"PM",          lat:43.6562, lng:1.5272 },
+  { id:1, cat:"rodeur",      urg:"haute",   title:"Individu suspect ch. du Moulin",         desc:"Homme en capuche noire observant les maisons depuis 20 min, regardant dans plusieurs boîtes aux lettres.", quartier:"Louradou",    rue:"Ch. Louradou",      time:"Il y a 12 min", fdo:"gend", fdoLabel:"Gendarmerie", lat:43.6712, lng:1.5218 },
+  { id:2, cat:"vehicule",    urg:"moyenne",  title:"Camionnette garée depuis 3 jours",       desc:"Camionnette blanche immatriculée 31 devant le n°12. Personne ne la réclame, vitres teintées.",           quartier:"Centre-Bourg",rue:"Grande Rue",        time:"Il y a 1h",    fdo:null,   fdoLabel:null,          lat:43.6653, lng:1.5172 },
+  { id:3, cat:"intrusion",   urg:"haute",   title:"Tentative d'effraction ch. Tartaloche",  desc:"Traces de forçage sur portail. Plaque relevée: 31-AZ-xxx. Gendarmerie contactée.",                       quartier:"Tartaloche",  rue:"Ch. de Tartaloche", time:"Il y a 2h",    fdo:"gend", fdoLabel:"Gend.",       lat:43.6608, lng:1.5108 },
+  { id:4, cat:"prevention",  urg:"info",    title:"Rappel : sécurisez vos portails",        desc:"Suite aux incidents récents, pensez à vérifier serrures et portails. Votre référent reste disponible.", quartier:"Louradou",    rue:"Secteur Louradou",  time:"Il y a 5h",    fdo:null,   fdoLabel:null,          lat:43.6715, lng:1.5225 },
+  { id:5, cat:"degradation", urg:"basse",   title:"Tags sur le mur de l'impasse",           desc:"Nouveaux graffitis apparus cette nuit. À signaler à la mairie pour nettoyage rapide.",                   quartier:"Castelviel",  rue:"Imp. de Castelviel",time:"Il y a 6h",    fdo:"pm",   fdoLabel:"Police Mun.", lat:43.6583, lng:1.5252 },
+  { id:6, cat:"vehicule",    urg:"basse",   title:"Stationnement gênant ch. Charlary",      desc:"Véhicule en stationnement interdit verbalisé par la Police Municipale à 10h30.",                         quartier:"Charlary",    rue:"Allée de Charlary", time:"Il y a 8h",    fdo:"pm",   fdoLabel:"PM",          lat:43.6683, lng:1.5092 },
+  { id:7, cat:"rodeur",      urg:"moyenne",  title:"Individu observant les véhicules",       desc:"Homme seul tournant autour des voitures garées en soirée. Signalement transmis à la PM.",                quartier:"Pigassou",    rue:"Ch. de Pigassou",   time:"Il y a 10h",   fdo:"pm",   fdoLabel:"PM",          lat:43.6558, lng:1.5188 },
 ];
 
 const CAT_ICONS  = { intrusion:"🚨", rodeur:"👤", vehicule:"🚗", degradation:"🔨", prevention:"📢", escroquerie:"⚠️", autre:"📌" };
@@ -430,7 +430,7 @@ function filterAlerts(btn, filter) {
 }
 
 function initMap() {
-  map = L.map("horus-map", { center:[43.6664, 1.5261], zoom:16, zoomControl:true, attributionControl:true });
+  map = L.map("horus-map", { center:[43.6640, 1.5175], zoom:15, zoomControl:true, attributionControl:true });
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom:19,
