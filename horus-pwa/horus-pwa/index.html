@@ -812,12 +812,23 @@ function submitSignalement() {
   const t   = document.getElementById("f-type").value;
   const d   = document.getElementById("f-desc").value.trim();
   if (!rue || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
+
+  const signalement = {
+    id: Date.now(),
+    rue, quartier: q, type: t, desc: d,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+    fdoKey: null, fdoName: null, resolvedAt: null,
+  };
+  const existing = JSON.parse(localStorage.getItem("horus_signalements") || "[]");
+  localStorage.setItem("horus_signalements", JSON.stringify([signalement, ...existing]));
+
   closeModalBtn();
   document.getElementById("f-rue").value = "";
   document.getElementById("f-quartier").innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
   document.getElementById("f-type").value = "";
   document.getElementById("f-desc").value = "";
-  showToast("✓ Signalement transmis — en attente de validation.");
+  showToast("✓ Signalement transmis — en attente de validation par les FDO.");
 }
 
 function showToast(msg) {
