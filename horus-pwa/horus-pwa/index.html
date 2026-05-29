@@ -131,6 +131,49 @@
   @media(max-width:900px) { .referents-grid { grid-template-columns:repeat(2,1fr); } }
   @media(max-width:500px) { .referents-grid { grid-template-columns:1fr; } }
 
+  /* FDO */
+  .fdo-section { max-width:1100px; margin:0 auto; padding:0 32px 48px; }
+  .fdo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .fdo-card { border-radius:var(--r2); padding:24px; position:relative; overflow:hidden; }
+  .fdo-card::before { content:''; position:absolute; inset:0; opacity:.06; }
+  .fdo-card.gend { background:linear-gradient(135deg,rgba(30,58,95,.4),rgba(13,17,23,.8)); border:1px solid rgba(74,109,167,.35); }
+  .fdo-card.gend::before { background:#1e3a5f; }
+  .fdo-card.pm   { background:linear-gradient(135deg,rgba(29,78,216,.3),rgba(13,17,23,.8)); border:1px solid rgba(53,117,196,.35); }
+  .fdo-card.pm::before { background:#1d4ed8; }
+  .fdo-card.asvp { background:linear-gradient(135deg,rgba(180,83,9,.3),rgba(13,17,23,.8)); border:1px solid rgba(180,83,9,.35); }
+  .fdo-card.asvp::before { background:#b45309; }
+  .fdo-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .fdo-badge-big { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .fdo-card.gend .fdo-badge-big { background:rgba(74,109,167,.2); }
+  .fdo-card.pm   .fdo-badge-big { background:rgba(53,117,196,.2); }
+  .fdo-card.asvp .fdo-badge-big { background:rgba(180,83,9,.2); }
+  .fdo-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:var(--blanc); line-height:1.2; }
+  .fdo-sub  { font-size:11px; margin-top:2px; }
+  .fdo-card.gend .fdo-sub { color:#7ba0d4; }
+  .fdo-card.pm   .fdo-sub { color:var(--bleu); }
+  .fdo-card.asvp .fdo-sub { color:#fbbf24; }
+  .fdo-stats { display:flex; gap:10px; margin-bottom:16px; }
+  .fdo-stat { flex:1; background:rgba(0,0,0,.25); border-radius:var(--r); padding:10px 8px; text-align:center; }
+  .fdo-stat-n { font-family:'Cinzel',serif; font-size:20px; font-weight:700; line-height:1; }
+  .fdo-stat-l { font-size:9px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+  .fdo-card.gend .fdo-stat-n { color:#7ba0d4; }
+  .fdo-card.pm   .fdo-stat-n { color:var(--bleu); }
+  .fdo-card.asvp .fdo-stat-n { color:#fbbf24; }
+  .fdo-desc { font-size:12px; color:var(--gris); line-height:1.6; margin-bottom:16px; }
+  .fdo-contacts { display:flex; flex-direction:column; gap:8px; }
+  .fdo-contact-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .fdo-contact-label { font-size:11px; color:var(--gris2); }
+  .fdo-contact-link { font-size:13px; font-weight:700; text-decoration:none; padding:5px 12px; border-radius:10px; transition:opacity .15s; }
+  .fdo-card.gend .fdo-contact-link { color:#7ba0d4; background:rgba(74,109,167,.2); }
+  .fdo-card.pm   .fdo-contact-link { color:var(--bleu); background:rgba(53,117,196,.2); }
+  .fdo-card.asvp .fdo-contact-link { color:#fbbf24; background:rgba(180,83,9,.2); }
+  .fdo-contact-link:hover { opacity:.8; }
+  .fdo-active-alerts { margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08); }
+  .fdo-active-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gris2); margin-bottom:8px; }
+  .fdo-alert-item { font-size:11px; color:var(--gris); padding:5px 8px; background:rgba(0,0,0,.2); border-radius:6px; margin-bottom:5px; line-height:1.4; }
+  .fdo-alert-item:last-child { margin-bottom:0; }
+  @media(max-width:900px) { .fdo-grid { grid-template-columns:1fr; } }
+
   /* CARTE */
   .map-section { max-width:1100px; margin:0 auto; padding:0 32px 48px; }
   .map-container { border:1px solid var(--bord); border-radius:var(--r2); overflow:hidden; position:relative; }
@@ -230,7 +273,8 @@
         <div><div class="stat-val" id="stat-resolus">0</div><div class="stat-lab">incidents résolus</div></div>
       </div>
       <div class="hero-actions">
-        <a class="btn-ghost" href="#referents">Référents de quartier →</a>
+        <a class="btn-ghost" href="#referents">Référents →</a>
+        <a class="btn-ghost" href="#fdo">Forces de l'ordre →</a>
         <a class="btn-ghost" href="#alertes">Alertes →</a>
       </div>
     </div>
@@ -280,6 +324,15 @@
     <a class="section-link" href="#alertes">Voir les alertes →</a>
   </div>
   <div class="referents-grid" id="referents-grid"></div>
+</section>
+
+<!-- FDO -->
+<section class="fdo-section" id="fdo">
+  <div class="section-header">
+    <h2 class="section-title">Forces de l'ordre</h2>
+    <span style="font-size:12px;color:var(--gris2)">Urgence : <strong style="color:var(--rouge)">17</strong></span>
+  </div>
+  <div class="fdo-grid" id="fdo-grid"></div>
 </section>
 
 <!-- ALERTES -->
@@ -487,6 +540,91 @@ const URG_COLORS = { haute:"#E05555", moyenne:"#C9A84C", basse:"#3FB950", info:"
 
 let currentFilter = "tous";
 let map = null;
+
+const FDO = [
+  {
+    key: "gend",
+    cls: "gend",
+    emoji: "⚖️",
+    name: "Gendarmerie Nationale",
+    sub: "Brigade de L'Union",
+    desc: "Compétente sur le territoire de Rouffiac-Tolosan. Intervient sur les crimes, délits, accidents et troubles à l'ordre public.",
+    contacts: [
+      { label: "Urgences",       num: "17",            tel: "17" },
+      { label: "Brigade",        num: "05 61 09 10 17", tel: "0561091017" },
+    ],
+    fdoKey: "gend",
+  },
+  {
+    key: "pm",
+    cls: "pm",
+    emoji: "🔵",
+    name: "Police Municipale",
+    sub: "Toulouse Métropole",
+    desc: "Assure la tranquillité, la sécurité et la salubrité publique. Verbalisation, surveillance des voies et accompagnement des riverains.",
+    contacts: [
+      { label: "Urgences",       num: "17",            tel: "17" },
+      { label: "PM Métropole",   num: "05 61 22 29 22", tel: "0561222922" },
+    ],
+    fdoKey: "pm",
+  },
+  {
+    key: "asvp",
+    cls: "asvp",
+    emoji: "🟡",
+    name: "ASVP",
+    sub: "Agents de Surveillance de la Voie Publique",
+    desc: "Contrôle du stationnement, sécurité aux abords des écoles, médiation de proximité et signalement aux autorités compétentes.",
+    contacts: [
+      { label: "Mairie",         num: "05 61 09 01 82", tel: "0561090182" },
+      { label: "Urgences",       num: "17",             tel: "17" },
+    ],
+    fdoKey: "asvp",
+  },
+];
+
+function renderFdo() {
+  const grid = document.getElementById("fdo-grid");
+  grid.innerHTML = FDO.map(f => {
+    const taken    = ALERTS.filter(a => a.fdo === f.fdoKey);
+    const resolved = taken.filter(a => a.resolved ?? false).length;
+    const active   = taken.filter(a => !(a.resolved ?? false)).length;
+    const total    = taken.length;
+
+    const activeAlerts = taken.filter(a => !(a.resolved ?? false)).slice(0,3).map(a =>
+      `<div class="fdo-alert-item">📍 ${a.rue} · <strong>${a.quartier}</strong> — ${a.time}</div>`
+    ).join('');
+
+    const contactsHTML = f.contacts.map(c =>
+      `<div class="fdo-contact-row">
+        <span class="fdo-contact-label">${c.label}</span>
+        <a class="fdo-contact-link" href="tel:${c.tel}">📞 ${c.num}</a>
+      </div>`
+    ).join('');
+
+    return `
+    <div class="fdo-card ${f.cls}">
+      <div class="fdo-header">
+        <div class="fdo-badge-big">${f.emoji}</div>
+        <div>
+          <div class="fdo-name">${f.name}</div>
+          <div class="fdo-sub">${f.sub}</div>
+        </div>
+      </div>
+      <div class="fdo-stats">
+        <div class="fdo-stat"><div class="fdo-stat-n">${active}</div><div class="fdo-stat-l">En cours</div></div>
+        <div class="fdo-stat"><div class="fdo-stat-n">${resolved}</div><div class="fdo-stat-l">Résolus</div></div>
+        <div class="fdo-stat"><div class="fdo-stat-n">${total}</div><div class="fdo-stat-l">Total</div></div>
+      </div>
+      <div class="fdo-desc">${f.desc}</div>
+      <div class="fdo-contacts">${contactsHTML}</div>
+      ${active > 0 ? `<div class="fdo-active-alerts">
+        <div class="fdo-active-label">Interventions actives</div>
+        ${activeAlerts}
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
 
 function renderReferents() {
   const alertCounts = {};
@@ -730,6 +868,7 @@ window.addEventListener('appinstalled', () => showToast('✓ HORUS installé'));
 
 document.addEventListener("DOMContentLoaded", () => {
   buildRueSelect();
+  renderFdo();
   renderReferents();
   renderQuartiers();
   renderAlerts();
