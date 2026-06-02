@@ -611,6 +611,38 @@ const ALERTS = [
 const CAT_ICONS  = { intrusion:"🚨", rodeur:"👤", vehicule:"🚗", degradation:"🔨", prevention:"📢", escroquerie:"⚠️", autre:"📌" };
 const CAT_LABELS = { intrusion:"Intrusion", rodeur:"Rôdeur", vehicule:"Véhicule suspect", degradation:"Dégradation", prevention:"Prévention", escroquerie:"Escroquerie", autre:"Autre" };
 const URG_COLORS = { haute:"#E05555", moyenne:"#C9A84C", basse:"#3FB950", info:"#58A6FF" };
+const FDO_LABELS = { gend:"Gendarmerie", pm:"Police Mun.", asvp:"ASVP" };
+const TYPE_TO_CAT = {
+  "🚨 Intrusion / Effraction": "intrusion",
+  "👤 Rôdeur suspect":          "rodeur",
+  "🚗 Véhicule suspect":        "vehicule",
+  "🔨 Dégradation":             "degradation",
+  "⚠️ Escroquerie / Démarchage":"escroquerie",
+  "📌 Autre":                   "autre",
+};
+
+function localToAlert(s) {
+  const q = QUARTIERS.find(x => x.label === s.quartier);
+  const diff = Date.now() - new Date(s.createdAt).getTime();
+  const time = diff < 60000 ? "À l'instant"
+             : diff < 3600000 ? `Il y a ${Math.floor(diff/60000)} min`
+             : diff < 86400000 ? `Il y a ${Math.floor(diff/3600000)}h`
+             : `Il y a ${Math.floor(diff/86400000)}j`;
+  return {
+    id:       s.id,
+    cat:      TYPE_TO_CAT[s.type] || "autre",
+    urg:      "moyenne",
+    title:    s.desc.substring(0, 65) + (s.desc.length > 65 ? "…" : ""),
+    desc:     s.desc,
+    quartier: s.quartier,
+    rue:      s.rue,
+    time,
+    fdo:      s.fdoKey || null,
+    fdoLabel: s.fdoKey ? FDO_LABELS[s.fdoKey] : null,
+    lat:      q ? q.lat + (Math.random() - .5) * .003 : 43.6639,
+    lng:      q ? q.lng + (Math.random() - .5) * .003 : 1.5249,
+  };
+}
 
 let currentFilter = "tous";
 let map = null;
@@ -741,7 +773,11 @@ function renderQuartiers() {
 
 function renderAlerts() {
   const grid = document.getElementById("alerts-grid");
-  const list = currentFilter === "tous" ? ALERTS : ALERTS.filter(a => a.cat === currentFilter);
+  const validated = JSON.parse(localStorage.getItem("horus_signalements") || "[]")
+    .filter(s => s.status === "approved" && !s.resolvedAt)
+    .map(localToAlert);
+  const allAlerts = [...validated, ...ALERTS];
+  const list = currentFilter === "tous" ? allAlerts : allAlerts.filter(a => a.cat === currentFilter);
   grid.innerHTML = list.map(a => `
     <div class="alert-card ${a.urg}">
       <div class="card-top">
@@ -976,6 +1012,10 @@ document.addEventListener("DOMContentLoaded", () => {
   renderQuartiers();
   renderAlerts();
   initMap();
+
+  window.addEventListener("storage", e => {
+    if (e.key === "horus_signalements") renderAlerts();
+  });
   setTimeout(() => {
     animateStat("stat-alertes", 24);
     animateStat("stat-membres", 247);
