@@ -428,9 +428,12 @@
     </div>
     <div class="form-group">
       <label class="form-label">Rue</label>
-      <select class="form-select" id="f-rue" onchange="onRueChange()">
-        <option value="">Sélectionner une rue…</option>
-      </select>
+      <div style="display:flex;gap:8px">
+        <select class="form-select" id="f-rue" onchange="onRueChange()" style="flex:1">
+          <option value="">Sélectionner une rue…</option>
+        </select>
+        <input class="form-input" id="f-numero" type="text" placeholder="N°" style="width:68px;flex-shrink:0" maxlength="6">
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">Quartier</label>
@@ -872,15 +875,17 @@ function closeModal(e) { if (e.target === document.getElementById("modal")) clos
 function closeModalBtn() { document.getElementById("modal").classList.remove("open"); document.body.style.overflow = ""; }
 
 function submitSignalement() {
-  const rue = document.getElementById("f-rue").value;
-  const q   = document.getElementById("f-quartier").value;
-  const t   = document.getElementById("f-type").value;
-  const d   = document.getElementById("f-desc").value.trim();
+  const rue    = document.getElementById("f-rue").value;
+  const numero = document.getElementById("f-numero").value.trim();
+  const q      = document.getElementById("f-quartier").value;
+  const t      = document.getElementById("f-type").value;
+  const d      = document.getElementById("f-desc").value.trim();
   if (!rue || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
 
+  const rueComplete = numero ? `${numero} ${rue}` : rue;
   const signalement = {
     id: Date.now(),
-    rue, quartier: q, type: t, desc: d,
+    rue: rueComplete, quartier: q, type: t, desc: d,
     status: "pending",
     createdAt: new Date().toISOString(),
     fdoKey: null, fdoName: null, resolvedAt: null,
@@ -890,6 +895,7 @@ function submitSignalement() {
 
   closeModalBtn();
   document.getElementById("f-rue").value = "";
+  document.getElementById("f-numero").value = "";
   document.getElementById("f-quartier").innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
   document.getElementById("f-type").value = "";
   document.getElementById("f-desc").value = "";
