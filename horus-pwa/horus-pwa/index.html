@@ -436,9 +436,15 @@
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Quartier</label>
-      <select class="form-select" id="f-quartier" style="background:var(--nuit3);color:var(--gris);cursor:default" disabled>
-        <option value="">Auto-rempli selon la rue</option>
+      <label class="form-label">Quartier <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--gris2)">(auto-rempli ou modifiable)</span></label>
+      <select class="form-select" id="f-quartier">
+        <option value="">Sélectionner…</option>
+        <option>Centre-Bourg</option>
+        <option>Louradou</option>
+        <option>Castelviel</option>
+        <option>Charlary</option>
+        <option>Tartaloche</option>
+        <option>Pigassou</option>
       </select>
     </div>
     <div class="form-group">
@@ -858,12 +864,8 @@ function buildRueSelect() {
 function onRueChange() {
   const rue = document.getElementById("f-rue").value;
   const match = RUES.find(r => r.rue === rue);
-  const qSel = document.getElementById("f-quartier");
   if (match) {
-    qSel.innerHTML = `<option value="${match.quartier}">${match.quartier}</option>`;
-    qSel.value = match.quartier;
-  } else {
-    qSel.innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
+    document.getElementById("f-quartier").value = match.quartier;
   }
 }
 
@@ -880,7 +882,7 @@ function submitSignalement() {
   const q      = document.getElementById("f-quartier").value;
   const t      = document.getElementById("f-type").value;
   const d      = document.getElementById("f-desc").value.trim();
-  if (!rue || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
+  if (!rue || !q || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
 
   const rueComplete = numero ? `${numero} ${rue}` : rue;
   const signalement = {
@@ -896,7 +898,7 @@ function submitSignalement() {
   closeModalBtn();
   document.getElementById("f-rue").value = "";
   document.getElementById("f-numero").value = "";
-  document.getElementById("f-quartier").innerHTML = `<option value="">Auto-rempli selon la rue</option>`;
+  document.getElementById("f-quartier").value = "";
   document.getElementById("f-type").value = "";
   document.getElementById("f-desc").value = "";
   showToast("✓ Signalement transmis — en attente de validation par les FDO.");
