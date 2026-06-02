@@ -21,20 +21,6 @@
     --nuit2:   #161B22;
     --nuit3:   #21262D;
     --shadow:  0 4px 24px rgba(0,0,0,.4);
-  }
-  [data-theme="light"] {
-    --nuit:    #F2F0EB;
-    --nuit2:   #FFFFFF;
-    --nuit3:   #E8E5DF;
-    --blanc:   #1A1A2A;
-    --gris:    #4B5563;
-    --gris2:   #6B7280;
-    --bord:    rgba(201,168,76,.22);
-    --bord2:   rgba(201,168,76,.45);
-    --shadow:  0 4px 24px rgba(0,0,0,.1);
-  }
-  html { transition: background .25s; }
-  :root {
     --or:      #C9A84C;
     --or2:     #E8C97A;
     --or-pale: #F5E9C8;
@@ -50,6 +36,18 @@
     --r2:      12px;
     --r3:      20px;
   }
+  [data-theme="light"] {
+    --nuit:    #F2F0EB;
+    --nuit2:   #FFFFFF;
+    --nuit3:   #E8E5DF;
+    --shadow:  0 4px 24px rgba(0,0,0,.1);
+    --blanc:   #1A1A2A;
+    --gris:    #4B5563;
+    --gris2:   #374151;
+    --bord:    rgba(201,168,76,.22);
+    --bord2:   rgba(201,168,76,.45);
+  }
+  html { transition: background .25s; }
   body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blanc); min-height:100vh; line-height:1.6; }
 
   /* INSTALL BANNER */

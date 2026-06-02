@@ -1,15 +1,20 @@
-app = "horus-rouffiac"
-primary_region = "cdg"
+# fly.toml app configuration file generated for horus-rouffiac on 2026-05-28T15:14:06+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'horus-rouffiac'
+primary_region = 'cdg'
 
 [build]
 
 [http_service]
   internal_port = 80
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = 'shared-cpu-1x'
+  memory = '256mb'
