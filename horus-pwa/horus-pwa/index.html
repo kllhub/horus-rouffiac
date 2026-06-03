@@ -12,11 +12,14 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
+    --font-sans: 'Open Sans', sans-serif;
+    --font-display: 'Muse Sans', sans-serif;
+    --font-mono: 'Roboto Mono', monospace;
     --nuit:    #0D1117;
     --nuit2:   #161B22;
     --nuit3:   #21262D;
@@ -48,7 +51,7 @@
     --bord2:   rgba(201,168,76,.45);
   }
   html { transition: background .25s; }
-  body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blanc); min-height:100vh; line-height:1.6; }
+  body { font-family:var(--font-sans); background:var(--nuit); color:var(--blanc); min-height:100vh; line-height:1.6; }
 
   /* INSTALL BANNER */
   .install-bar {
@@ -58,7 +61,7 @@
   .install-bar.visible { display:flex; }
   .install-bar p { font-size:13px; color:var(--blanc); line-height:1.4; }
   .install-bar p strong { color:var(--or); }
-  .install-bar button { flex-shrink:0; background:var(--or); color:var(--nuit); border:none; border-radius:16px; padding:7px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Outfit',sans-serif; }
+  .install-bar button { flex-shrink:0; background:var(--or); color:var(--nuit); border:none; border-radius:16px; padding:7px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:var(--font-sans); }
   .install-bar .close-install { background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; padding:0; flex-shrink:0; }
 
   /* HERO */
@@ -71,31 +74,31 @@
   @keyframes iris-glow  { 0%,100%{opacity:.8}50%{opacity:1} }
   .eye-scan  { animation:scan 4s linear infinite; transform-origin:50% 50%; }
   @keyframes scan { 0%{transform:rotate(0deg)}100%{transform:rotate(360deg)} }
-  .hero-tagline { font-family:'Outfit',sans-serif; font-size:11px; font-weight:600; letter-spacing:.35em; text-transform:uppercase; color:var(--or); margin-bottom:16px; }
-  .hero-title { font-family:'Cinzel',serif; font-size:clamp(36px,5vw,58px); font-weight:700; line-height:1.1; margin-bottom:8px; }
+  .hero-tagline { font-family:var(--font-sans); font-size:11px; font-weight:600; letter-spacing:.35em; text-transform:uppercase; color:var(--or); margin-bottom:16px; }
+  .hero-title { font-family:var(--font-display); font-size:clamp(36px,5vw,58px); font-weight:700; line-height:1.1; margin-bottom:8px; }
   .hero-title em { font-style:italic; color:var(--or); }
   .hero-subtitle { font-size:15px; color:var(--gris); margin-bottom:32px; font-weight:300; }
   .hero-stats { display:flex; gap:32px; margin-bottom:40px; padding-bottom:32px; border-bottom:1px solid var(--bord); }
-  .stat-val { font-family:'Cinzel',serif; font-size:32px; font-weight:700; color:var(--or); line-height:1; }
+  .stat-val { font-family:var(--font-mono); font-size:32px; font-weight:700; color:var(--or); line-height:1; }
   .stat-lab { font-size:11px; color:var(--gris); text-transform:uppercase; letter-spacing:.08em; margin-top:2px; }
   .hero-actions { display:flex; gap:12px; flex-wrap:wrap; }
-  .btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--or); color:var(--nuit); border:none; border-radius:var(--r3); padding:12px 28px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; transition:background .2s,transform .1s; }
+  .btn-primary { display:inline-flex; align-items:center; gap:8px; background:var(--or); color:var(--nuit); border:none; border-radius:var(--r3); padding:12px 28px; font-family:var(--font-sans); font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; transition:background .2s,transform .1s; }
   .btn-primary:hover { background:var(--or2); transform:translateY(-1px); }
-  .btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--or); border:1px solid var(--bord2); border-radius:var(--r3); padding:11px 24px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:500; cursor:pointer; text-decoration:none; transition:border-color .2s,background .2s; }
+  .btn-ghost { display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--or); border:1px solid var(--bord2); border-radius:var(--r3); padding:11px 24px; font-family:var(--font-sans); font-size:14px; font-weight:500; cursor:pointer; text-decoration:none; transition:border-color .2s,background .2s; }
   .btn-ghost:hover { background:rgba(201,168,76,.08); border-color:var(--or); }
   .horus-eye-wrap { display:flex; justify-content:center; align-items:center; }
 
   /* SECTIONS */
   .horus-widget { max-width:1100px; margin:0 auto; padding:48px 32px; }
   .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:28px; }
-  .section-title { font-family:'Cinzel',serif; font-size:22px; font-weight:600; color:var(--blanc); display:flex; align-items:center; gap:12px; }
+  .section-title { font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--blanc); display:flex; align-items:center; gap:12px; }
   .section-title::before { content:''; display:block; width:3px; height:24px; background:var(--or); border-radius:2px; }
   .section-link { font-size:13px; color:var(--or); text-decoration:none; font-weight:500; cursor:pointer; transition:opacity .15s; }
   .section-link:hover { opacity:.75; }
 
   /* FILTRES */
   .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px; }
-  .filter-btn { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r3); padding:6px 16px; font-size:12px; font-family:'Outfit',sans-serif; font-weight:500; color:var(--gris); cursor:pointer; transition:all .15s; }
+  .filter-btn { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r3); padding:6px 16px; font-size:12px; font-family:var(--font-sans); font-weight:500; color:var(--gris); cursor:pointer; transition:all .15s; }
   .filter-btn:hover { border-color:var(--or); color:var(--or2); }
   .filter-btn.active { background:rgba(201,168,76,.12); border-color:var(--or); color:var(--or); }
 
@@ -130,7 +133,7 @@
   .referents-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
   .ref-card { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); padding:20px; display:flex; gap:16px; align-items:flex-start; transition:border-color .2s,transform .15s; }
   .ref-card:hover { border-color:var(--bord2); transform:translateY(-2px); }
-  .ref-avatar { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:16px; font-weight:700; flex-shrink:0; }
+  .ref-avatar { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:16px; font-weight:700; flex-shrink:0; }
   .ref-info { flex:1; min-width:0; }
   .ref-name { font-size:15px; font-weight:700; color:var(--blanc); margin-bottom:2px; }
   .ref-quartier { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
@@ -150,7 +153,7 @@
   .ref-msg-sheet { background:var(--nuit2); border:1px solid var(--bord2); border-radius:20px 20px 0 0; width:100%; max-width:640px; height:70vh; display:flex; flex-direction:column; animation:sheet-up .25s ease; }
   @keyframes sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
   .ref-msg-header { padding:16px 20px 12px; border-bottom:1px solid var(--bord); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-  .ref-msg-title { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:var(--blanc); }
+  .ref-msg-title { font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--blanc); }
   .ref-msg-sub { font-size:11px; color:var(--gris2); margin-top:2px; }
   .ref-msg-close { background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; line-height:1; }
   .ref-msg-list { flex:1; overflow-y:auto; padding:14px 20px; display:flex; flex-direction:column; gap:9px; }
@@ -163,9 +166,9 @@
   .ref-msg-meta { font-size:10px; color:var(--gris2); margin-top:3px; }
   .ref-msg-bubble.from-ref .ref-msg-meta { text-align:right; }
   .ref-msg-compose { padding:12px 16px; border-top:1px solid var(--bord); display:flex; gap:8px; flex-shrink:0; }
-  .ref-msg-input { flex:1; background:var(--nuit3); border:1px solid var(--bord); border-radius:var(--r); padding:9px 13px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--blanc); outline:none; transition:border-color .15s; }
+  .ref-msg-input { flex:1; background:var(--nuit3); border:1px solid var(--bord); border-radius:var(--r); padding:9px 13px; font-family:var(--font-sans); font-size:13px; color:var(--blanc); outline:none; transition:border-color .15s; }
   .ref-msg-input:focus { border-color:var(--or); }
-  .ref-msg-send { background:var(--or); color:var(--nuit); border:none; border-radius:var(--r); padding:9px 16px; font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; cursor:pointer; flex-shrink:0; }
+  .ref-msg-send { background:var(--or); color:var(--nuit); border:none; border-radius:var(--r); padding:9px 16px; font-family:var(--font-sans); font-size:13px; font-weight:700; cursor:pointer; flex-shrink:0; }
   @media(max-width:900px) { .referents-grid { grid-template-columns:repeat(2,1fr); } }
   @media(max-width:500px) { .referents-grid { grid-template-columns:1fr; } }
 
@@ -185,14 +188,14 @@
   .fdo-card.gend .fdo-badge-big { background:rgba(74,109,167,.2); }
   .fdo-card.pm   .fdo-badge-big { background:rgba(53,117,196,.2); }
   .fdo-card.asvp .fdo-badge-big { background:rgba(180,83,9,.2); }
-  .fdo-name { font-family:'Cinzel',serif; font-size:15px; font-weight:700; color:var(--blanc); line-height:1.2; }
+  .fdo-name { font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--blanc); line-height:1.2; }
   .fdo-sub  { font-size:11px; margin-top:2px; }
   .fdo-card.gend .fdo-sub { color:#7ba0d4; }
   .fdo-card.pm   .fdo-sub { color:var(--bleu); }
   .fdo-card.asvp .fdo-sub { color:#fbbf24; }
   .fdo-stats { display:flex; gap:10px; margin-bottom:16px; }
   .fdo-stat { flex:1; background:rgba(0,0,0,.25); border-radius:var(--r); padding:10px 8px; text-align:center; }
-  .fdo-stat-n { font-family:'Cinzel',serif; font-size:20px; font-weight:700; line-height:1; }
+  .fdo-stat-n { font-family:var(--font-display); font-size:20px; font-weight:700; line-height:1; }
   .fdo-stat-l { font-size:9px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
   .fdo-card.gend .fdo-stat-n { color:#7ba0d4; }
   .fdo-card.pm   .fdo-stat-n { color:var(--bleu); }
@@ -238,7 +241,7 @@
   .secteur-card:hover { border-color:var(--bord2); transform:translateY(-2px); }
   .secteur-dot { width:10px; height:10px; border-radius:50%; margin:0 auto 10px; }
   .secteur-label { font-size:12px; font-weight:600; color:var(--blanc); margin-bottom:4px; line-height:1.3; }
-  .secteur-count { font-family:'Cinzel',serif; font-size:20px; font-weight:700; line-height:1; margin-bottom:2px; }
+  .secteur-count { font-family:var(--font-display); font-size:20px; font-weight:700; line-height:1; margin-bottom:2px; }
   .secteur-sub { font-size:10px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; }
   .secteur-ref { font-size:11px; color:var(--gris2); margin-top:8px; padding-top:8px; border-top:1px solid rgba(201,168,76,.1); }
   .secteur-ref span { color:var(--or); font-weight:500; }
@@ -246,25 +249,25 @@
   /* CTA */
   .horus-cta { background:linear-gradient(135deg,var(--nuit2) 0%,#1a1400 100%); border-top:1px solid var(--bord); border-bottom:1px solid var(--bord); }
   .cta-inner { max-width:1100px; margin:0 auto; padding:56px 32px; display:grid; grid-template-columns:1fr auto; gap:48px; align-items:center; }
-  .cta-title { font-family:'Cinzel',serif; font-size:30px; font-weight:600; margin-bottom:10px; line-height:1.2; }
+  .cta-title { font-family:var(--font-display); font-size:30px; font-weight:600; margin-bottom:10px; line-height:1.2; }
   .cta-title em { color:var(--or); font-style:italic; }
   .cta-sub { font-size:14px; color:var(--gris); font-weight:300; }
 
   /* FOOTER */
   .horus-footer { max-width:1100px; margin:0 auto; padding:24px 32px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--bord); font-size:12px; color:var(--gris2); }
-  .horus-wordmark { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:var(--or); letter-spacing:.15em; display:flex; align-items:center; gap:8px; }
+  .horus-wordmark { font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--or); letter-spacing:.15em; display:flex; align-items:center; gap:8px; }
 
   /* MODAL */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:2000; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(4px); }
   .modal-overlay.open { display:flex; }
   .modal { background:var(--nuit2); border:1px solid var(--bord2); border-radius:var(--r2); padding:32px; width:100%; max-width:480px; position:relative; animation:modal-in .2s ease; }
   @keyframes modal-in { from{transform:scale(.96) translateY(8px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
-  .modal-title { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color:var(--blanc); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .modal-title { font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--blanc); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
   .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; line-height:1; }
   .modal-close:hover { color:var(--blanc); }
   .form-group { margin-bottom:16px; }
   .form-label { display:block; font-size:12px; font-weight:600; color:var(--gris); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
-  .form-input,.form-select,.form-textarea { width:100%; background:var(--nuit3); border:1px solid var(--bord); border-radius:var(--r); padding:10px 14px; font-family:'Outfit',sans-serif; font-size:14px; color:var(--blanc); outline:none; transition:border-color .15s; appearance:none; }
+  .form-input,.form-select,.form-textarea { width:100%; background:var(--nuit3); border:1px solid var(--bord); border-radius:var(--r); padding:10px 14px; font-family:var(--font-sans); font-size:14px; color:var(--blanc); outline:none; transition:border-color .15s; appearance:none; }
   .form-input:focus,.form-select:focus,.form-textarea:focus { border-color:var(--or); }
   .form-textarea { resize:vertical; min-height:100px; line-height:1.6; }
   .form-select option { background:var(--nuit2); }
@@ -292,9 +295,9 @@
 
 <!-- BARRE SUPÉRIEURE -->
 <div style="background:var(--nuit);border-bottom:1px solid var(--bord);padding:8px 32px;display:flex;justify-content:flex-end;align-items:center;gap:8px;position:sticky;top:0;z-index:100">
-  <button onclick="openGuide()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px" title="Guide d'utilisation">❓ Guide</button>
-  <button onclick="toggleTheme()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer" title="Mode clair/sombre">🌓</button>
-  <a href="fdo.html" style="background:rgba(74,109,167,.15);border:1px solid rgba(74,109,167,.35);border-radius:8px;padding:6px 14px;color:#7ba0d4;font-family:'Outfit',sans-serif;font-size:12px;text-decoration:none;font-weight:600">⚖️ Espace FDO</a>
+  <button onclick="openGuide()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:var(--font-sans);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px" title="Guide d'utilisation">❓ Guide</button>
+  <button onclick="toggleTheme()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:var(--font-sans);font-size:12px;cursor:pointer" title="Mode clair/sombre">🌓</button>
+  <a href="fdo.html" style="background:rgba(74,109,167,.15);border:1px solid rgba(74,109,167,.35);border-radius:8px;padding:6px 14px;color:#7ba0d4;font-family:var(--font-sans);font-size:12px;text-decoration:none;font-weight:600">⚖️ Espace FDO</a>
 </div>
 
 <!-- INSTALL BANNER -->
@@ -343,7 +346,7 @@
         <line x1="180" y1="94" x2="194" y2="76" stroke="#C9A84C" stroke-width="1" opacity=".4"/>
         <line x1="140" y1="200" x2="140" y2="220" stroke="#C9A84C" stroke-width="1" opacity=".6"/>
         <line x1="100" y1="186" x2="80" y2="202" stroke="#C9A84C" stroke-width="1" opacity=".4"/>
-        <text x="140" y="260" text-anchor="middle" font-family="'Cinzel',serif" font-size="18" font-weight="700" letter-spacing="10" fill="#C9A84C">HORUS</text>
+        <text x="140" y="260" text-anchor="middle" font-family="var(--font-display)" font-size="18" font-weight="700" letter-spacing="10" fill="#C9A84C">HORUS</text>
       </svg>
       <button class="btn-primary" onclick="openModal()" style="width:100%;justify-content:center">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
@@ -497,19 +500,19 @@
 <div id="guide-overlay" onclick="closeGuide()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299"></div>
 <div id="guide-panel" style="position:fixed;top:0;right:-440px;width:420px;height:100vh;background:var(--nuit2);border-left:1px solid var(--bord2);z-index:300;overflow-y:auto;transition:right .3s ease;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.3)">
   <div style="padding:20px 24px 16px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-    <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--or)">Guide citoyen</div>
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--or)">Guide citoyen</div>
     <button onclick="closeGuide()" style="background:none;border:none;color:var(--gris);font-size:22px;cursor:pointer">×</button>
   </div>
   <div style="padding:20px 24px;flex:1;font-size:13px;color:var(--gris);line-height:1.6">
 
     <div style="margin-bottom:20px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🗺️ Carte des incidents</div>
+      <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🗺️ Carte des incidents</div>
       <p>La carte affiche les alertes validées par les forces de l'ordre. Cliquez sur un marqueur pour voir le détail. Cliquez sur un quartier pour zoomer sur sa zone.</p>
     </div>
     <hr style="border:none;border-top:1px solid var(--bord);margin:16px 0">
 
     <div style="margin-bottom:20px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🚨 Signaler un incident</div>
+      <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🚨 Signaler un incident</div>
       <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid var(--bord2);color:var(--or);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div><span>Cliquez <strong style="color:var(--blanc)">Signaler un incident</strong> (bouton doré).</span></div>
       <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid var(--bord2);color:var(--or);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div><span>Choisissez la <strong style="color:var(--blanc)">rue</strong> — le quartier se remplit automatiquement.</span></div>
       <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start"><div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.15);border:1px solid var(--bord2);color:var(--or);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div><span>Décrivez précisément : heure, description physique, immatriculation si véhicule.</span></div>
@@ -519,19 +522,19 @@
     <hr style="border:none;border-top:1px solid var(--bord);margin:16px 0">
 
     <div style="margin-bottom:20px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">👥 Référents de quartier</div>
+      <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">👥 Référents de quartier</div>
       <p>Chaque quartier a un référent citoyen bénévole. Il coordonne les alertes locales et fait le lien avec les FDO. Cliquez sur 📞 pour l'appeler directement.</p>
     </div>
     <hr style="border:none;border-top:1px solid var(--bord);margin:16px 0">
 
     <div style="margin-bottom:20px">
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">📱 Installer l'application</div>
+      <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">📱 Installer l'application</div>
       <p>HORUS est une PWA installable sur votre téléphone. Cliquez sur <strong style="color:var(--blanc)">Installer l'application</strong> dans la section CTA ou via le menu de votre navigateur.</p>
     </div>
     <hr style="border:none;border-top:1px solid var(--bord);margin:16px 0">
 
     <div>
-      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🌓 Mode clair / sombre</div>
+      <div style="font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:10px">🌓 Mode clair / sombre</div>
       <p>Cliquez sur le bouton 🌓 en haut à droite pour basculer entre le mode sombre (par défaut) et le mode clair. Votre préférence est sauvegardée.</p>
     </div>
 
@@ -894,7 +897,7 @@ async function initMap() {
   QUARTIERS.forEach(q => {
     L.circleMarker([q.lat, q.lng], { radius:22, fillColor:q.color, fillOpacity:.15, color:q.color, weight:1.5, opacity:.6 }).addTo(map);
     const label = L.divIcon({
-      html:`<div style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:${q.color};text-align:center;white-space:nowrap;text-shadow:0 1px 3px #000">${q.label}</div>`,
+      html:`<div style="font-family:var(--font-sans);font-size:10px;font-weight:700;color:${q.color};text-align:center;white-space:nowrap;text-shadow:0 1px 3px #000">${q.label}</div>`,
       className:"", iconSize:[90,16], iconAnchor:[45,-16],
     });
     L.marker([q.lat, q.lng], { icon:label, interactive:false }).addTo(map);
