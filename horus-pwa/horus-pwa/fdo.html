@@ -6,183 +6,291 @@
 <title>HORUS · Espace Forces de l'Ordre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <style>
-*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-
-/* ── THÈMES ─────────────────────────────────────────────────────── */
-:root {
-  --nuit:  #0D1117; --nuit2: #161B22; --nuit3: #21262D;
-  --or:    #C9A84C; --or2:   #E8C97A;
-  --blanc: #F0EDE6; --gris:  #8B949E; --gris2: #6E7681;
-  --rouge: #E05555; --vert:  #3FB950; --bleu:  #58A6FF;
-  --bord:  rgba(201,168,76,.18); --bord2: rgba(201,168,76,.35);
-  --r:8px; --r2:14px; --r3:24px;
-  --shadow: 0 4px 24px rgba(0,0,0,.4);
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --nuit:#0D1117;--nuit2:#161B22;--nuit3:#21262D;
+  --or:#C9A84C;--or2:#E8C97A;
+  --blanc:#F0EDE6;--gris:#8B949E;--gris2:#6E7681;
+  --rouge:#E05555;--vert:#3FB950;--bleu:#58A6FF;
+  --bord:rgba(201,168,76,.18);--bord2:rgba(201,168,76,.35);
+  --r:8px;--r2:14px;--r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
 }
-[data-theme="light"] {
-  --nuit:  #F2F0EB; --nuit2: #FFFFFF; --nuit3: #E8E5DF;
-  --blanc: #1A1A2A; --gris:  #4B5563; --gris2: #6B7280;
-  --bord:  rgba(201,168,76,.22); --bord2: rgba(201,168,76,.45);
-  --shadow: 0 4px 24px rgba(0,0,0,.12);
+[data-theme="light"]{
+  --nuit:#F2F0EB;--nuit2:#FFFFFF;--nuit3:#E8E5DF;
+  --blanc:#1A1A2A;--gris:#4B5563;--gris2:#374151;
+  --bord:rgba(201,168,76,.22);--bord2:rgba(201,168,76,.45);
+  --shadow:0 4px 24px rgba(0,0,0,.12);
+}
+body{font-family:'Outfit',sans-serif;background:var(--nuit);color:var(--blanc);min-height:100vh;transition:background .25s,color .25s}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.08) 0%,transparent 60%)}
+.login-box{background:var(--nuit2);border:1px solid var(--bord2);border-radius:var(--r2);padding:48px 40px;width:100%;max-width:380px;text-align:center;box-shadow:var(--shadow)}
+.login-title{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--or);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--gris);margin-bottom:28px;line-height:1.5}
+.pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.pin-digit{width:52px;height:60px;background:var(--nuit3);border:2px solid var(--bord);border-radius:var(--r);font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--or);text-align:center;outline:none;transition:border-color .15s;caret-color:transparent}
+.pin-digit:focus{border-color:var(--or)}
+.login-btn{width:100%;background:var(--or);color:var(--nuit);border:none;border-radius:var(--r3);padding:13px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.login-btn:hover{background:var(--or2)}
+.login-error{color:var(--rouge);font-size:12px;margin-top:12px;min-height:18px}
+.login-hint{font-size:11px;color:var(--gris2);margin-top:16px}
+.login-theme{position:fixed;top:16px;right:16px}
+
+/* TOPBAR */
+#dashboard{display:none}
+.topbar{background:var(--nuit);border-bottom:1px solid var(--bord);padding:12px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:12px}
+.topbar-brand{font-family:'Cinzel',serif;font-size:17px;font-weight:700;color:var(--or);letter-spacing:.12em;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.role-pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:10px;border:1px solid}
+.role-pill.gend{border-color:#4a6da7;color:#7ba0d4;background:rgba(74,109,167,.15)}
+.role-pill.pm{border-color:#3575c4;color:var(--bleu);background:rgba(53,117,196,.15)}
+.role-pill.asvp{border-color:#b45309;color:#fbbf24;background:rgba(180,83,9,.15)}
+.icon-btn{background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:6px 12px;color:var(--gris);font-size:13px;cursor:pointer;transition:all .15s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:6px}
+.icon-btn:hover{border-color:var(--bord2);color:var(--blanc)}
+.logout-btn{background:transparent;border:1px solid var(--bord);border-radius:var(--r);padding:6px 12px;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .15s}
+.logout-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+
+/* LAYOUT */
+.page-inner{max-width:1100px;margin:0 auto;padding:28px}
+
+/* ROLE SELECTOR */
+.role-selector{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.role-opt{padding:7px 18px;border-radius:var(--r3);border:1px solid var(--bord);background:transparent;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.role-opt.active{background:rgba(201,168,76,.12);border-color:var(--or);color:var(--or)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.stat-box{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);padding:16px;text-align:center}
+.stat-n{font-family:'Cinzel',serif;font-size:30px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--gris2);text-transform:uppercase;letter-spacing:.06em;margin-top:5px}
+.stat-box.pending .stat-n{color:var(--or)}
+.stat-box.taken .stat-n{color:var(--bleu)}
+.stat-box.approved .stat-n{color:var(--vert)}
+.stat-box.rejected .stat-n{color:var(--rouge)}
+
+/* PAGE TABS */
+.page-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid var(--bord);overflow-x:auto;scrollbar-width:none}
+.page-tabs::-webkit-scrollbar{display:none}
+.page-tab{padding:10px 18px;border:none;background:transparent;color:var(--gris);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.page-tab.active{color:var(--or);border-bottom-color:var(--or)}
+.page-tab:hover:not(.active){color:var(--blanc)}
+.page-section{display:none}
+.page-section.active{display:block}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--rouge);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;vertical-align:middle}
+
+/* SIGNALEMENTS */
+.section-title{font-family:'Cinzel',serif;font-size:17px;font-weight:600;color:var(--blanc);display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.section-title::before{content:'';display:block;width:3px;height:18px;background:var(--or);border-radius:2px}
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tab{padding:5px 14px;border-radius:var(--r3);border:1px solid var(--bord);background:transparent;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.tab.active{background:rgba(201,168,76,.12);border-color:var(--or);color:var(--or)}
+.cards-list{display:flex;flex-direction:column;gap:10px;margin-bottom:40px}
+.sig-card{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);padding:18px;position:relative;overflow:hidden;transition:border-color .2s}
+.sig-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px}
+.sig-card.pending::before{background:var(--or)}
+.sig-card.taken::before{background:var(--bleu)}
+.sig-card.approved::before{background:var(--vert)}
+.sig-card.rejected::before{background:var(--rouge)}
+.sig-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
+.sig-head-left{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700}
+.pill.pending{background:rgba(201,168,76,.12);color:var(--or)}
+.pill.taken{background:rgba(88,166,255,.12);color:var(--bleu)}
+.pill.approved{background:rgba(63,185,80,.12);color:var(--vert)}
+.pill.rejected{background:rgba(224,85,85,.12);color:var(--rouge)}
+.pill.demo{background:rgba(139,148,158,.1);color:var(--gris)}
+.pill.new{background:rgba(63,185,80,.1);color:var(--vert)}
+.sig-time{font-size:11px;color:var(--gris2);flex-shrink:0}
+.sig-rue{font-weight:700;font-size:14px;color:var(--blanc);margin-bottom:3px;cursor:pointer;display:inline}
+.sig-rue:hover{color:var(--or);text-decoration:underline}
+.sig-meta{font-size:12px;color:var(--gris2);margin-bottom:7px}
+.sig-desc{font-size:13px;color:var(--gris);line-height:1.55}
+.fdo-avis{background:rgba(30,58,95,.2);border:1px solid rgba(74,109,167,.25);border-radius:var(--r);padding:7px 11px;margin-top:9px;font-size:12px;color:#7ba0d4}
+.sig-actions{display:flex;gap:7px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(201,168,76,.1)}
+.btn-action{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:opacity .15s}
+.btn-action:hover{opacity:.75}
+.btn-validate{background:rgba(63,185,80,.12);color:var(--vert);border-color:rgba(63,185,80,.3)}
+.btn-reject{background:rgba(224,85,85,.12);color:var(--rouge);border-color:rgba(224,85,85,.3)}
+.btn-take{background:rgba(88,166,255,.12);color:var(--bleu);border-color:rgba(88,166,255,.3)}
+.btn-resolve{background:rgba(201,168,76,.12);color:var(--or);border-color:var(--bord2)}
+.btn-edit{background:rgba(139,148,158,.1);color:var(--gris);border-color:rgba(139,148,158,.25)}
+.btn-fiche{background:rgba(201,168,76,.06);color:var(--or);border-color:var(--bord)}
+.empty-state{text-align:center;padding:48px;color:var(--gris)}
+.empty-icon{font-size:44px;margin-bottom:10px}
+
+/* MAIN COURANTE */
+.mc-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.mc-month{font-size:13px;color:var(--gris)}
+.btn-export{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;background:var(--or);color:var(--nuit);border:none;border-radius:var(--r3);font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-export:hover{background:var(--or2)}
+.mc-table-wrap{overflow-x:auto;border-radius:var(--r2);border:1px solid var(--bord)}
+.mc-table{width:100%;border-collapse:collapse;font-size:12px;min-width:680px}
+.mc-table th{background:var(--nuit3);color:var(--gris2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;font-size:10px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bord);white-space:nowrap}
+.mc-table td{padding:10px 14px;border-bottom:1px solid rgba(201,168,76,.06);color:var(--gris);vertical-align:top}
+.mc-table tr:last-child td{border-bottom:none}
+.mc-table tr:hover td{background:rgba(201,168,76,.03)}
+.mc-rue{font-weight:600;color:var(--blanc)}
+.mc-action{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700}
+.mc-action.approved{background:rgba(63,185,80,.12);color:var(--vert)}
+.mc-action.rejected{background:rgba(224,85,85,.12);color:var(--rouge)}
+.mc-action.taken{background:rgba(88,166,255,.12);color:var(--bleu)}
+.mc-action.resolved{background:rgba(201,168,76,.12);color:var(--or)}
+.mc-empty{text-align:center;padding:40px;color:var(--gris);font-size:13px}
+
+/* STATISTIQUES */
+.stats-filters{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;align-items:center}
+.sf-label{font-size:12px;color:var(--gris);font-weight:600}
+.sf-btn{padding:5px 14px;border-radius:var(--r3);border:1px solid var(--bord);background:transparent;color:var(--gris);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .15s}
+.sf-btn.active{background:rgba(201,168,76,.12);border-color:var(--or);color:var(--or)}
+.sf-select{background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:5px 10px;color:var(--blanc);font-family:'Outfit',sans-serif;font-size:12px;outline:none;cursor:pointer;appearance:none;padding-right:24px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);padding:18px}
+.chart-card.full{grid-column:1/-1}
+.chart-title{font-size:11px;font-weight:700;color:var(--gris2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px}
+.chart-wrap{position:relative;height:220px}
+.chart-wrap.tall{height:260px}
+#stats-map{height:280px;border-radius:var(--r);overflow:hidden}
+.rapport-bar{margin-top:8px;background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);padding:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.rapport-bar-text{font-size:13px;color:var(--gris)}
+.rapport-bar-text strong{color:var(--blanc)}
+.btn-rapport{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;background:rgba(201,168,76,.12);color:var(--or);border:1px solid var(--bord2);border-radius:var(--r3);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-rapport:hover{background:rgba(201,168,76,.2)}
+
+/* MESSAGERIE */
+.msg-layout{display:grid;grid-template-columns:220px 1fr;gap:14px;min-height:480px}
+.msg-threads{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);overflow-y:auto}
+.msg-thread-item{padding:12px 14px;border-bottom:1px solid var(--bord);cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:10px}
+.msg-thread-item:last-child{border-bottom:none}
+.msg-thread-item:hover{background:rgba(201,168,76,.05)}
+.msg-thread-item.active{background:rgba(201,168,76,.1);border-left:3px solid var(--or)}
+.msg-thread-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.msg-thread-info{flex:1;min-width:0}
+.msg-thread-name{font-size:13px;font-weight:600;color:var(--blanc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-thread-sub{font-size:11px;color:var(--gris2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msg-unread{background:var(--rouge);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msg-panel{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);display:flex;flex-direction:column;min-height:480px}
+.msg-panel-header{padding:14px 18px;border-bottom:1px solid var(--bord);flex-shrink:0}
+.msg-panel-title{font-family:'Cinzel',serif;font-size:14px;font-weight:700;color:var(--blanc)}
+.msg-panel-sub{font-size:11px;color:var(--gris2);margin-top:2px}
+.msg-list{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:300px}
+.msg-bubble{max-width:78%}
+.msg-bubble.from-fdo{align-self:flex-end}
+.msg-bubble.from-ref{align-self:flex-start}
+.msg-content{padding:9px 13px;border-radius:var(--r2);font-size:13px;line-height:1.5}
+.msg-bubble.from-fdo .msg-content{background:rgba(201,168,76,.15);color:var(--blanc);border:1px solid var(--bord2)}
+.msg-bubble.from-ref .msg-content{background:var(--nuit3);color:var(--blanc);border:1px solid var(--bord)}
+.msg-meta{font-size:10px;color:var(--gris2);margin-top:3px}
+.msg-bubble.from-fdo .msg-meta{text-align:right}
+.msg-compose{padding:12px 14px;border-top:1px solid var(--bord);display:flex;gap:8px;flex-shrink:0}
+.msg-input{flex:1;background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:9px 13px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--blanc);outline:none;transition:border-color .15s}
+.msg-input:focus{border-color:var(--or)}
+.msg-send{background:var(--or);color:var(--nuit);border:none;border-radius:var(--r);padding:9px 16px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;transition:background .15s}
+.msg-send:hover{background:var(--or2)}
+.msg-empty{text-align:center;padding:48px 24px;color:var(--gris);font-size:13px}
+.msg-select-hint{display:flex;align-items:center;justify-content:center;height:100%;color:var(--gris);font-size:13px;text-align:center;padding:32px}
+
+/* FICHE INCIDENT MODAL */
+.fiche-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.fiche-full{grid-column:1/-1}
+.fiche-sep{grid-column:1/-1;border:none;border-top:1px solid var(--bord);margin:2px 0}
+.fiche-field{background:var(--nuit3);border-radius:var(--r);padding:10px 13px}
+.fiche-label{font-size:10px;font-weight:700;color:var(--gris2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.fiche-value{font-size:13px;color:var(--blanc);line-height:1.5}
+.fiche-value.placeholder{color:var(--gris2);font-style:italic}
+.btn-copy{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:rgba(88,166,255,.1);color:var(--bleu);border:1px solid rgba(88,166,255,.25);border-radius:var(--r3);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-copy:hover{background:rgba(88,166,255,.18)}
+
+/* RAPPORT MODAL */
+.rapport-text{background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:16px;font-size:13px;color:var(--gris);line-height:1.8;white-space:pre-wrap;min-height:180px;max-height:46vh;overflow-y:auto;margin-bottom:14px}
+.rapport-actions{display:flex;gap:8px;flex-wrap:wrap}
+.api-key-row{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.api-key-row label{font-size:11px;color:var(--gris);white-space:nowrap;font-weight:600}
+.api-key-row input{flex:1;background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:7px 10px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--blanc);outline:none}
+.api-key-row input:focus{border-color:var(--or)}
+
+/* MODALS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--nuit2);border:1px solid var(--bord2);border-radius:var(--r2);padding:28px;width:100%;max-width:580px;position:relative;animation:modal-in .2s ease;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
+@keyframes modal-in{from{transform:scale(.96) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal.modal-lg{max-width:700px}
+.modal-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--blanc);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--gris);font-size:22px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--rouge)}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--gris);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--nuit3);border:1.5px solid var(--bord);border-radius:var(--r);padding:10px 13px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--blanc);outline:none;transition:border-color .15s;appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--or)}
+.form-textarea{resize:vertical;min-height:90px;line-height:1.6}
+.form-select option{background:var(--nuit2)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.btn-save{flex:2;background:var(--or);color:var(--nuit);border:none;border-radius:var(--r3);padding:12px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.btn-save:hover{background:var(--or2)}
+.btn-cancel{flex:1;background:transparent;color:var(--gris);border:1px solid var(--bord2);border-radius:var(--r3);padding:12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer}
+.btn-cancel:hover{border-color:var(--rouge);color:var(--rouge)}
+
+/* GUIDE */
+.guide-panel{position:fixed;top:0;right:-440px;width:420px;height:100vh;background:var(--nuit2);border-left:1px solid var(--bord2);z-index:300;overflow-y:auto;transition:right .3s ease;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.guide-panel.open{right:0}
+.guide-header{padding:20px 24px 16px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.guide-title{font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--or)}
+.guide-close{background:none;border:none;color:var(--gris);font-size:22px;cursor:pointer}
+.guide-body{padding:20px 24px;flex:1;font-size:13px;color:var(--gris);line-height:1.6}
+.guide-section{margin-bottom:20px}
+.guide-section-title{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:8px}
+.guide-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299}
+.guide-overlay.open{display:block}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--nuit2);border:1px solid var(--or);border-radius:var(--r3);padding:10px 22px;font-size:13px;font-weight:500;color:var(--or);opacity:0;transition:opacity .3s,transform .3s;z-index:400;white-space:nowrap;box-shadow:var(--shadow);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .topbar,.page-inner{padding-left:16px;padding-right:16px}
+  .guide-panel{width:100%;right:-100%}
+  .modal{padding:20px 16px}
+  .page-tab{font-size:12px;padding:8px 12px}
+  .charts-grid{grid-template-columns:1fr}
+  .chart-card.full{grid-column:1}
+  .msg-layout{grid-template-columns:1fr;min-height:auto}
+  .msg-threads{max-height:180px}
+  .msg-panel{min-height:380px}
+  .fiche-grid{grid-template-columns:1fr}
+  .fiche-full,.fiche-sep{grid-column:1}
+}
+@media(max-width:480px){
+  .login-box{padding:32px 20px}
+  .pin-digit{width:44px;height:52px;font-size:20px}
 }
 
-body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blanc); min-height:100vh; transition:background .25s,color .25s; }
-
-/* ── LOGIN ──────────────────────────────────────────────────────── */
-#login-screen {
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.08) 0%, transparent 60%);
-}
-.login-box { background:var(--nuit2); border:1px solid var(--bord2); border-radius:var(--r2); padding:48px 40px; width:100%; max-width:380px; text-align:center; box-shadow:var(--shadow); }
-.login-title { font-family:'Cinzel',serif; font-size:26px; font-weight:700; color:var(--or); margin-bottom:4px; }
-.login-sub   { font-size:13px; color:var(--gris); margin-bottom:28px; line-height:1.5; }
-.pin-row     { display:flex; gap:10px; justify-content:center; margin-bottom:20px; }
-.pin-digit   { width:52px; height:60px; background:var(--nuit3); border:2px solid var(--bord); border-radius:var(--r); font-family:'Cinzel',serif; font-size:24px; font-weight:700; color:var(--or); text-align:center; outline:none; transition:border-color .15s; caret-color:transparent; }
-.pin-digit:focus { border-color:var(--or); }
-.login-btn   { width:100%; background:var(--or); color:var(--nuit); border:none; border-radius:var(--r3); padding:13px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:background .2s; }
-.login-btn:hover { background:var(--or2); }
-.login-error { color:var(--rouge); font-size:12px; margin-top:12px; min-height:18px; }
-.login-hint  { font-size:11px; color:var(--gris2); margin-top:16px; }
-.login-theme { position:fixed; top:16px; right:16px; }
-
-/* ── DASHBOARD ──────────────────────────────────────────────────── */
-#dashboard { display:none; }
-.topbar {
-  background:var(--nuit); border-bottom:1px solid var(--bord);
-  padding:12px 28px; display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:50; gap:12px;
-}
-.topbar-brand { font-family:'Cinzel',serif; font-size:17px; font-weight:700; color:var(--or); letter-spacing:.12em; display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.topbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.role-pill { font-size:11px; font-weight:700; padding:4px 12px; border-radius:10px; border:1px solid; }
-.role-pill.gend { border-color:#4a6da7; color:#7ba0d4; background:rgba(74,109,167,.15); }
-.role-pill.pm   { border-color:#3575c4; color:var(--bleu); background:rgba(53,117,196,.15); }
-.role-pill.asvp { border-color:#b45309; color:#fbbf24; background:rgba(180,83,9,.15); }
-.icon-btn { background:var(--nuit3); border:1px solid var(--bord); border-radius:var(--r); padding:6px 12px; color:var(--gris); font-size:13px; cursor:pointer; transition:all .15s; font-family:'Outfit',sans-serif; display:flex; align-items:center; gap:6px; }
-.icon-btn:hover { border-color:var(--bord2); color:var(--blanc); }
-.logout-btn { background:transparent; border:1px solid var(--bord); border-radius:var(--r); padding:6px 12px; color:var(--gris); font-family:'Outfit',sans-serif; font-size:12px; cursor:pointer; transition:all .15s; }
-.logout-btn:hover { border-color:var(--rouge); color:var(--rouge); }
-
-.page-inner { max-width:1100px; margin:0 auto; padding:28px 28px; }
-
-/* Role selector */
-.role-selector { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
-.role-opt { padding:7px 18px; border-radius:var(--r3); border:1px solid var(--bord); background:transparent; color:var(--gris); font-family:'Outfit',sans-serif; font-size:12px; font-weight:600; cursor:pointer; transition:all .15s; }
-.role-opt.active { background:rgba(201,168,76,.12); border-color:var(--or); color:var(--or); }
-
-/* Stats */
-.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:28px; }
-.stat-box  { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); padding:16px; text-align:center; }
-.stat-n    { font-family:'Cinzel',serif; font-size:30px; font-weight:700; line-height:1; }
-.stat-l    { font-size:10px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; margin-top:5px; }
-.stat-box.pending  .stat-n { color:var(--or); }
-.stat-box.taken    .stat-n { color:var(--bleu); }
-.stat-box.approved .stat-n { color:var(--vert); }
-.stat-box.rejected .stat-n { color:var(--rouge); }
-
-/* Section */
-.section-title { font-family:'Cinzel',serif; font-size:17px; font-weight:600; color:var(--blanc); display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-.section-title::before { content:''; display:block; width:3px; height:18px; background:var(--or); border-radius:2px; }
-
-/* Tabs */
-.tabs { display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
-.tab  { padding:5px 14px; border-radius:var(--r3); border:1px solid var(--bord); background:transparent; color:var(--gris); font-family:'Outfit',sans-serif; font-size:12px; font-weight:500; cursor:pointer; transition:all .15s; }
-.tab.active { background:rgba(201,168,76,.12); border-color:var(--or); color:var(--or); }
-
-/* Cards */
-.cards-list { display:flex; flex-direction:column; gap:10px; margin-bottom:40px; }
-.sig-card { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); padding:18px; position:relative; overflow:hidden; transition:border-color .2s; }
-.sig-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:2px 0 0 2px; }
-.sig-card.pending::before  { background:var(--or); }
-.sig-card.taken::before    { background:var(--bleu); }
-.sig-card.approved::before { background:var(--vert); }
-.sig-card.rejected::before { background:var(--rouge); }
-
-.sig-head { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; gap:10px; }
-.sig-head-left { display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
-.pill { display:inline-flex; align-items:center; gap:3px; padding:3px 9px; border-radius:10px; font-size:10px; font-weight:700; }
-.pill.pending  { background:rgba(201,168,76,.12); color:var(--or); }
-.pill.taken    { background:rgba(88,166,255,.12);  color:var(--bleu); }
-.pill.approved { background:rgba(63,185,80,.12);   color:var(--vert); }
-.pill.rejected { background:rgba(224,85,85,.12);   color:var(--rouge); }
-.pill.demo     { background:rgba(139,148,158,.1);  color:var(--gris); }
-.pill.new      { background:rgba(63,185,80,.1);    color:var(--vert); }
-.sig-time { font-size:11px; color:var(--gris2); flex-shrink:0; }
-
-.sig-rue  { font-weight:700; font-size:14px; color:var(--blanc); margin-bottom:3px; }
-.sig-meta { font-size:12px; color:var(--gris2); margin-bottom:7px; }
-.sig-desc { font-size:13px; color:var(--gris); line-height:1.55; }
-.fdo-avis { background:rgba(30,58,95,.2); border:1px solid rgba(74,109,167,.25); border-radius:var(--r); padding:7px 11px; margin-top:9px; font-size:12px; color:#7ba0d4; }
-
-.sig-actions { display:flex; gap:7px; flex-wrap:wrap; padding-top:12px; border-top:1px solid rgba(201,168,76,.1); }
-.btn-action  { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:10px; font-family:'Outfit',sans-serif; font-size:12px; font-weight:600; cursor:pointer; border:1px solid; transition:opacity .15s; }
-.btn-action:hover { opacity:.75; }
-.btn-validate { background:rgba(63,185,80,.12);  color:var(--vert);  border-color:rgba(63,185,80,.3); }
-.btn-reject   { background:rgba(224,85,85,.12);  color:var(--rouge); border-color:rgba(224,85,85,.3); }
-.btn-take     { background:rgba(88,166,255,.12);  color:var(--bleu);  border-color:rgba(88,166,255,.3); }
-.btn-resolve  { background:rgba(201,168,76,.12);  color:var(--or);    border-color:var(--bord2); }
-.btn-edit     { background:rgba(139,148,158,.1); color:var(--gris);  border-color:rgba(139,148,158,.25); }
-
-.empty-state { text-align:center; padding:48px; color:var(--gris); }
-.empty-icon  { font-size:44px; margin-bottom:10px; }
-
-/* ── MODAL ÉDITION ──────────────────────────────────────────────── */
-.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(4px); }
-.overlay.open { display:flex; }
-.modal { background:var(--nuit2); border:1px solid var(--bord2); border-radius:var(--r2); padding:28px; width:100%; max-width:520px; position:relative; animation:modal-in .2s ease; box-shadow:var(--shadow); }
-@keyframes modal-in { from{transform:scale(.96) translateY(8px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
-.modal-title { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--blanc); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
-.modal-close { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; }
-.modal-close:hover { color:var(--rouge); }
-.form-group  { margin-bottom:14px; }
-.form-label  { display:block; font-size:11px; font-weight:600; color:var(--gris); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-.form-input, .form-select, .form-textarea { width:100%; background:var(--nuit3); border:1.5px solid var(--bord); border-radius:var(--r); padding:10px 13px; font-family:'Outfit',sans-serif; font-size:13px; color:var(--blanc); outline:none; transition:border-color .15s; appearance:none; }
-.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--or); }
-.form-textarea { resize:vertical; min-height:90px; line-height:1.6; }
-.form-select option { background:var(--nuit2); }
-.modal-actions { display:flex; gap:10px; margin-top:20px; }
-.btn-save   { flex:2; background:var(--or); color:var(--nuit); border:none; border-radius:var(--r3); padding:12px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; cursor:pointer; }
-.btn-save:hover { background:var(--or2); }
-.btn-cancel { flex:1; background:transparent; color:var(--gris); border:1px solid var(--bord2); border-radius:var(--r3); padding:12px; font-family:'Outfit',sans-serif; font-size:13px; cursor:pointer; }
-.btn-cancel:hover { border-color:var(--rouge); color:var(--rouge); }
-
-/* ── GUIDE ──────────────────────────────────────────────────────── */
-.guide-panel { position:fixed; top:0; right:-440px; width:420px; height:100vh; background:var(--nuit2); border-left:1px solid var(--bord2); z-index:300; overflow-y:auto; transition:right .3s ease; box-shadow:var(--shadow); display:flex; flex-direction:column; }
-.guide-panel.open { right:0; }
-.guide-header { padding:20px 24px 16px; border-bottom:1px solid var(--bord); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-.guide-title  { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--or); }
-.guide-close  { background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; }
-.guide-body   { padding:20px 24px; flex:1; }
-.guide-section { margin-bottom:24px; }
-.guide-section-title { font-family:'Cinzel',serif; font-size:13px; font-weight:700; color:var(--blanc); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-.guide-section-title span { font-size:16px; }
-.guide-step  { display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; }
-.guide-step-n { width:22px; height:22px; border-radius:50%; background:rgba(201,168,76,.15); border:1px solid var(--bord2); color:var(--or); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-.guide-step-text { font-size:13px; color:var(--gris); line-height:1.55; }
-.guide-step-text strong { color:var(--blanc); }
-.guide-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:8px; font-size:11px; font-weight:700; vertical-align:middle; }
-.guide-badge.g { background:rgba(63,185,80,.12); color:var(--vert); }
-.guide-badge.b { background:rgba(88,166,255,.12); color:var(--bleu); }
-.guide-badge.r { background:rgba(224,85,85,.12);  color:var(--rouge); }
-.guide-badge.o { background:rgba(201,168,76,.12); color:var(--or); }
-.guide-divider { border:none; border-top:1px solid var(--bord); margin:20px 0; }
-.guide-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:299; }
-.guide-overlay.open { display:block; }
-
-/* ── TOAST ──────────────────────────────────────────────────────── */
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--nuit2); border:1px solid var(--or); border-radius:var(--r3); padding:10px 22px; font-size:13px; font-weight:500; color:var(--or); opacity:0; transition:opacity .3s,transform .3s; z-index:400; white-space:nowrap; box-shadow:var(--shadow); }
-.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-@media(max-width:700px) {
-  .stats-row { grid-template-columns:repeat(2,1fr); }
-  .topbar, .page-inner { padding-left:16px; padding-right:16px; }
-  .guide-panel { width:100%; right:-100%; }
+/* PRINT — Main courante PDF */
+#print-zone{display:none}
+@media print{
+  body>*{display:none!important}
+  #print-zone{display:block!important;position:static;padding:24px;font-family:Arial,sans-serif;color:#000;background:#fff}
+  .print-header{text-align:center;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid #000}
+  .print-header h1{font-size:16px;font-weight:700;margin-bottom:3px}
+  .print-header h2{font-size:13px;font-weight:400;margin-bottom:3px}
+  .print-meta{font-size:11px;color:#555;margin-top:4px}
+  .print-table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:20px}
+  .print-table th{background:#eee;border:1px solid #999;padding:5px 7px;font-weight:700;text-align:left}
+  .print-table td{border:1px solid #ccc;padding:5px 7px;vertical-align:top}
+  .print-totals h3{font-size:12px;font-weight:700;margin-bottom:6px}
+  .print-totals table{border-collapse:collapse;font-size:10px}
+  .print-totals td,.print-totals th{border:1px solid #ccc;padding:4px 8px}
+  .print-totals th{background:#eee}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN ════════════════════════════════════════════════════ -->
+<!-- ══ LOGIN ═══════════════════════════════════════════════════════ -->
 <div id="login-screen">
   <div class="login-theme">
     <button class="icon-btn" onclick="toggleTheme()" title="Mode clair/sombre">🌓</button>
@@ -192,7 +300,7 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
       <path d="M40 140 Q90 80 140 80 Q190 80 240 140 Q190 200 140 200 Q90 200 40 140Z" fill="var(--nuit)" stroke="#C9A84C" stroke-width="2"/>
       <circle cx="140" cy="140" r="40" fill="#C9A84C" opacity=".9"/>
       <circle cx="140" cy="140" r="16" fill="var(--nuit)"/>
-      <circle cx="140" cy="140" r="6"  fill="#C9A84C"/>
+      <circle cx="140" cy="140" r="6" fill="#C9A84C"/>
     </svg>
     <div class="login-title">HORUS FDO</div>
     <div class="login-sub">Espace Forces de l'Ordre<br>Rouffiac-Tolosan · 31180</div>
@@ -208,7 +316,7 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
   </div>
 </div>
 
-<!-- ══ DASHBOARD ════════════════════════════════════════════════ -->
+<!-- ══ DASHBOARD ════════════════════════════════════════════════════ -->
 <div id="dashboard">
   <div class="topbar">
     <div class="topbar-brand">
@@ -217,39 +325,143 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
     </div>
     <div class="topbar-right">
       <span class="role-pill" id="role-pill">—</span>
-      <button class="icon-btn" onclick="openGuide()" title="Guide d'utilisation">❓ Guide</button>
-      <button class="icon-btn" onclick="toggleTheme()" title="Mode clair/sombre">🌓</button>
+      <button class="icon-btn" onclick="openGuide()">❓ Guide</button>
+      <button class="icon-btn" onclick="toggleTheme()">🌓</button>
       <button class="logout-btn" onclick="logout()">Déconnexion</button>
     </div>
   </div>
 
   <div class="page-inner">
+    <!-- Rôle -->
     <div class="role-selector">
       <button class="role-opt active" onclick="setRole('gend',this)">⚖️ Gendarmerie</button>
       <button class="role-opt" onclick="setRole('pm',this)">🔵 Police Municipale</button>
       <button class="role-opt" onclick="setRole('asvp',this)">🟡 ASVP</button>
     </div>
 
+    <!-- Compteurs -->
     <div class="stats-row">
-      <div class="stat-box pending" ><div class="stat-n" id="stat-pending">0</div><div class="stat-l">En attente</div></div>
-      <div class="stat-box taken"   ><div class="stat-n" id="stat-taken">0</div><div class="stat-l">Pris en charge</div></div>
+      <div class="stat-box pending"><div class="stat-n" id="stat-pending">0</div><div class="stat-l">En attente</div></div>
+      <div class="stat-box taken"><div class="stat-n" id="stat-taken">0</div><div class="stat-l">Pris en charge</div></div>
       <div class="stat-box approved"><div class="stat-n" id="stat-approved">0</div><div class="stat-l">Validés</div></div>
       <div class="stat-box rejected"><div class="stat-n" id="stat-rejected">0</div><div class="stat-l">Rejetés</div></div>
     </div>
 
-    <div class="section-title">File de signalements</div>
-    <div class="tabs">
-      <button class="tab active" onclick="setTab(this,'all')">Tous</button>
-      <button class="tab" onclick="setTab(this,'pending')">⏳ En attente</button>
-      <button class="tab" onclick="setTab(this,'taken')">🔵 Pris en charge</button>
-      <button class="tab" onclick="setTab(this,'approved')">✓ Validés</button>
-      <button class="tab" onclick="setTab(this,'rejected')">✕ Rejetés</button>
+    <!-- Onglets de page -->
+    <div class="page-tabs">
+      <button class="page-tab active" onclick="switchPage('signalements',this)">📋 Signalements</button>
+      <button class="page-tab" onclick="switchPage('maincourante',this)">📒 Main courante</button>
+      <button class="page-tab" onclick="switchPage('stats',this)">📊 Statistiques</button>
+      <button class="page-tab" id="msg-tab-btn" onclick="switchPage('messages',this)">💬 Messages</button>
     </div>
-    <div class="cards-list" id="cards-list"></div>
-  </div>
-</div>
 
-<!-- ══ MODAL ÉDITION ════════════════════════════════════════════ -->
+    <!-- ── SECTION SIGNALEMENTS ─────────────────────────────── -->
+    <div class="page-section active" id="section-signalements">
+      <div class="section-title">File de signalements</div>
+      <div class="tabs">
+        <button class="tab active" onclick="setTab(this,'all')">Tous</button>
+        <button class="tab" onclick="setTab(this,'pending')">⏳ En attente</button>
+        <button class="tab" onclick="setTab(this,'taken')">🔵 Pris en charge</button>
+        <button class="tab" onclick="setTab(this,'approved')">✓ Validés</button>
+        <button class="tab" onclick="setTab(this,'rejected')">✕ Rejetés</button>
+      </div>
+      <div class="cards-list" id="cards-list"></div>
+    </div>
+
+    <!-- ── SECTION MAIN COURANTE ───────────────────────────── -->
+    <div class="page-section" id="section-maincourante">
+      <div class="mc-toolbar">
+        <div>
+          <div class="section-title" style="margin-bottom:4px">Main courante numérique</div>
+          <div class="mc-month" id="mc-month-label"></div>
+        </div>
+        <button class="btn-export" onclick="exportPDF()">⬇ Exporter PDF</button>
+      </div>
+      <div class="mc-table-wrap">
+        <table class="mc-table">
+          <thead>
+            <tr>
+              <th>Date / Heure</th>
+              <th>Rue · Quartier</th>
+              <th>Catégorie</th>
+              <th>Description</th>
+              <th>Agent</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="mc-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SECTION STATISTIQUES ────────────────────────────── -->
+    <div class="page-section" id="section-stats">
+      <div class="section-title">Statistiques de délinquance</div>
+      <div class="stats-filters">
+        <span class="sf-label">Période :</span>
+        <button class="sf-btn" onclick="setSfPeriod(7,this)">7 j</button>
+        <button class="sf-btn active" onclick="setSfPeriod(30,this)">30 j</button>
+        <button class="sf-btn" onclick="setSfPeriod(90,this)">90 j</button>
+        <span class="sf-label" style="margin-left:8px">Catégorie :</span>
+        <select class="sf-select" id="sf-cat" onchange="refreshStats()">
+          <option value="tous">Toutes</option>
+          <option value="intrusion">Intrusion</option>
+          <option value="rodeur">Rôdeur</option>
+          <option value="vehicule">Véhicule</option>
+          <option value="degradation">Dégradation</option>
+          <option value="escroquerie">Escroquerie</option>
+          <option value="autre">Autre</option>
+        </select>
+        <span class="sf-label" style="margin-left:8px">Quartier :</span>
+        <select class="sf-select" id="sf-quartier" onchange="refreshStats()">
+          <option value="tous">Tous</option>
+          <option>Centre-Bourg</option>
+          <option>Louradou</option>
+          <option>Castelviel</option>
+          <option>Charlary</option>
+          <option>Tartaloche</option>
+          <option>Pigassou</option>
+        </select>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Incidents par quartier</div>
+          <div class="chart-wrap"><canvas id="chart-bar"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Répartition par catégorie</div>
+          <div class="chart-wrap"><canvas id="chart-pie"></canvas></div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-title">Évolution hebdomadaire</div>
+          <div class="chart-wrap tall"><canvas id="chart-line"></canvas></div>
+        </div>
+        <div class="chart-card full">
+          <div class="chart-title">Carte de chaleur — densité des incidents</div>
+          <div id="stats-map"></div>
+        </div>
+      </div>
+      <div class="rapport-bar">
+        <div class="rapport-bar-text"><strong>Rapport mensuel IA</strong> — Génère un résumé narratif des incidents, tendances et recommandations via Claude.</div>
+        <button class="btn-rapport" onclick="openRapportModal()">✨ Générer le rapport</button>
+      </div>
+    </div>
+
+    <!-- ── SECTION MESSAGES ────────────────────────────────── -->
+    <div class="page-section" id="section-messages">
+      <div class="section-title">Messages référents ↔ FDO</div>
+      <div class="msg-layout">
+        <div class="msg-threads" id="msg-threads"></div>
+        <div class="msg-panel" id="msg-panel">
+          <div class="msg-select-hint">← Sélectionnez un quartier pour lire ou envoyer un message</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end page-inner -->
+</div><!-- end dashboard -->
+
+<!-- ══ MODAL ÉDITION ════════════════════════════════════════════════ -->
 <div class="overlay" id="overlay-edit" onclick="closeEditOnBg(event)">
   <div class="modal">
     <button class="modal-close" onclick="closeEdit()">×</button>
@@ -278,16 +490,73 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
     </div>
     <div class="form-group">
       <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="edit-desc" placeholder="Complétez ou corrigez la description…"></textarea>
+      <textarea class="form-textarea" id="edit-desc"></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeEdit()">Annuler</button>
-      <button class="btn-save"   onclick="saveEdit()">Enregistrer les modifications</button>
+      <button class="btn-save" onclick="saveEdit()">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- ══ GUIDE ═════════════════════════════════════════════════════ -->
+<!-- ══ MODAL FICHE INCIDENT ══════════════════════════════════════════ -->
+<div class="overlay" id="overlay-fiche" onclick="closeFicheOnBg(event)">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeFiche()">×</button>
+    <div class="modal-title">📋 Fiche incident</div>
+    <input type="hidden" id="fiche-id">
+    <div class="fiche-grid" id="fiche-readonly"></div>
+    <hr class="fiche-sep" style="margin:16px 0">
+    <div style="font-size:11px;font-weight:700;color:var(--gris2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Compléments d'enquête</div>
+    <div class="fiche-grid">
+      <div class="form-group">
+        <label class="form-label">Plaque relevée</label>
+        <input class="form-input" id="fiche-plaque" type="text" placeholder="Ex : 31-AB-123" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nombre de témoins</label>
+        <input class="form-input" id="fiche-temoins" type="number" min="0" max="99" placeholder="0">
+      </div>
+      <div class="form-group fiche-full">
+        <label class="form-label">Suites données</label>
+        <select class="form-select" id="fiche-suites">
+          <option value="">— Sélectionner —</option>
+          <option>Patrouille effectuée</option>
+          <option>Transmis au parquet</option>
+          <option>Classé sans suite</option>
+          <option>En cours</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions" style="flex-wrap:wrap;gap:8px">
+      <button class="btn-copy" onclick="copyForPlainte()">📋 Copier pour dépôt de plainte</button>
+      <div style="flex:1;min-width:160px;display:flex;gap:8px">
+        <button class="btn-cancel" style="flex:1" onclick="closeFiche()">Fermer</button>
+        <button class="btn-save" style="flex:2" onclick="saveFiche()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL RAPPORT ═════════════════════════════════════════════════ -->
+<div class="overlay" id="overlay-rapport" onclick="closeRapportOnBg(event)">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeRapport()">×</button>
+    <div class="modal-title">✨ Rapport mensuel IA</div>
+    <div class="api-key-row">
+      <label>Clé API Anthropic :</label>
+      <input type="password" id="rapport-apikey" placeholder="sk-ant-…" oninput="saveApiKey(this.value)">
+    </div>
+    <div class="rapport-text" id="rapport-text">Cliquez sur "Générer" pour rédiger le rapport à partir des statistiques du mois.</div>
+    <div class="rapport-actions">
+      <button class="btn-rapport" id="rapport-generate-btn" onclick="generateRapport()">✨ Générer</button>
+      <button class="btn-copy" onclick="copyRapport()">📋 Copier</button>
+      <button class="btn-export" onclick="printRapport()" style="flex-shrink:0">🖨 Imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ GUIDE ══════════════════════════════════════════════════════════ -->
 <div class="guide-overlay" id="guide-overlay" onclick="closeGuide()"></div>
 <div class="guide-panel" id="guide-panel">
   <div class="guide-header">
@@ -295,55 +564,50 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
     <button class="guide-close" onclick="closeGuide()">×</button>
   </div>
   <div class="guide-body">
-
     <div class="guide-section">
-      <div class="guide-section-title"><span>🔐</span> Connexion</div>
-      <div class="guide-step"><div class="guide-step-n">1</div><div class="guide-step-text">Entrez votre <strong>code PIN à 4 chiffres</strong>. Chaque chiffre avance automatiquement au suivant.</div></div>
-      <div class="guide-step"><div class="guide-step-n">2</div><div class="guide-step-text">Sélectionnez votre <strong>rôle</strong> (Gendarmerie, PM ou ASVP) — cela identifie votre service dans les actions.</div></div>
+      <div class="guide-section-title">📋 Signalements</div>
+      <p>Cliquez <strong style="color:var(--blanc)">sur la rue</strong> d'un signalement pour ouvrir la fiche détaillée (plaque, témoins, suites). Utilisez les boutons d'action pour gérer chaque dossier.</p>
     </div>
-
-    <hr class="guide-divider">
-
-    <div class="guide-section">
-      <div class="guide-section-title"><span>📋</span> Tableau de bord</div>
-      <div class="guide-step"><div class="guide-step-n">1</div><div class="guide-step-text">Les <strong>4 compteurs</strong> en haut résument l'état de la file en temps réel.</div></div>
-      <div class="guide-step"><div class="guide-step-n">2</div><div class="guide-step-text">Utilisez les <strong>onglets</strong> pour filtrer : En attente / Pris en charge / Validés / Rejetés.</div></div>
-      <div class="guide-step"><div class="guide-step-n">3</div><div class="guide-step-text">Les signalements marqués <span class="guide-badge g">Nouveau</span> viennent des citoyens. Les <span class="guide-badge o">Données démo</span> sont des exemples.</div></div>
+    <div class="guide-section" style="margin-top:16px">
+      <div class="guide-section-title">📒 Main courante</div>
+      <p>Chaque action (validation, prise en charge…) est automatiquement enregistrée. Cliquez <strong style="color:var(--blanc)">Exporter PDF</strong> pour générer le rapport mensuel.</p>
     </div>
-
-    <hr class="guide-divider">
-
-    <div class="guide-section">
-      <div class="guide-section-title"><span>⚡</span> Actions sur un signalement</div>
-      <div class="guide-step"><div class="guide-step-n">✏️</div><div class="guide-step-text"><strong>Modifier</strong> — corrige la rue, le type ou la description avant toute action.</div></div>
-      <div class="guide-step"><div class="guide-step-n">🔵</div><div class="guide-step-text"><strong>Prendre en charge</strong> — associe votre service au signalement. Visible sur la carte publique.</div></div>
-      <div class="guide-step"><div class="guide-step-n">✓</div><div class="guide-step-text"><strong>Valider</strong> — <span class="guide-badge g">publie</span> l'alerte sur la carte publique HORUS.</div></div>
-      <div class="guide-step"><div class="guide-step-n">✕</div><div class="guide-step-text"><strong>Rejeter</strong> — <span class="guide-badge r">retire</span> le signalement (doublon, erreur, infondé).</div></div>
-      <div class="guide-step"><div class="guide-step-n">🏁</div><div class="guide-step-text"><strong>Clôturer</strong> — marque l'incident comme <span class="guide-badge g">résolu</span> après intervention.</div></div>
+    <div class="guide-section" style="margin-top:16px">
+      <div class="guide-section-title">📊 Statistiques</div>
+      <p>Graphiques filtrables par période, catégorie et quartier. La carte de chaleur montre la concentration des incidents. Le bouton <strong style="color:var(--blanc)">Générer le rapport</strong> rédige un résumé narratif via l'IA.</p>
     </div>
-
-    <hr class="guide-divider">
-
-    <div class="guide-section">
-      <div class="guide-section-title"><span>💡</span> Bon à savoir</div>
-      <div class="guide-step"><div class="guide-step-n">i</div><div class="guide-step-text">Les modifications sont sauvegardées localement (test). Sur le serveur OVH, elles iront en base PostgreSQL.</div></div>
-      <div class="guide-step"><div class="guide-step-n">i</div><div class="guide-step-text">Un nouveau signalement reçu pendant votre session déclenche une notification <span class="guide-badge b">🆕 Nouveau signalement reçu</span>.</div></div>
+    <div class="guide-section" style="margin-top:16px">
+      <div class="guide-section-title">💬 Messages</div>
+      <p>Échangez directement avec les référents de quartier. Les messages non lus apparaissent avec un badge rouge.</p>
     </div>
-
   </div>
 </div>
 
+<!-- Zone impression -->
+<div id="print-zone"></div>
+
 <div class="toast" id="toast"></div>
 
+<!-- ══ SCRIPTS ════════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script>
-// ── PIN ──────────────────────────────────────────────────────────
-const VALID_PIN = "1234"; // À changer avant déploiement
+// ── CONSTANTES ───────────────────────────────────────────────────────
+const VALID_PIN = "1234";
 
-// ── Base rues → quartier ─────────────────────────────────────────
+const QUARTIERS = [
+  {key:"centre",    label:"Centre-Bourg",color:"#7c3aed",lat:43.6655,lng:1.5175,ref:"Paul D.",    phone:"06 98 76 54 32"},
+  {key:"louradou",  label:"Louradou",    color:"#2563eb",lat:43.6710,lng:1.5220,ref:"Marie L.",   phone:"06 12 34 56 78"},
+  {key:"castelviel",label:"Castelviel", color:"#0891b2",lat:43.6585,lng:1.5255,ref:"Sophie R.",  phone:"06 55 44 33 22"},
+  {key:"charlary",  label:"Charlary",   color:"#16a34a",lat:43.6685,lng:1.5095,ref:"Nadine B.",  phone:"06 77 88 99 00"},
+  {key:"tartaloche",label:"Tartaloche", color:"#d97706",lat:43.6605,lng:1.5105,ref:"Thierry M.", phone:"06 11 22 33 44"},
+  {key:"pigassou",  label:"Pigassou",   color:"#e11d48",lat:43.6555,lng:1.5185,ref:"Karim A.",   phone:"06 00 00 00 00"},
+];
+
 const RUES = [
-  {rue:"Grande Rue",quartier:"Centre-Bourg"},{rue:"Petite Rue",quartier:"Centre-Bourg"},{rue:"Impasse de l'Église",quartier:"Centre-Bourg"},{rue:"Impasse de Gardes",quartier:"Centre-Bourg"},{rue:"Chemin du Barri",quartier:"Centre-Bourg"},{rue:"Chemin du Château",quartier:"Centre-Bourg"},{rue:"Impasse du Château de la Bergerie",quartier:"Centre-Bourg"},{rue:"Place des Ormeaux",quartier:"Centre-Bourg"},{rue:"Rue du Moulin",quartier:"Centre-Bourg"},{rue:"Chemin de Saint-Jean",quartier:"Centre-Bourg"},{rue:"Route d'Albi",quartier:"Centre-Bourg"},{rue:"Chemin de Montrabé",quartier:"Centre-Bourg"},{rue:"Chemin de Pesquié",quartier:"Centre-Bourg"},{rue:"Chemin des Pesquiès",quartier:"Centre-Bourg"},{rue:"Clos de Rouffiac",quartier:"Centre-Bourg"},{rue:"Impasse de l'Olivier",quartier:"Centre-Bourg"},{rue:"Impasse des Jardins de Riverolles",quartier:"Centre-Bourg"},{rue:"Impasse du Clos du Loup",quartier:"Centre-Bourg"},{rue:"Impasse du Lac",quartier:"Centre-Bourg"},{rue:"Le Clos d'Imbertis",quartier:"Centre-Bourg"},{rue:"Route du Clos du Loup",quartier:"Centre-Bourg"},{rue:"Rue de l'Eden",quartier:"Centre-Bourg"},{rue:"Rue de la Bergerie",quartier:"Centre-Bourg"},{rue:"Rue des Jardins du Château",quartier:"Centre-Bourg"},{rue:"Rue du Clos de Malfre",quartier:"Centre-Bourg"},{rue:"Résidence Les Jardins Tolosans",quartier:"Centre-Bourg"},
-  {rue:"Chemin Louradou",quartier:"Louradou"},{rue:"Chemin de Louradou",quartier:"Louradou"},{rue:"Impasse du Louradou",quartier:"Louradou"},{rue:"Impasse des Terrasses du louradou",quartier:"Louradou"},{rue:"Impasse des vergers du louradou",quartier:"Louradou"},{rue:"Zone Commerciale du Louradou",quartier:"Louradou"},{rue:"Avenue de la Viste",quartier:"Louradou"},{rue:"Avenue la Bisto",quartier:"Louradou"},{rue:"Allée Guynemer",quartier:"Louradou"},{rue:"Allée des Platanes",quartier:"Louradou"},{rue:"Avenue Saint-Exupéry",quartier:"Louradou"},{rue:"Place Blériot",quartier:"Louradou"},{rue:"Place Mermoz",quartier:"Louradou"},{rue:"Place Nungesser",quartier:"Louradou"},{rue:"Place Roland Garros",quartier:"Louradou"},{rue:"Rue Latécoère",quartier:"Louradou"},{rue:"Rue Jacques Cartier",quartier:"Louradou"},{rue:"Rue Louis Antoine de Bougainville",quartier:"Louradou"},{rue:"Rue Beausoleil",quartier:"Louradou"},
-  {rue:"Chemin du Castelviel",quartier:"Castelviel"},{rue:"Impasse de Castelviel",quartier:"Castelviel"},{rue:"Chemin des Garosses",quartier:"Castelviel"},{rue:"Impasse des Garosses",quartier:"Castelviel"},{rue:"Chemin de Pompignac",quartier:"Castelviel"},
+  {rue:"Grande Rue",quartier:"Centre-Bourg"},{rue:"Petite Rue",quartier:"Centre-Bourg"},{rue:"Impasse de l'Église",quartier:"Centre-Bourg"},{rue:"Impasse de Gardes",quartier:"Centre-Bourg"},{rue:"Chemin du Barri",quartier:"Centre-Bourg"},{rue:"Chemin du Château",quartier:"Centre-Bourg"},{rue:"Place des Ormeaux",quartier:"Centre-Bourg"},{rue:"Rue du Moulin",quartier:"Centre-Bourg"},{rue:"Chemin de Saint-Jean",quartier:"Centre-Bourg"},{rue:"Route d'Albi",quartier:"Centre-Bourg"},{rue:"Chemin de Montrabé",quartier:"Centre-Bourg"},{rue:"Chemin de Pesquié",quartier:"Centre-Bourg"},{rue:"Clos de Rouffiac",quartier:"Centre-Bourg"},{rue:"Impasse du Lac",quartier:"Centre-Bourg"},{rue:"Rue de l'Eden",quartier:"Centre-Bourg"},{rue:"Rue de la Bergerie",quartier:"Centre-Bourg"},{rue:"Rue du Clos de Malfre",quartier:"Centre-Bourg"},
+  {rue:"Chemin Louradou",quartier:"Louradou"},{rue:"Chemin de Louradou",quartier:"Louradou"},{rue:"Impasse du Louradou",quartier:"Louradou"},{rue:"Zone Commerciale du Louradou",quartier:"Louradou"},{rue:"Avenue de la Viste",quartier:"Louradou"},{rue:"Allée Guynemer",quartier:"Louradou"},{rue:"Allée des Platanes",quartier:"Louradou"},{rue:"Avenue Saint-Exupéry",quartier:"Louradou"},{rue:"Place Blériot",quartier:"Louradou"},{rue:"Place Mermoz",quartier:"Louradou"},{rue:"Rue Latécoère",quartier:"Louradou"},{rue:"Rue Jacques Cartier",quartier:"Louradou"},{rue:"Rue Beausoleil",quartier:"Louradou"},
+  {rue:"Chemin du Castelviel",quartier:"Castelviel"},{rue:"Impasse de Castelviel",quartier:"Castelviel"},{rue:"Chemin des Garosses",quartier:"Castelviel"},{rue:"Chemin de Pompignac",quartier:"Castelviel"},
   {rue:"Allée de Charlary",quartier:"Charlary"},{rue:"Impasse de Charlary",quartier:"Charlary"},{rue:"Chemin des Margarits",quartier:"Charlary"},{rue:"Chemin du Barrus",quartier:"Charlary"},
   {rue:"Chemin de Tartaloche",quartier:"Tartaloche"},{rue:"Chemin de Ramounelle",quartier:"Tartaloche"},{rue:"Chemin des Vignettes",quartier:"Tartaloche"},
   {rue:"Chemin de Pigassou",quartier:"Pigassou"},{rue:"Chemin du Cros",quartier:"Pigassou"},{rue:"Chemin des Combes",quartier:"Pigassou"},{rue:"Chemin de Hollande",quartier:"Pigassou"},{rue:"Autoroute du Pastel",quartier:"Pigassou"},
@@ -361,21 +625,37 @@ const DEMO_ALERTS = [
 const FDO_NAMES  = {gend:"Adj. Martinet", pm:"Agent Duval", asvp:"Agent Roussel"};
 const FDO_LABELS = {gend:"Gendarmerie",   pm:"Police Municipale", asvp:"ASVP"};
 
+const TYPE_TO_CAT = {
+  "🚨 Intrusion / Effraction":"intrusion",
+  "👤 Rôdeur suspect":"rodeur",
+  "🚗 Véhicule suspect":"vehicule",
+  "🔨 Dégradation":"degradation",
+  "⚠️ Escroquerie / Démarchage":"escroquerie",
+  "📌 Autre":"autre",
+};
+const CAT_LABELS = {intrusion:"Intrusion",rodeur:"Rôdeur",vehicule:"Véhicule",degradation:"Dégradation",prevention:"Prévention",escroquerie:"Escroquerie",autre:"Autre"};
+
+// ── ÉTAT ─────────────────────────────────────────────────────────────
 let currentRole = "gend";
 let currentTab  = "all";
+let currentPage = "signalements";
+let currentMsgThread = null;
+let sfPeriod = 30;
+let statsMapInstance = null;
+let charts = {};
 
-// ── PIN ──────────────────────────────────────────────────────────
+// ── PIN ───────────────────────────────────────────────────────────────
 function pinKey(e, idx) {
   if (e.target.value && idx < 3) document.getElementById("p"+(idx+1)).focus();
   if (e.key === "Backspace" && !e.target.value && idx > 0) document.getElementById("p"+(idx-1)).focus();
   if (e.key === "Enter") tryLogin();
 }
-function getPin() { return [0,1,2,3].map(i=>document.getElementById("p"+i).value).join(""); }
+function getPin() { return [0,1,2,3].map(i => document.getElementById("p"+i).value).join(""); }
 function tryLogin() {
   if (getPin() === VALID_PIN) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("dashboard").style.display = "block";
-    updateRolePill(); render();
+    updateRolePill(); render(); renderMainCourante(); updateMsgBadge();
   } else {
     document.getElementById("login-error").textContent = "Code incorrect. Réessayez.";
     [0,1,2,3].forEach(i => document.getElementById("p"+i).value = "");
@@ -390,15 +670,14 @@ function logout() {
   document.getElementById("p0").focus();
 }
 
-// ── Thème ────────────────────────────────────────────────────────
+// ── THÈME ─────────────────────────────────────────────────────────────
 function toggleTheme() {
-  const html = document.documentElement;
-  const next = html.dataset.theme === "dark" ? "light" : "dark";
-  html.dataset.theme = next;
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
   localStorage.setItem("horus_theme", next);
 }
 
-// ── Rôle ─────────────────────────────────────────────────────────
+// ── RÔLE ─────────────────────────────────────────────────────────────
 function setRole(role, btn) {
   currentRole = role;
   document.querySelectorAll(".role-opt").forEach(b => b.classList.remove("active"));
@@ -411,14 +690,26 @@ function updateRolePill() {
   pill.className = "role-pill " + currentRole;
 }
 
-// ── Onglets ──────────────────────────────────────────────────────
+// ── PAGE TABS ─────────────────────────────────────────────────────────
+function switchPage(page, btn) {
+  currentPage = page;
+  document.querySelectorAll(".page-tab").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".page-section").forEach(s => s.classList.remove("active"));
+  document.getElementById("section-" + page).classList.add("active");
+  if (page === "maincourante") renderMainCourante();
+  if (page === "stats") { setTimeout(renderStats, 50); }
+  if (page === "messages") renderMessages();
+}
+
+// ── ONGLETS SIGNALEMENTS ──────────────────────────────────────────────
 function setTab(btn, tab) {
   currentTab = tab;
   document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
   btn.classList.add("active"); render();
 }
 
-// ── Données ──────────────────────────────────────────────────────
+// ── DONNÉES ───────────────────────────────────────────────────────────
 function getAll() {
   const local = JSON.parse(localStorage.getItem("horus_signalements") || "[]");
   return [...local, ...DEMO_ALERTS].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -431,71 +722,38 @@ function fmtDate(iso) {
   if (diff < 60000)    return "À l'instant";
   if (diff < 3600000)  return `Il y a ${Math.floor(diff/60000)} min`;
   if (diff < 86400000) return `Il y a ${Math.floor(diff/3600000)}h`;
-  return new Date(iso).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  return new Date(iso).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 }
 
-// ── Actions ──────────────────────────────────────────────────────
+// ── ACTIONS ───────────────────────────────────────────────────────────
 function doAction(id, patch) {
   const all = getAll();
   const idx = all.findIndex(x => String(x.id) === String(id));
   if (idx < 0) return;
   Object.assign(all[idx], patch);
   saveLocal(all);
+  if (patch.action) logMainCourante(all[idx], patch.action);
   render();
 }
-function validate(id)   { doAction(id, {status:"approved", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole]}); toast("✓ Signalement validé et publié"); }
-function reject(id)     { doAction(id, {status:"rejected"}); toast("✕ Signalement rejeté"); }
-function takeCharge(id) { doAction(id, {status:"taken", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole]}); toast(`${FDO_LABELS[currentRole]} a pris en charge ce signalement`); }
-function resolve(id)    { doAction(id, {resolvedAt:new Date().toISOString()}); toast("🏁 Incident clôturé"); }
 
-// ── Édition ──────────────────────────────────────────────────────
-function buildRueSelect() {
-  const sel = document.getElementById("edit-rue");
-  const grouped = {};
-  RUES.forEach(r => { if (!grouped[r.quartier]) grouped[r.quartier]=[]; grouped[r.quartier].push(r.rue); });
-  ["Centre-Bourg","Louradou","Castelviel","Charlary","Tartaloche","Pigassou"].forEach(q => {
-    if (!grouped[q]) return;
-    const grp = document.createElement("optgroup"); grp.label = q;
-    grouped[q].sort().forEach(rue => { const o=document.createElement("option"); o.value=rue; o.textContent=rue; grp.appendChild(o); });
-    sel.appendChild(grp);
-  });
+function validate(id) {
+  doAction(id, {status:"approved", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Validé"});
+  toast("✓ Signalement validé et publié");
+}
+function reject(id) {
+  doAction(id, {status:"rejected", action:"Rejeté"});
+  toast("✕ Signalement rejeté");
+}
+function takeCharge(id) {
+  doAction(id, {status:"taken", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Pris en charge"});
+  toast(`${FDO_LABELS[currentRole]} a pris en charge ce signalement`);
+}
+function resolve(id) {
+  doAction(id, {resolvedAt:new Date().toISOString(), action:"Clôturé"});
+  toast("🏁 Incident clôturé");
 }
 
-function openEdit(id) {
-  const all = getAll();
-  const s = all.find(x => String(x.id) === String(id));
-  if (!s) return;
-  document.getElementById("edit-id").value      = id;
-  document.getElementById("edit-rue").value     = s.rue;
-  document.getElementById("edit-quartier").value= s.quartier;
-  document.getElementById("edit-type").value    = s.type;
-  document.getElementById("edit-desc").value    = s.desc;
-  document.getElementById("overlay-edit").classList.add("open");
-}
-function onEditRueChange() {
-  const rue = document.getElementById("edit-rue").value;
-  const match = RUES.find(r => r.rue === rue);
-  document.getElementById("edit-quartier").value = match ? match.quartier : "";
-}
-function closeEdit() { document.getElementById("overlay-edit").classList.remove("open"); }
-function closeEditOnBg(e) { if (e.target === document.getElementById("overlay-edit")) closeEdit(); }
-function saveEdit() {
-  const id       = document.getElementById("edit-id").value;
-  const rue      = document.getElementById("edit-rue").value;
-  const quartier = document.getElementById("edit-quartier").value;
-  const type     = document.getElementById("edit-type").value;
-  const desc     = document.getElementById("edit-desc").value.trim();
-  if (!rue || !type || !desc) { toast("Tous les champs sont requis."); return; }
-  doAction(id, {rue, quartier, type, desc});
-  closeEdit();
-  toast("✏️ Signalement modifié");
-}
-
-// ── Guide ────────────────────────────────────────────────────────
-function openGuide()  { document.getElementById("guide-panel").classList.add("open"); document.getElementById("guide-overlay").classList.add("open"); }
-function closeGuide() { document.getElementById("guide-panel").classList.remove("open"); document.getElementById("guide-overlay").classList.remove("open"); }
-
-// ── Rendu ────────────────────────────────────────────────────────
+// ── RENDER SIGNALEMENTS ───────────────────────────────────────────────
 function render() {
   const all = getAll();
   const filtered = currentTab === "all" ? all : all.filter(s => s.status === currentTab);
@@ -504,19 +762,18 @@ function render() {
   document.getElementById("stat-approved").textContent = all.filter(s=>s.status==="approved").length;
   document.getElementById("stat-rejected").textContent = all.filter(s=>s.status==="rejected").length;
 
+  const STATUS_LABEL = {pending:"En attente",taken:"Pris en charge",approved:"Validé",rejected:"Rejeté"};
+  const STATUS_EMOJI = {pending:"⏳",taken:"🔵",approved:"✓",rejected:"✕"};
   const list = document.getElementById("cards-list");
+
   if (!filtered.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">✓</div><div>Aucun signalement dans cette catégorie.</div></div>`;
     return;
   }
 
-  const STATUS_LABEL = {pending:"En attente",taken:"Pris en charge",approved:"Validé",rejected:"Rejeté"};
-  const STATUS_EMOJI = {pending:"⏳",taken:"🔵",approved:"✓",rejected:"✕"};
-
   list.innerHTML = filtered.map(s => {
     const isDemo = String(s.id).startsWith("d");
     const canEdit = s.status === "pending" || s.status === "taken";
-
     const actions = [];
     if (canEdit)              actions.push(`<button class="btn-action btn-edit"     onclick="openEdit('${s.id}')">✏️ Modifier</button>`);
     if (s.status==="pending") actions.push(`<button class="btn-action btn-take"     onclick="takeCharge('${s.id}')">🔵 Prendre en charge</button>`);
@@ -524,7 +781,8 @@ function render() {
       actions.push(`<button class="btn-action btn-validate" onclick="validate('${s.id}')">✓ Valider</button>`);
       actions.push(`<button class="btn-action btn-reject"   onclick="reject('${s.id}')">✕ Rejeter</button>`);
     }
-    if (s.status==="approved"&&!s.resolvedAt) actions.push(`<button class="btn-action btn-resolve" onclick="resolve('${s.id}')">🏁 Clôturer</button>`);
+    if (s.status==="approved" && !s.resolvedAt) actions.push(`<button class="btn-action btn-resolve" onclick="resolve('${s.id}')">🏁 Clôturer</button>`);
+    actions.push(`<button class="btn-action btn-fiche" onclick="openFiche('${s.id}')">📋 Fiche</button>`);
 
     return `
     <div class="sig-card ${s.status}">
@@ -535,7 +793,7 @@ function render() {
         </div>
         <span class="sig-time">${fmtDate(s.createdAt)}</span>
       </div>
-      <div class="sig-rue">📍 ${s.rue} · <span style="color:var(--or)">${s.quartier}</span></div>
+      <div class="sig-rue" onclick="openFiche('${s.id}')">📍 ${s.rue} · <span style="color:var(--or)">${s.quartier}</span></div>
       <div class="sig-meta">${s.type}</div>
       <div class="sig-desc">${s.desc}</div>
       ${s.fdoName ? `<div class="fdo-avis">⚖️ <strong>${s.fdoName}</strong> · ${FDO_LABELS[s.fdoKey]||s.fdoKey} · ${s.status==="taken"?"prise en charge":"traité"}</div>` : ""}
@@ -545,26 +803,475 @@ function render() {
   }).join("");
 }
 
+// ── ÉDITION ───────────────────────────────────────────────────────────
+function buildRueSelect() {
+  const sel = document.getElementById("edit-rue");
+  const grouped = {};
+  RUES.forEach(r => { if (!grouped[r.quartier]) grouped[r.quartier]=[]; grouped[r.quartier].push(r.rue); });
+  ["Centre-Bourg","Louradou","Castelviel","Charlary","Tartaloche","Pigassou"].forEach(q => {
+    if (!grouped[q]) return;
+    const grp = document.createElement("optgroup"); grp.label = q;
+    grouped[q].sort().forEach(rue => {
+      const o = document.createElement("option"); o.value=rue; o.textContent=rue; grp.appendChild(o);
+    });
+    sel.appendChild(grp);
+  });
+}
+function openEdit(id) {
+  const s = getAll().find(x => String(x.id) === String(id));
+  if (!s) return;
+  document.getElementById("edit-id").value       = id;
+  document.getElementById("edit-rue").value      = s.rue;
+  document.getElementById("edit-quartier").value = s.quartier;
+  document.getElementById("edit-type").value     = s.type;
+  document.getElementById("edit-desc").value     = s.desc;
+  document.getElementById("overlay-edit").classList.add("open");
+}
+function onEditRueChange() {
+  const m = RUES.find(r => r.rue === document.getElementById("edit-rue").value);
+  document.getElementById("edit-quartier").value = m ? m.quartier : "";
+}
+function closeEdit() { document.getElementById("overlay-edit").classList.remove("open"); }
+function closeEditOnBg(e) { if (e.target===document.getElementById("overlay-edit")) closeEdit(); }
+function saveEdit() {
+  const id = document.getElementById("edit-id").value;
+  const rue=document.getElementById("edit-rue").value, quartier=document.getElementById("edit-quartier").value;
+  const type=document.getElementById("edit-type").value, desc=document.getElementById("edit-desc").value.trim();
+  if (!rue||!type||!desc) { toast("Tous les champs sont requis."); return; }
+  doAction(id, {rue,quartier,type,desc});
+  closeEdit(); toast("✏️ Signalement modifié");
+}
+
+// ── FICHE INCIDENT ────────────────────────────────────────────────────
+function openFiche(id) {
+  const s = getAll().find(x => String(x.id) === String(id));
+  if (!s) return;
+  document.getElementById("fiche-id").value = id;
+  document.getElementById("fiche-plaque").value  = s.plaque || "";
+  document.getElementById("fiche-temoins").value = s.nb_temoins || "";
+  document.getElementById("fiche-suites").value  = s.suites || "";
+
+  const STATUS_LABEL = {pending:"En attente",taken:"Pris en charge",approved:"Validé",rejected:"Rejeté"};
+  document.getElementById("fiche-readonly").innerHTML = `
+    <div class="fiche-field fiche-full"><div class="fiche-label">Adresse</div><div class="fiche-value">${s.rue} · <strong>${s.quartier}</strong></div></div>
+    <div class="fiche-field"><div class="fiche-label">Catégorie</div><div class="fiche-value">${s.type}</div></div>
+    <div class="fiche-field"><div class="fiche-label">Statut</div><div class="fiche-value">${STATUS_LABEL[s.status]||s.status}</div></div>
+    <div class="fiche-field fiche-full"><div class="fiche-label">Description</div><div class="fiche-value">${s.desc}</div></div>
+    <div class="fiche-field"><div class="fiche-label">Date</div><div class="fiche-value">${new Date(s.createdAt).toLocaleString("fr-FR")}</div></div>
+    <div class="fiche-field"><div class="fiche-label">Agent</div><div class="fiche-value">${s.fdoName ? `${s.fdoName} · ${FDO_LABELS[s.fdoKey]}` : '<span class="placeholder">Non assigné</span>'}</div></div>
+  `;
+  document.getElementById("overlay-fiche").classList.add("open");
+}
+function closeFiche() { document.getElementById("overlay-fiche").classList.remove("open"); }
+function closeFicheOnBg(e) { if (e.target===document.getElementById("overlay-fiche")) closeFiche(); }
+function saveFiche() {
+  const id     = document.getElementById("fiche-id").value;
+  const plaque = document.getElementById("fiche-plaque").value.trim();
+  const nb     = parseInt(document.getElementById("fiche-temoins").value)||0;
+  const suites = document.getElementById("fiche-suites").value;
+  doAction(id, {plaque, nb_temoins:nb, suites});
+  closeFiche(); toast("📋 Fiche enregistrée");
+}
+function copyForPlainte() {
+  const id = document.getElementById("fiche-id").value;
+  const s = getAll().find(x => String(x.id) === String(id));
+  if (!s) return;
+  const txt = [
+    `PROCÈS-VERBAL — HORUS Rouffiac-Tolosan`,
+    `Gendarmerie – Brigade de Toulouse-Est`,
+    ``,
+    `Date : ${new Date(s.createdAt).toLocaleString("fr-FR")}`,
+    `Lieu : ${s.rue}, ${s.quartier}, Rouffiac-Tolosan (31180)`,
+    `Nature : ${s.type}`,
+    ``,
+    `FAITS CONSTATÉS :`,
+    s.desc,
+    ``,
+    s.plaque ? `Plaque relevée : ${s.plaque}` : "",
+    s.nb_temoins ? `Nombre de témoins : ${s.nb_temoins}` : "",
+    s.suites ? `Suites données : ${s.suites}` : "",
+    s.fdoName ? `\nAgent traitant : ${s.fdoName} (${FDO_LABELS[s.fdoKey]})` : "",
+  ].filter(Boolean).join("\n");
+  navigator.clipboard.writeText(txt).then(() => toast("📋 Texte copié dans le presse-papier")).catch(() => toast("Erreur : accès presse-papier refusé"));
+}
+
+// ── MAIN COURANTE ─────────────────────────────────────────────────────
+function logMainCourante(sig, action) {
+  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  mc.unshift({
+    id: Date.now(),
+    ts: new Date().toISOString(),
+    quartier: sig.quartier || "",
+    type: sig.type || "—",
+    rue: sig.rue || "—",
+    desc: (sig.desc || "").substring(0, 80),
+    agent: FDO_NAMES[currentRole] || currentRole,
+    service: currentRole,
+    action,
+  });
+  localStorage.setItem("horus_mc", JSON.stringify(mc));
+  if (currentPage === "maincourante") renderMainCourante();
+}
+
+function renderMainCourante() {
+  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  const now = new Date();
+  document.getElementById("mc-month-label").textContent =
+    `${now.toLocaleString("fr-FR",{month:"long",year:"numeric"})} · ${mc.length} entrée${mc.length!==1?"s":""}`;
+
+  const ACTION_LABEL = {Validé:"approved","Pris en charge":"taken",Rejeté:"rejected",Clôturé:"resolved"};
+  const tbody = document.getElementById("mc-tbody");
+  if (!mc.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="mc-empty">Aucune action enregistrée ce mois-ci.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = mc.map(e => `
+    <tr>
+      <td style="white-space:nowrap">${new Date(e.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+      <td><span class="mc-rue">${e.rue}</span><br><span style="font-size:11px">${e.quartier}</span></td>
+      <td>${e.type}</td>
+      <td>${e.desc}${e.desc.length>=80?"…":""}</td>
+      <td style="white-space:nowrap">${e.agent}<br><span style="font-size:10px;color:var(--gris2)">${FDO_LABELS[e.service]||e.service}</span></td>
+      <td><span class="mc-action ${ACTION_LABEL[e.action]||''}">${e.action}</span></td>
+    </tr>`).join("");
+}
+
+function exportPDF() {
+  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  const now = new Date();
+  const moisLabel = now.toLocaleString("fr-FR",{month:"long",year:"numeric"});
+  const totals = {};
+  mc.forEach(e => { totals[e.action] = (totals[e.action]||0)+1; });
+
+  const rows = mc.map(e => `
+    <tr>
+      <td>${new Date(e.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+      <td>${e.rue}<br>${e.quartier}</td>
+      <td>${e.type}</td>
+      <td>${e.desc}</td>
+      <td>${e.agent}<br>${FDO_LABELS[e.service]||e.service}</td>
+      <td>${e.action}</td>
+    </tr>`).join("");
+
+  const totRows = Object.entries(totals).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+
+  document.getElementById("print-zone").innerHTML = `
+    <div class="print-header">
+      <h1>Gendarmerie – Brigade de Toulouse-Est</h1>
+      <h2>HORUS Rouffiac-Tolosan — Main courante numérique</h2>
+      <div class="print-meta">Mois de ${moisLabel} · Généré le ${now.toLocaleString("fr-FR")} · ${mc.length} entrée${mc.length!==1?"s":""}</div>
+    </div>
+    <table class="print-table">
+      <thead><tr><th>Date / Heure</th><th>Lieu</th><th>Catégorie</th><th>Description</th><th>Agent</th><th>Action</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="6">Aucune entrée</td></tr>'}</tbody>
+    </table>
+    <div class="print-totals">
+      <h3>Totaux par action</h3>
+      <table><thead><tr><th>Action</th><th>Nb</th></tr></thead><tbody>${totRows}</tbody></table>
+    </div>`;
+  window.print();
+}
+
+// ── STATISTIQUES ──────────────────────────────────────────────────────
+function setSfPeriod(days, btn) {
+  sfPeriod = days;
+  document.querySelectorAll(".sf-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  refreshStats();
+}
+function refreshStats() { renderStats(); }
+
+function filterStatsData() {
+  const all = getAll().filter(s => s.status === "approved" || s.status === "taken" || s.status === "resolved" || s.resolvedAt);
+  const since = Date.now() - sfPeriod * 86400000;
+  const cat = document.getElementById("sf-cat").value;
+  const qrt = document.getElementById("sf-quartier").value;
+  return all.filter(s => {
+    if (new Date(s.createdAt).getTime() < since) return false;
+    if (cat !== "tous") {
+      const c = TYPE_TO_CAT[s.type] || "autre";
+      if (c !== cat) return false;
+    }
+    if (qrt !== "tous" && s.quartier !== qrt) return false;
+    return true;
+  });
+}
+
+function renderStats() {
+  const data = filterStatsData();
+
+  // Bar — incidents par quartier
+  const qCounts = {};
+  QUARTIERS.forEach(q => qCounts[q.label] = 0);
+  data.forEach(s => { if (qCounts[s.quartier]!==undefined) qCounts[s.quartier]++; });
+  const qLabels = Object.keys(qCounts), qVals = Object.values(qCounts);
+  const qColors = QUARTIERS.map(q => q.color);
+
+  destroyChart("chart-bar");
+  charts["chart-bar"] = new Chart(document.getElementById("chart-bar"), {
+    type:"bar",
+    data:{labels:qLabels, datasets:[{label:"Incidents",data:qVals,backgroundColor:qColors.map(c=>c+"99"),borderColor:qColors,borderWidth:1.5,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:"#8B949E",stepSize:1},grid:{color:"rgba(201,168,76,.08)"}},x:{ticks:{color:"#8B949E"},grid:{display:false}}}}
+  });
+
+  // Pie — répartition par catégorie
+  const catCounts = {};
+  data.forEach(s => { const c = TYPE_TO_CAT[s.type]||"autre"; catCounts[c]=(catCounts[c]||0)+1; });
+  const pieColors = {intrusion:"#E05555",rodeur:"#C9A84C",vehicule:"#58A6FF",degradation:"#3FB950",escroquerie:"#f59e0b",autre:"#8B949E"};
+  const catKeys = Object.keys(catCounts);
+  destroyChart("chart-pie");
+  charts["chart-pie"] = new Chart(document.getElementById("chart-pie"), {
+    type:"doughnut",
+    data:{labels:catKeys.map(k=>CAT_LABELS[k]||k), datasets:[{data:Object.values(catCounts),backgroundColor:catKeys.map(k=>(pieColors[k]||"#8B949E")+"cc"),borderColor:"#161B22",borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#8B949E",boxWidth:12,padding:10}}}}
+  });
+
+  // Line — évolution hebdomadaire (nb semaines selon période)
+  const weeks = Math.ceil(sfPeriod / 7);
+  const weekLabels = [], weekVals = [];
+  for (let w = weeks-1; w >= 0; w--) {
+    const start = Date.now() - (w+1)*7*86400000;
+    const end   = Date.now() - w*7*86400000;
+    const count = data.filter(s => {
+      const t = new Date(s.createdAt).getTime();
+      return t>=start && t<end;
+    }).length;
+    const d = new Date(Date.now() - w*7*86400000);
+    weekLabels.push(`S${weeks-w}`);
+    weekVals.push(count);
+  }
+  destroyChart("chart-line");
+  charts["chart-line"] = new Chart(document.getElementById("chart-line"), {
+    type:"line",
+    data:{labels:weekLabels, datasets:[{label:"Incidents/semaine",data:weekVals,borderColor:"#C9A84C",backgroundColor:"rgba(201,168,76,.1)",pointBackgroundColor:"#C9A84C",pointRadius:4,tension:.3,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:"#8B949E",stepSize:1},grid:{color:"rgba(201,168,76,.08)"},beginAtZero:true},x:{ticks:{color:"#8B949E"},grid:{display:false}}}}
+  });
+
+  // Leaflet heatmap
+  renderStatsMap(data);
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+function renderStatsMap(data) {
+  const el = document.getElementById("stats-map");
+  if (!el) return;
+  if (statsMapInstance) { statsMapInstance.remove(); statsMapInstance = null; }
+
+  statsMapInstance = L.map("stats-map", {center:[43.6639,1.5249],zoom:14,zoomControl:true,attributionControl:true});
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(statsMapInstance);
+
+  // Cercles pondérés par nombre d'incidents par quartier
+  const qCounts = {};
+  QUARTIERS.forEach(q => qCounts[q.label] = 0);
+  data.forEach(s => { if (qCounts[s.quartier]!==undefined) qCounts[s.quartier]++; });
+  const maxCount = Math.max(1, ...Object.values(qCounts));
+
+  QUARTIERS.forEach(q => {
+    const count = qCounts[q.label] || 0;
+    const radius = 30 + (count/maxCount)*120;
+    L.circle([q.lat,q.lng],{radius,color:q.color,fillColor:q.color,fillOpacity:.25,weight:1.5,opacity:.7})
+      .addTo(statsMapInstance)
+      .bindPopup(`<strong style="color:${q.color}">${q.label}</strong><br>${count} incident${count!==1?"s":""}`);
+    if (count > 0) {
+      L.marker([q.lat,q.lng],{icon:L.divIcon({html:`<div style="background:${q.color};color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid #fff">${count}</div>`,className:"",iconSize:[24,24],iconAnchor:[12,12]})}).addTo(statsMapInstance);
+    }
+  });
+}
+
+// ── RAPPORT MENSUEL ───────────────────────────────────────────────────
+function openRapportModal() {
+  const key = localStorage.getItem("horus_apikey") || "";
+  document.getElementById("rapport-apikey").value = key;
+  document.getElementById("rapport-text").textContent = "Cliquez sur \"Générer\" pour rédiger le rapport.";
+  document.getElementById("overlay-rapport").classList.add("open");
+}
+function closeRapport() { document.getElementById("overlay-rapport").classList.remove("open"); }
+function closeRapportOnBg(e) { if (e.target===document.getElementById("overlay-rapport")) closeRapport(); }
+function saveApiKey(v) { localStorage.setItem("horus_apikey", v); }
+
+async function generateRapport() {
+  const apiKey = document.getElementById("rapport-apikey").value.trim();
+  if (!apiKey) { toast("Saisissez votre clé API Anthropic"); return; }
+
+  const data = filterStatsData();
+  const now = new Date();
+  const qCounts = {}, catCounts = {}, actionCounts = {};
+  QUARTIERS.forEach(q => qCounts[q.label] = 0);
+  data.forEach(s => {
+    if (qCounts[s.quartier]!==undefined) qCounts[s.quartier]++;
+    const c = TYPE_TO_CAT[s.type]||"autre";
+    catCounts[c] = (catCounts[c]||0)+1;
+  });
+  const mc = JSON.parse(localStorage.getItem("horus_mc")||"[]");
+  mc.forEach(e => { actionCounts[e.action]=(actionCounts[e.action]||0)+1; });
+
+  const statsText = [
+    `Commune : Rouffiac-Tolosan (31180)`,
+    `Période : ${sfPeriod} derniers jours`,
+    `Total incidents : ${data.length}`,
+    `Par quartier : ${JSON.stringify(qCounts)}`,
+    `Par catégorie : ${JSON.stringify(catCounts)}`,
+    `Actions FDO : ${JSON.stringify(actionCounts)}`,
+  ].join("\n");
+
+  const btn = document.getElementById("rapport-generate-btn");
+  btn.textContent = "⏳ Génération…"; btn.disabled = true;
+  document.getElementById("rapport-text").textContent = "Rédaction en cours…";
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1200,
+        system:`Tu es un rédacteur de rapports officiels pour la Gendarmerie nationale française. Rédige un rapport mensuel structuré, professionnel et factuel, en français, à partir des statistiques fournies. Format : introduction, bilan chiffré, analyse par quartier, tendances, recommandations opérationnelles. Ton sobre et administratif.`,
+        messages:[{role:"user",content:`Voici les statistiques :\n${statsText}\n\nRédige le rapport mensuel officiel.`}]
+      })
+    });
+    const json = await res.json();
+    document.getElementById("rapport-text").textContent = json.content?.[0]?.text || "Erreur : réponse vide.";
+  } catch(e) {
+    document.getElementById("rapport-text").textContent = "Erreur de connexion à l'API. Vérifiez la clé et la connexion.";
+  }
+  btn.textContent = "✨ Générer"; btn.disabled = false;
+}
+
+function copyRapport() {
+  const txt = document.getElementById("rapport-text").textContent;
+  navigator.clipboard.writeText(txt).then(()=>toast("📋 Rapport copié")).catch(()=>toast("Erreur accès presse-papier"));
+}
+function printRapport() {
+  const txt = document.getElementById("rapport-text").textContent;
+  document.getElementById("print-zone").innerHTML = `
+    <div class="print-header">
+      <h1>Gendarmerie – Brigade de Toulouse-Est</h1>
+      <h2>HORUS Rouffiac-Tolosan — Rapport mensuel IA</h2>
+      <div class="print-meta">Généré le ${new Date().toLocaleString("fr-FR")}</div>
+    </div>
+    <div style="font-size:12px;line-height:1.9;white-space:pre-wrap">${txt}</div>`;
+  window.print();
+}
+
+// ── MESSAGERIE ────────────────────────────────────────────────────────
+function getMsgs() { return JSON.parse(localStorage.getItem("horus_messages")||"[]"); }
+function saveMsgs(msgs) { localStorage.setItem("horus_messages", JSON.stringify(msgs)); }
+
+function updateMsgBadge() {
+  const unread = getMsgs().filter(m => m.from === "referent" && !m.readByFdo).length;
+  const btn = document.getElementById("msg-tab-btn");
+  const existing = btn.querySelector(".tab-badge");
+  if (existing) existing.remove();
+  if (unread > 0) btn.insertAdjacentHTML("beforeend",`<span class="tab-badge">${unread}</span>`);
+}
+
+function renderMessages() {
+  const msgs = getMsgs();
+  // Thread list
+  document.getElementById("msg-threads").innerHTML = QUARTIERS.map(q => {
+    const thread = msgs.filter(m => m.quartierKey === q.key);
+    const lastMsg = thread[thread.length-1];
+    const unread = thread.filter(m => m.from==="referent" && !m.readByFdo).length;
+    return `
+    <div class="msg-thread-item ${currentMsgThread===q.key?'active':''}" onclick="selectThread('${q.key}')">
+      <div class="msg-thread-dot" style="background:${q.color}"></div>
+      <div class="msg-thread-info">
+        <div class="msg-thread-name">${q.label}</div>
+        <div class="msg-thread-sub">${lastMsg ? lastMsg.content.substring(0,28)+"…" : q.ref}</div>
+      </div>
+      ${unread>0?`<div class="msg-unread">${unread}</div>`:''}
+    </div>`;
+  }).join("");
+
+  if (currentMsgThread) selectThread(currentMsgThread, true);
+}
+
+function selectThread(key, silent) {
+  currentMsgThread = key;
+  const q = QUARTIERS.find(x => x.key===key);
+  if (!q) return;
+
+  // Marquer lu
+  const msgs = getMsgs();
+  let changed = false;
+  msgs.forEach(m => { if (m.quartierKey===key && m.from==="referent" && !m.readByFdo) { m.readByFdo=true; changed=true; } });
+  if (changed) { saveMsgs(msgs); updateMsgBadge(); }
+
+  if (!silent) {
+    document.querySelectorAll(".msg-thread-item").forEach(el => el.classList.remove("active"));
+    const idx = QUARTIERS.findIndex(x=>x.key===key);
+    document.querySelectorAll(".msg-thread-item")[idx]?.classList.add("active");
+  }
+
+  const thread = msgs.filter(m => m.quartierKey===key);
+  const panel = document.getElementById("msg-panel");
+  panel.innerHTML = `
+    <div class="msg-panel-header">
+      <div class="msg-panel-title" style="color:${q.color}">${q.label}</div>
+      <div class="msg-panel-sub">Référent : ${q.ref} · ${q.phone}</div>
+    </div>
+    <div class="msg-list" id="msg-list-${key}">
+      ${thread.length ? thread.map(m => `
+        <div class="msg-bubble from-${m.from==="referent"?"ref":"fdo"}">
+          <div class="msg-content">${m.content}</div>
+          <div class="msg-meta">${m.fromLabel} · ${new Date(m.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+        </div>`).join("") : '<div class="msg-empty">Aucun message. Commencez la conversation.</div>'}
+    </div>
+    <div class="msg-compose">
+      <input class="msg-input" id="msg-input-${key}" type="text" placeholder="Votre message…" onkeydown="if(event.key==='Enter')sendFdoMessage('${key}')">
+      <button class="msg-send" onclick="sendFdoMessage('${key}')">Envoyer</button>
+    </div>`;
+
+  // Scroll to bottom
+  setTimeout(() => {
+    const list = document.getElementById(`msg-list-${key}`);
+    if (list) list.scrollTop = list.scrollHeight;
+  }, 50);
+}
+
+function sendFdoMessage(key) {
+  const input = document.getElementById(`msg-input-${key}`);
+  const content = input?.value?.trim();
+  if (!content) return;
+  const q = QUARTIERS.find(x=>x.key===key);
+  const msgs = getMsgs();
+  msgs.push({
+    id: Date.now(), quartierKey:key, quartierLabel:q?.label||key,
+    from: currentRole, fromLabel: FDO_NAMES[currentRole],
+    content, ts: new Date().toISOString(),
+    readByFdo:true, readByRef:false,
+  });
+  saveMsgs(msgs);
+  input.value = "";
+  selectThread(key, true);
+  renderMessages();
+}
+
+// ── GUIDE ─────────────────────────────────────────────────────────────
+function openGuide()  { document.getElementById("guide-panel").classList.add("open"); document.getElementById("guide-overlay").classList.add("open"); }
+function closeGuide() { document.getElementById("guide-panel").classList.remove("open"); document.getElementById("guide-overlay").classList.remove("open"); }
+
+// ── TOAST ─────────────────────────────────────────────────────────────
 function toast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg; t.classList.add("show");
   setTimeout(() => t.classList.remove("show"), 3000);
 }
 
-// ── Init ─────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", () => {
-  // Thème sauvegardé
   const saved = localStorage.getItem("horus_theme");
   if (saved) document.documentElement.dataset.theme = saved;
-
   buildRueSelect();
   document.getElementById("p0").focus();
-
-  // Nouveaux signalements depuis index.html (autre onglet)
   window.addEventListener("storage", e => {
     if (e.key === "horus_signalements" && document.getElementById("dashboard").style.display !== "none") {
       render(); toast("🆕 Nouveau signalement reçu");
     }
+    if (e.key === "horus_messages") { updateMsgBadge(); if (currentPage==="messages") renderMessages(); }
   });
 });
 </script>
