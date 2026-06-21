@@ -272,6 +272,21 @@
   .form-textarea { resize:vertical; min-height:100px; line-height:1.6; }
   .form-select option { background:var(--nuit2); }
   .modal-note { background:rgba(201,168,76,.08); border:1px solid var(--bord); border-radius:var(--r); padding:10px 14px; font-size:12px; color:var(--gris); margin-bottom:20px; line-height:1.6; }
+  /* MODAL CONDUITE TIP */
+  .modal-tip{border:1.5px solid rgba(201,168,76,.3);border-radius:var(--r);background:rgba(201,168,76,.04);overflow:hidden;margin-bottom:14px}
+  .modal-tip-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px 8px;border-bottom:1px solid rgba(201,168,76,.12)}
+  .modal-tip-icon{font-size:22px;flex-shrink:0}
+  .modal-tip-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc)}
+  .modal-tip-sub{font-size:11px;color:var(--gris2);margin-top:1px}
+  .modal-tip-body{padding:10px 14px 12px}
+  .modal-tip-sec{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+  .modal-tip-sec.do{color:#4ade80}.modal-tip-sec.dont{color:#f87171;margin-top:8px}
+  .modal-tip-list{margin:0 0 0 14px;padding:0;font-size:12px;color:var(--gris);line-height:1.65}
+  .modal-tip-list.do-list li::marker{color:#4ade80}.modal-tip-list.dont-list li::marker{color:#f87171}
+  .modal-tip-num{display:flex;align-items:center;gap:10px;margin-top:10px;padding:7px 12px;border-radius:6px;font-size:12px;text-decoration:none;font-weight:600}
+  .modal-tip-num.urg{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);color:#f87171}
+  .modal-tip-num.soft{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--or)}
+  .modal-tip-num.neutral{background:rgba(100,100,120,.1);border:1px solid var(--bord);color:var(--gris)}
 
   /* CONDUITE – FICHES */
   .cf-btn{padding:4px 12px;border-radius:16px;border:1px solid var(--bord);background:transparent;color:var(--gris);font-family:var(--font-sans);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
@@ -507,7 +522,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">Type d'incident</label>
-      <select class="form-select" id="f-type">
+      <select class="form-select" id="f-type" onchange="updateModalConduite()">
         <option value="">Sélectionner…</option>
         <option>🚨 Intrusion / Effraction</option>
         <option>👤 Rôdeur suspect</option>
@@ -517,13 +532,13 @@
         <option>📌 Autre</option>
       </select>
     </div>
+    <div id="modal-conduite-tip" style="display:none"></div>
     <div class="form-group">
       <label class="form-label">Description</label>
       <textarea class="form-textarea" id="f-desc" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation si véhicule…"></textarea>
     </div>
     <div class="modal-note">
-      <div>⚠️ En cas d'urgence immédiate, appelez le <strong style="color:var(--or)">17</strong> (Police) ou le <strong style="color:var(--or)">112</strong>. Ce formulaire est pour les signalements non urgents.</div>
-      <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(201,168,76,.2);font-size:11px">Votre rôle est d'<strong>observer et de signaler</strong>, jamais d'intervenir. <span onclick="openConduite()" style="cursor:pointer;color:var(--or);text-decoration:underline">Que faire en cas d'incident ? →</span></div>
+      <div>⚠️ En cas d'urgence immédiate, appelez le <strong style="color:var(--or)">17</strong> (Police) ou le <strong style="color:var(--or)">112</strong>. Ce formulaire est pour les signalements non urgents. Votre rôle est d'<strong>observer et de signaler</strong>, jamais d'intervenir.</div>
     </div>
     <button class="btn-primary" style="width:100%;justify-content:center" onclick="submitSignalement()">Envoyer le signalement →</button>
   </div>
@@ -1052,6 +1067,7 @@ function submitSignalement() {
   document.getElementById("f-quartier").value = "";
   document.getElementById("f-type").value = "";
   document.getElementById("f-desc").value = "";
+  updateModalConduite();
   showToast("✓ Signalement transmis — en attente de validation par les FDO.");
 }
 
@@ -1230,6 +1246,38 @@ const FICHES = [
 ];
 
 let conduiteFilter = 'tous';
+
+const TYPE_FICHE_MAP = {
+  '🚨 Intrusion / Effraction':   'flagrant',
+  '👤 Rôdeur suspect':           'suspect',
+  '🚗 Véhicule suspect':         'suspect',
+  '🔨 Dégradation':              'voisinage',
+  '⚠️ Escroquerie / Démarchage': 'demarchage',
+};
+
+function updateModalConduite() {
+  const type = document.getElementById('f-type').value;
+  const tip  = document.getElementById('modal-conduite-tip');
+  const f    = FICHES.find(x => x.id === TYPE_FICHE_MAP[type]);
+  if (!f) { tip.style.display = 'none'; return; }
+  const btn = f.href
+    ? `<a href="${f.href}" class="modal-tip-num ${f.cls}"><span>📞 ${f.number}</span><span style="font-size:11px;font-weight:400;color:var(--gris2)">— ${f.numLabel}</span></a>`
+    : `<div class="modal-tip-num neutral"><span>${f.number}</span><span style="font-size:11px;font-weight:400;color:var(--gris2)">— ${f.numLabel}</span></div>`;
+  tip.innerHTML = `<div class="modal-tip">
+    <div class="modal-tip-hdr">
+      <div class="modal-tip-icon">${f.icon}</div>
+      <div><div class="modal-tip-title">${f.title}</div><div class="modal-tip-sub">${f.subtitle}</div></div>
+    </div>
+    <div class="modal-tip-body">
+      <div class="modal-tip-sec do">✓ À faire</div>
+      <ul class="modal-tip-list do-list">${f.todo.map(t=>`<li>${t}</li>`).join('')}</ul>
+      <div class="modal-tip-sec dont">✕ À ne PAS faire</div>
+      <ul class="modal-tip-list dont-list">${f.dont.map(d=>`<li>${d}</li>`).join('')}</ul>
+      ${btn}
+    </div>
+  </div>`;
+  tip.style.display = 'block';
+}
 
 function openConduite() {
   renderConduite();
