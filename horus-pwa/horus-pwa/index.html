@@ -273,6 +273,35 @@
   .form-select option { background:var(--nuit2); }
   .modal-note { background:rgba(201,168,76,.08); border:1px solid var(--bord); border-radius:var(--r); padding:10px 14px; font-size:12px; color:var(--gris); margin-bottom:20px; line-height:1.6; }
 
+  /* CONDUITE – FICHES */
+  .cf-btn{padding:4px 12px;border-radius:16px;border:1px solid var(--bord);background:transparent;color:var(--gris);font-family:var(--font-sans);font-size:11px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .cf-btn:hover{border-color:var(--or);color:var(--or2)}
+  .cf-btn.active{background:rgba(201,168,76,.12);border-color:var(--or);color:var(--or)}
+  .fiche-card{background:var(--nuit3);border:1px solid var(--bord);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  .fiche-hdr{padding:13px 16px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:background .15s}
+  .fiche-hdr:hover{background:rgba(201,168,76,.05)}
+  .fiche-icon{font-size:24px;flex-shrink:0}
+  .fiche-title{font-family:var(--font-display);font-size:13px;font-weight:700;color:var(--blanc);margin-bottom:2px}
+  .fiche-subtitle{font-size:11px;color:var(--gris)}
+  .fiche-chev{color:var(--gris2);font-size:12px;transition:transform .2s;flex-shrink:0;margin-left:auto}
+  .fiche-card.open .fiche-chev{transform:rotate(180deg)}
+  .fiche-body{display:none;padding:0 16px 14px;border-top:1px solid var(--bord)}
+  .fiche-card.open .fiche-body{display:block}
+  .fiche-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:11px 0 6px}
+  .fiche-sec.do{color:var(--vert)}.fiche-sec.dont{color:var(--rouge)}
+  .fiche-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+  .fiche-list li{font-size:12.5px;color:var(--blanc);line-height:1.5;padding-left:17px;position:relative}
+  .fiche-list li::before{position:absolute;left:0;font-weight:700}
+  .fiche-do-list li::before{content:'✓';color:var(--vert)}
+  .fiche-dont-list li::before{content:'✕';color:var(--rouge)}
+  .fiche-num-btn{display:flex;align-items:center;justify-content:space-between;border-radius:8px;padding:10px 13px;margin-top:12px;text-decoration:none}
+  .fiche-num-btn.urg{background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3)}
+  .fiche-num-btn.soft{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25)}
+  .fiche-num-btn.neutral{background:rgba(201,168,76,.08);border:1px solid var(--bord)}
+  .fiche-num{font-family:var(--font-mono);font-size:17px;font-weight:700}
+  .fiche-num-btn.urg .fiche-num{color:var(--rouge)}.fiche-num-btn.soft .fiche-num{color:var(--vert)}.fiche-num-btn.neutral .fiche-num{color:var(--or);font-size:13px}
+  .fiche-num-label{font-size:11px;color:var(--gris);margin-top:2px}
+
   /* TOAST */
   .toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--nuit2); border:1px solid var(--or); border-radius:var(--r3); padding:12px 24px; font-size:13px; font-weight:500; color:var(--or); opacity:0; transition:opacity .3s,transform .3s; z-index:3000; white-space:nowrap; }
   .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -295,6 +324,7 @@
 
 <!-- BARRE SUPÉRIEURE -->
 <div style="background:var(--nuit);border-bottom:1px solid var(--bord);padding:8px 32px;display:flex;justify-content:flex-end;align-items:center;gap:8px;position:sticky;top:0;z-index:100">
+  <button onclick="openConduite()" style="background:rgba(201,168,76,.1);border:1px solid var(--bord2);border-radius:8px;padding:6px 14px;color:var(--or);font-family:var(--font-sans);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600" title="Conduite à tenir">🛡 Conduite</button>
   <button onclick="openGuide()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:var(--font-sans);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px" title="Guide d'utilisation">❓ Guide</button>
   <button onclick="toggleTheme()" style="background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:6px 14px;color:var(--gris);font-family:var(--font-sans);font-size:12px;cursor:pointer" title="Mode clair/sombre">🌓</button>
   <a href="fdo.html" style="background:rgba(74,109,167,.15);border:1px solid rgba(74,109,167,.35);border-radius:8px;padding:6px 14px;color:#7ba0d4;font-family:var(--font-sans);font-size:12px;text-decoration:none;font-weight:600">⚖️ Espace FDO</a>
@@ -491,12 +521,40 @@
       <label class="form-label">Description</label>
       <textarea class="form-textarea" id="f-desc" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation si véhicule…"></textarea>
     </div>
-    <div class="modal-note">⚠️ En cas d'urgence immédiate, appelez le <strong style="color:var(--or)">17</strong> (Police) ou le <strong style="color:var(--or)">112</strong>. Ce formulaire est pour les signalements non urgents.</div>
+    <div class="modal-note">
+      <div>⚠️ En cas d'urgence immédiate, appelez le <strong style="color:var(--or)">17</strong> (Police) ou le <strong style="color:var(--or)">112</strong>. Ce formulaire est pour les signalements non urgents.</div>
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(201,168,76,.2);font-size:11px">Votre rôle est d'<strong>observer et de signaler</strong>, jamais d'intervenir. <span onclick="openConduite()" style="cursor:pointer;color:var(--or);text-decoration:underline">Que faire en cas d'incident ? →</span></div>
+    </div>
     <button class="btn-primary" style="width:100%;justify-content:center" onclick="submitSignalement()">Envoyer le signalement →</button>
   </div>
 </div>
 
 <!-- GUIDE PANEL -->
+<!-- CONDUITE OVERLAY + PANEL -->
+<div id="conduite-overlay" onclick="closeConduite()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;backdrop-filter:blur(2px)"></div>
+<div id="conduite-panel" style="position:fixed;top:0;left:-520px;width:500px;height:100vh;background:var(--nuit2);border-right:1px solid var(--bord2);z-index:300;overflow-y:auto;transition:left .3s ease;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.4)">
+  <div style="padding:18px 22px 14px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:rgba(201,168,76,.05)">
+    <div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--or)">🛡 Conduite à tenir</div>
+    <button onclick="closeConduite()" style="background:none;border:none;color:var(--gris);font-size:22px;cursor:pointer;line-height:1">×</button>
+  </div>
+  <!-- Bandeau doctrine -->
+  <div style="margin:16px 20px 0;background:rgba(201,168,76,.1);border:1.5px solid var(--or);border-radius:10px;padding:13px 16px;display:flex;gap:11px;align-items:flex-start;flex-shrink:0">
+    <span style="font-size:20px;flex-shrink:0;margin-top:1px">⚠️</span>
+    <div style="font-size:12.5px;color:var(--blanc);line-height:1.65">Le rôle du citoyen vigilant est <strong style="color:var(--or)">exclusivement préventif et informatif</strong>. Vous ne remplacez en aucun cas les forces de l'ordre&nbsp;: pas de ronde, pas de patrouille, pas d'intervention. Votre rôle est d'<strong style="color:var(--or)">observer et de signaler</strong>.</div>
+  </div>
+  <!-- Filtres -->
+  <div style="padding:14px 20px 0;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0" id="conduite-filters">
+    <button class="cf-btn active" onclick="filterConduite(this,'tous')">Tous</button>
+    <button class="cf-btn" onclick="filterConduite(this,'intrusion')">🚨 Intrusion</button>
+    <button class="cf-btn" onclick="filterConduite(this,'rodeur')">👤 Rôdeur</button>
+    <button class="cf-btn" onclick="filterConduite(this,'vehicule')">🚗 Véhicule</button>
+    <button class="cf-btn" onclick="filterConduite(this,'degradation')">🔨 Dégradation</button>
+    <button class="cf-btn" onclick="filterConduite(this,'escroquerie')">⚠️ Escroquerie</button>
+  </div>
+  <!-- Fiches -->
+  <div style="padding:14px 20px 24px;flex:1" id="fiches-list"></div>
+</div>
+
 <div id="guide-overlay" onclick="closeGuide()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299"></div>
 <div id="guide-panel" style="position:fixed;top:0;right:-440px;width:420px;height:100vh;background:var(--nuit2);border-left:1px solid var(--bord2);z-index:300;overflow-y:auto;transition:right .3s ease;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.3)">
   <div style="padding:20px 24px 16px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
@@ -1131,6 +1189,81 @@ function sendRefMessage() {
   saveMsgs(msgs);
   input.value = "";
   openRefMessages(currentRefKey);
+}
+
+// ── CONDUITE À TENIR ────────────────────────────────────────────────
+const FICHES = [
+  {id:'flagrant',icon:'🚨',title:'Crime ou délit flagrant',subtitle:'Vol, agression, effraction en cours',cats:['intrusion','rodeur'],
+   todo:["Appeler immédiatement le <strong>17</strong> (ou <strong>112</strong> depuis un mobile)","Donner l'adresse précise, décrire la situation, rester en ligne","Restez à l'abri — observez depuis un lieu sécurisé"],
+   dont:["N'intervenez jamais seul","Ne tentez pas d'interpeller ou de poursuivre une personne"],
+   number:'17 / 112',numLabel:'Police / Urgences',href:'tel:17',cls:'urg'},
+  {id:'suspect',icon:'👁',title:'Individu ou véhicule suspect',subtitle:'Comportement anormal, pas de délit constaté',cats:['rodeur','vehicule'],
+   todo:["Observez sans vous exposer","Notez : description physique, vêtements, plaque, direction","Signalez via HORUS ou contactez votre référent de quartier"],
+   dont:["N'abordez pas la personne","Ne la photographiez pas de manière intrusive"],
+   number:'HORUS / 17',numLabel:'Signalement ou 17 si doute persiste',href:null,cls:'soft'},
+  {id:'demarchage',icon:'🚪',title:'Démarchage suspect à domicile',subtitle:'Faux agents, fournisseurs non sollicités',cats:['escroquerie'],
+   todo:["Vérifiez l'identité (carte professionnelle)","N'ouvrez pas si un doute subsiste","Contactez l'organisme officiel pour confirmer avant d'agir"],
+   dont:["Ne laissez jamais entrer une personne non identifiée avec certitude"],
+   number:'17',numLabel:'Si pression ou insistance suspecte',href:'tel:17',cls:'urg'},
+  {id:'vacances',icon:'🏖',title:'Absence prolongée (vacances)',subtitle:'Dispositif Opération Tranquillité Vacances',cats:['prevention'],
+   todo:["Signalez votre absence à la gendarmerie — Opération Tranquillité Vacances","Demandez à un voisin de relever le courrier","Laissez vos coordonnées à un proche de confiance"],
+   dont:["N'annoncez pas vos dates d'absence sur les réseaux sociaux"],
+   number:'Brigade locale',numLabel:'Dispositif OTV – Opération Tranquillité',href:null,cls:'neutral'},
+  {id:'voisinage',icon:'🏘',title:'Troubles de voisinage',subtitle:'Bruit, nuisances répétées',cats:['degradation'],
+   todo:["Privilégiez le dialogue si possible","Si répété, contactez la mairie (pouvoir de police du maire)","Déposez une main courante pour dater les faits"],
+   dont:["N'intervenez pas seul en cas de tension","Ce n'est pas le rôle du référent de médiation"],
+   number:'Mairie / Police Mun.',numLabel:'Selon gravité des troubles',href:null,cls:'neutral'},
+  {id:'vulnerable',icon:'🧓',title:'Personne âgée ou vulnérable isolée',subtitle:'Absence de signe de vie, isolement',cats:['prevention'],
+   todo:["Signalez toute inquiétude (volets fermés) au référent ou à la mairie (CCAS)","Notez la date et l'heure de vos observations"],
+   dont:["N'entrez pas au domicile sans autorisation"],
+   number:'Mairie / CCAS / 17',numLabel:'Mairie, CCAS ou 17 si urgence vitale',href:'tel:17',cls:'soft'},
+];
+
+let conduiteFilter = 'tous';
+
+function openConduite() {
+  renderConduite();
+  document.getElementById('conduite-panel').style.left = '0';
+  document.getElementById('conduite-overlay').style.display = 'block';
+}
+function closeConduite() {
+  document.getElementById('conduite-panel').style.left = '-520px';
+  document.getElementById('conduite-overlay').style.display = 'none';
+}
+
+function renderConduite() {
+  const list = conduiteFilter === 'tous' ? FICHES : FICHES.filter(f => f.cats.includes(conduiteFilter));
+  document.getElementById('fiches-list').innerHTML = list.map(f => `
+    <div class="fiche-card" id="fiche-${f.id}">
+      <div class="fiche-hdr" onclick="toggleFiche('${f.id}')">
+        <div class="fiche-icon">${f.icon}</div>
+        <div style="flex:1">
+          <div class="fiche-title">${f.title}</div>
+          <div class="fiche-subtitle">${f.subtitle}</div>
+        </div>
+        <div class="fiche-chev">▼</div>
+      </div>
+      <div class="fiche-body">
+        <div class="fiche-sec do">✓ À faire</div>
+        <ul class="fiche-list fiche-do-list">${f.todo.map(t=>`<li>${t}</li>`).join('')}</ul>
+        <div class="fiche-sec dont">✕ À ne PAS faire</div>
+        <ul class="fiche-list fiche-dont-list">${f.dont.map(d=>`<li>${d}</li>`).join('')}</ul>
+        ${f.href
+          ? `<a href="${f.href}" class="fiche-num-btn ${f.cls}"><div><div class="fiche-num">${f.number}</div><div class="fiche-num-label">${f.numLabel}</div></div><span style="font-size:18px">📞</span></a>`
+          : `<div class="fiche-num-btn neutral"><div><div class="fiche-num">${f.number}</div><div class="fiche-num-label">${f.numLabel}</div></div></div>`}
+      </div>
+    </div>`).join('');
+}
+
+function filterConduite(el, filter) {
+  document.querySelectorAll('#conduite-filters .cf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  conduiteFilter = filter;
+  renderConduite();
+}
+
+function toggleFiche(id) {
+  document.getElementById('fiche-' + id)?.classList.toggle('open');
 }
 
 // Service Worker

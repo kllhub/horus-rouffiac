@@ -144,6 +144,33 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 .mc-action.resolved{background:rgba(201,168,76,.12);color:var(--or)}
 .mc-empty{text-align:center;padding:40px;color:var(--gris);font-size:13px}
 
+/* MCG ACCORDÉON */
+.mcg-registry-hdr{background:linear-gradient(135deg,#0d1f3a,#1a3a6b);border:1px solid rgba(74,109,167,.4);border-radius:var(--r2);padding:16px 20px;margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.mcg-registry-title{font-family:var(--font-display);font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.mcg-registry-sub{font-size:11px;color:rgba(255,255,255,.55)}
+.nmci-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;background:rgba(74,109,167,.3);border:1px solid rgba(74,109,167,.5);color:#7ba0d4;letter-spacing:.05em;white-space:nowrap;align-self:flex-start;flex-shrink:0}
+.mcg-entry{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.mcg-entry-hdr{padding:12px 16px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:background .15s}
+.mcg-entry-hdr:hover{background:rgba(201,168,76,.04)}
+.mcg-num-tag{font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--or);background:rgba(201,168,76,.1);border:1px solid var(--bord2);border-radius:4px;padding:3px 7px;white-space:nowrap;flex-shrink:0}
+.mcg-entry-main{flex:1;min-width:0}
+.mcg-entry-nature{font-size:12px;font-weight:700;color:var(--blanc);margin-bottom:1px}
+.mcg-entry-meta{font-size:11px;color:var(--gris2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mcg-suite-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;flex-shrink:0;white-space:nowrap}
+.mcg-suite-tag.en-cours{background:rgba(240,159,0,.15);color:#f59e0b}
+.mcg-suite-tag.patrouille{background:rgba(63,185,80,.15);color:var(--vert)}
+.mcg-suite-tag.transmis{background:rgba(74,109,167,.2);color:#7ba0d4}
+.mcg-suite-tag.classe{background:rgba(139,148,158,.15);color:var(--gris)}
+.mcg-entry-body{display:none;padding:12px 16px 14px;border-top:1px solid var(--bord)}
+.mcg-entry.open .mcg-entry-body{display:block}
+.mcg-fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.mcg-field-label{font-size:9px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.mcg-field-val{font-size:12px;color:var(--blanc);line-height:1.5}
+.mcg-suite-sel{background:var(--nuit3);border:1.5px solid var(--bord);border-radius:var(--r);padding:7px 11px;font-family:var(--font-sans);font-size:12px;color:var(--blanc);outline:none;width:100%;appearance:none;margin-top:4px;cursor:pointer}
+.mcg-suite-sel:focus{border-color:var(--or)}
+.mcg-suite-sel option{background:var(--nuit2)}
+.mcg-legal{font-size:10px;color:var(--gris2);border-top:1px solid var(--bord);padding-top:9px;margin-top:10px;line-height:1.6;font-style:italic}
+
 /* STATISTIQUES */
 .stats-filters{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;align-items:center}
 .sf-label{font-size:12px;color:var(--gris);font-weight:600}
@@ -373,28 +400,18 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 
     <!-- ── SECTION MAIN COURANTE ───────────────────────────── -->
     <div class="page-section" id="section-maincourante">
-      <div class="mc-toolbar">
+      <div class="mcg-registry-hdr">
         <div>
-          <div class="section-title" style="margin-bottom:4px">Main courante numérique</div>
-          <div class="mc-month" id="mc-month-label"></div>
+          <div class="mcg-registry-title">Main Courante Gendarmerie – NMCI</div>
+          <div class="mcg-registry-sub">Brigade de Toulouse-Est · Commune de Rouffiac-Tolosan (31180)</div>
+          <div class="mc-month" id="mc-month-label" style="margin-top:6px;color:rgba(255,255,255,.55);font-size:11px"></div>
         </div>
-        <button class="btn-export" onclick="exportPDF()">⬇ Exporter PDF</button>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+          <span class="nmci-badge">NMCI</span>
+          <button class="btn-export" onclick="exportMCGPDF()">📄 Exporter PDF</button>
+        </div>
       </div>
-      <div class="mc-table-wrap">
-        <table class="mc-table">
-          <thead>
-            <tr>
-              <th>Date / Heure</th>
-              <th>Rue · Quartier</th>
-              <th>Catégorie</th>
-              <th>Description</th>
-              <th>Agent</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="mc-tbody"></tbody>
-        </table>
-      </div>
+      <div id="mc-entries"></div>
     </div>
 
     <!-- ── SECTION STATISTIQUES ────────────────────────────── -->
@@ -898,79 +915,155 @@ function copyForPlainte() {
   navigator.clipboard.writeText(txt).then(() => toast("📋 Texte copié dans le presse-papier")).catch(() => toast("Erreur : accès presse-papier refusé"));
 }
 
-// ── MAIN COURANTE ─────────────────────────────────────────────────────
+// ── MAIN COURANTE MCG ─────────────────────────────────────────────────
+function getMCGCounter() { return parseInt(localStorage.getItem("horus_mcg_counter") || "0"); }
+function incMCGCounter() { const n = getMCGCounter() + 1; localStorage.setItem("horus_mcg_counter", n); return n; }
+function generateMCGNum() {
+  const n = incMCGCounter();
+  return `MCG-${new Date().getFullYear()}-${String(n).padStart(5,'0')}`;
+}
+
+const UNITES = {gend:"Gendarmerie Nationale", pm:"Police Municipale", asvp:"ASVP"};
+
 function logMainCourante(sig, action) {
   const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
   mc.unshift({
     id: Date.now(),
+    mcgNum: generateMCGNum(),
     ts: new Date().toISOString(),
+    dateEvent: sig.createdAt || new Date().toISOString(),
     quartier: sig.quartier || "",
     type: sig.type || "—",
     rue: sig.rue || "—",
-    desc: (sig.desc || "").substring(0, 80),
+    desc: (sig.desc || "").substring(0, 120),
     agent: FDO_NAMES[currentRole] || currentRole,
     service: currentRole,
+    uniteTraitante: UNITES[currentRole] || "Gendarmerie Nationale",
+    declarant: sig.declarant || "—",
+    suiteDonnee: action === "Validé" ? "En cours" : action === "Clôturé" ? "Classé sans suite" : "En cours",
     action,
   });
   localStorage.setItem("horus_mc", JSON.stringify(mc));
   if (currentPage === "maincourante") renderMainCourante();
 }
 
+function fmtDate(iso) {
+  return iso ? new Date(iso).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+}
+function suiteClass(s) {
+  if (!s) return "";
+  if (s === "En cours") return "en-cours";
+  if (s === "Patrouille effectuée") return "patrouille";
+  if (s === "Transmis au procureur") return "transmis";
+  if (s === "Classé sans suite") return "classe";
+  return "";
+}
+
 function renderMainCourante() {
   const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
   const now = new Date();
   document.getElementById("mc-month-label").textContent =
-    `${now.toLocaleString("fr-FR",{month:"long",year:"numeric"})} · ${mc.length} entrée${mc.length!==1?"s":""}`;
+    `${now.toLocaleString("fr-FR",{month:"long",year:"numeric"})} · ${mc.length} enregistrement${mc.length!==1?"s":""}`;
 
-  const ACTION_LABEL = {Validé:"approved","Pris en charge":"taken",Rejeté:"rejected",Clôturé:"resolved"};
-  const tbody = document.getElementById("mc-tbody");
+  const container = document.getElementById("mc-entries");
   if (!mc.length) {
-    tbody.innerHTML = `<tr><td colspan="6" class="mc-empty">Aucune action enregistrée ce mois-ci.</td></tr>`;
+    container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--gris2);font-style:italic">Aucune entrée enregistrée.</div>`;
     return;
   }
-  tbody.innerHTML = mc.map(e => `
-    <tr>
-      <td style="white-space:nowrap">${new Date(e.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
-      <td><span class="mc-rue">${e.rue}</span><br><span style="font-size:11px">${e.quartier}</span></td>
-      <td>${e.type}</td>
-      <td>${e.desc}${e.desc.length>=80?"…":""}</td>
-      <td style="white-space:nowrap">${e.agent}<br><span style="font-size:10px;color:var(--gris2)">${FDO_LABELS[e.service]||e.service}</span></td>
-      <td><span class="mc-action ${ACTION_LABEL[e.action]||''}">${e.action}</span></td>
-    </tr>`).join("");
+  container.innerHTML = mc.map((e, idx) => `
+    <div class="mcg-entry" id="mcg-entry-${idx}">
+      <div class="mcg-entry-hdr" onclick="toggleMCEntry(${idx})">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <span class="mcg-num-tag">${e.mcgNum || '—'}</span>
+          <span class="mcg-entry-nature">${e.type || '—'}</span>
+          <span style="font-size:.78rem;color:var(--gris2)">${e.rue ? e.rue + (e.quartier ? ' · ' + e.quartier : '') : '—'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <span class="mcg-suite-tag ${suiteClass(e.suiteDonnee)}">${e.suiteDonnee || 'En cours'}</span>
+          <span style="font-size:.75rem;color:var(--gris2);white-space:nowrap">${fmtDate(e.dateEvent)}</span>
+          <span class="mcg-entry-chev">▸</span>
+        </div>
+      </div>
+      <div class="mcg-entry-body">
+        <div class="mcg-fields-grid">
+          <div><span class="mcg-field-label">N° enregistrement</span><span class="mcg-field-val">${e.mcgNum || '—'}</span></div>
+          <div><span class="mcg-field-label">Date / heure des faits</span><span class="mcg-field-val">${fmtDate(e.dateEvent)}</span></div>
+          <div><span class="mcg-field-label">Date enregistrement</span><span class="mcg-field-val">${fmtDate(e.ts)}</span></div>
+          <div><span class="mcg-field-label">Unité traitante</span><span class="mcg-field-val">${e.uniteTraitante || '—'}</span></div>
+          <div><span class="mcg-field-label">Agent traitant</span><span class="mcg-field-val">${e.agent || '—'}</span></div>
+          <div><span class="mcg-field-label">Identité déclarant</span><span class="mcg-field-val">${e.declarant || '—'}</span></div>
+          <div><span class="mcg-field-label">Nature des faits</span><span class="mcg-field-val">${e.type || '—'}</span></div>
+          <div><span class="mcg-field-label">Lieu précis</span><span class="mcg-field-val">${e.rue || '—'}${e.quartier ? ', ' + e.quartier : ''}</span></div>
+        </div>
+        <div style="margin:.75rem 0">
+          <div class="mcg-field-label" style="margin-bottom:.3rem">Résumé des faits</div>
+          <div class="mcg-field-val" style="line-height:1.5">${e.desc || '—'}</div>
+        </div>
+        <div style="margin:.75rem 0;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <span class="mcg-field-label">Suite donnée :</span>
+          <select class="mcg-suite-sel" onchange="updateMCSuite(${idx}, this.value)">
+            <option value="En cours" ${(e.suiteDonnee||'En cours')==='En cours'?'selected':''}>En cours</option>
+            <option value="Patrouille effectuée" ${e.suiteDonnee==='Patrouille effectuée'?'selected':''}>Patrouille effectuée</option>
+            <option value="Transmis au procureur" ${e.suiteDonnee==='Transmis au procureur'?'selected':''}>Transmis au procureur</option>
+            <option value="Classé sans suite" ${e.suiteDonnee==='Classé sans suite'?'selected':''}>Classé sans suite</option>
+          </select>
+        </div>
+        <div class="mcg-legal">Cette main courante ne constitue pas une plainte pénale. Pour porter plainte, rapprochez-vous de la Brigade de Toulouse-Est ou d'un commissariat de police.</div>
+      </div>
+    </div>`).join("");
 }
 
-function exportPDF() {
+function toggleMCEntry(idx) {
+  const el = document.getElementById("mcg-entry-" + idx);
+  if (el) el.classList.toggle("open");
+}
+
+function updateMCSuite(idx, value) {
+  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  if (mc[idx]) {
+    mc[idx].suiteDonnee = value;
+    localStorage.setItem("horus_mc", JSON.stringify(mc));
+    const tag = document.querySelector(`#mcg-entry-${idx} .mcg-suite-tag`);
+    if (tag) { tag.className = "mcg-suite-tag " + suiteClass(value); tag.textContent = value; }
+  }
+}
+
+function exportMCGPDF() {
   const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
   const now = new Date();
   const moisLabel = now.toLocaleString("fr-FR",{month:"long",year:"numeric"});
-  const totals = {};
-  mc.forEach(e => { totals[e.action] = (totals[e.action]||0)+1; });
-
   const rows = mc.map(e => `
     <tr>
-      <td>${new Date(e.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
-      <td>${e.rue}<br>${e.quartier}</td>
-      <td>${e.type}</td>
-      <td>${e.desc}</td>
-      <td>${e.agent}<br>${FDO_LABELS[e.service]||e.service}</td>
-      <td>${e.action}</td>
+      <td>${e.mcgNum || '—'}</td>
+      <td>${fmtDate(e.dateEvent)}</td>
+      <td>${e.rue || '—'}${e.quartier ? '<br><small>' + e.quartier + '</small>' : ''}</td>
+      <td>${e.type || '—'}</td>
+      <td>${e.desc || '—'}</td>
+      <td><b>${e.suiteDonnee || 'En cours'}</b></td>
     </tr>`).join("");
-
-  const totRows = Object.entries(totals).map(([k,v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
-
   document.getElementById("print-zone").innerHTML = `
     <div class="print-header">
-      <h1>Gendarmerie – Brigade de Toulouse-Est</h1>
-      <h2>HORUS Rouffiac-Tolosan — Main courante numérique</h2>
-      <div class="print-meta">Mois de ${moisLabel} · Généré le ${now.toLocaleString("fr-FR")} · ${mc.length} entrée${mc.length!==1?"s":""}</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.2rem">République Française</div>
+          <h1 style="margin:0 0 .2rem">Gendarmerie Nationale</h1>
+          <div style="font-size:.9rem">Brigade Territoriale de Toulouse-Est · Commune de Rouffiac-Tolosan (31180)</div>
+        </div>
+        <div style="text-align:right;font-size:.8rem;color:#555">
+          <div>Système NMCI</div>
+          <div>Généré le ${now.toLocaleString("fr-FR")}</div>
+        </div>
+      </div>
+      <h2 style="margin:.8rem 0 .2rem;border-top:2px solid #000;padding-top:.5rem">Main Courante Gendarmerie – Registre ${moisLabel}</h2>
+      <div style="font-size:.85rem">${mc.length} enregistrement${mc.length!==1?"s":""}</div>
     </div>
     <table class="print-table">
-      <thead><tr><th>Date / Heure</th><th>Lieu</th><th>Catégorie</th><th>Description</th><th>Agent</th><th>Action</th></tr></thead>
-      <tbody>${rows||'<tr><td colspan="6">Aucune entrée</td></tr>'}</tbody>
+      <thead><tr><th>N° MCG</th><th>Date / heure faits</th><th>Lieu</th><th>Nature</th><th>Résumé</th><th>Suite donnée</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="6" style="text-align:center;font-style:italic">Aucune entrée</td></tr>'}</tbody>
     </table>
-    <div class="print-totals">
-      <h3>Totaux par action</h3>
-      <table><thead><tr><th>Action</th><th>Nb</th></tr></thead><tbody>${totRows}</tbody></table>
+    <div class="print-totals" style="margin-top:1.5rem;font-size:.8rem;color:#555;border-top:1px solid #ccc;padding-top:.5rem">
+      Ce document est établi au titre de la main courante numérique HORUS. Il ne constitue pas une plainte pénale ni un procès-verbal.
+      Pour toute démarche judiciaire, contacter la Brigade de Toulouse-Est ou composer le 17.
     </div>`;
   window.print();
 }
