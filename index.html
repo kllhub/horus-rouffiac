@@ -306,6 +306,93 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
 
 /* Moderation actions */
 .mod-actions { display:flex; gap:8px; margin-top:12px; }
+
+/* ══════════════════════════════════════════
+   CONDUITE À TENIR
+══════════════════════════════════════════ */
+.conduite-banner {
+  background:rgba(201,168,76,.1); border:1.5px solid var(--or);
+  border-radius:var(--r2); padding:14px 16px; margin-bottom:18px;
+  display:flex; gap:12px; align-items:flex-start;
+}
+.conduite-banner-icon { font-size:22px; flex-shrink:0; margin-top:1px; }
+.conduite-banner-text { font-size:12.5px; color:var(--blanc); line-height:1.65; }
+.conduite-banner-text strong { color:var(--or); }
+
+.conduite-quick {
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(201,168,76,.07); border:1px solid var(--bord);
+  border-radius:var(--r); padding:11px 14px; margin-bottom:14px; cursor:pointer;
+}
+.conduite-quick:active { background:rgba(201,168,76,.13); }
+.conduite-quick-left { display:flex; align-items:center; gap:10px; }
+.conduite-quick-left > span { font-size:18px; }
+.conduite-quick-label { font-size:13px; font-weight:600; color:var(--blanc); }
+.conduite-quick-sub { font-size:11px; color:var(--gris); margin-top:2px; }
+.conduite-quick-arrow { font-size:16px; color:var(--or); font-weight:700; }
+
+.fiche-card { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r2); margin-bottom:12px; overflow:hidden; }
+.fiche-header { padding:14px 16px; display:flex; gap:12px; align-items:center; cursor:pointer; transition:background .15s; }
+.fiche-header:active { background:var(--nuit3); }
+.fiche-icon { font-size:26px; flex-shrink:0; }
+.fiche-header-text { flex:1; }
+.fiche-title { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:var(--blanc); margin-bottom:2px; }
+.fiche-subtitle { font-size:11px; color:var(--gris); }
+.fiche-chevron { color:var(--gris2); transition:transform .2s; flex-shrink:0; font-size:13px; }
+.fiche-card.open .fiche-chevron { transform:rotate(180deg); }
+.fiche-body { display:none; padding:0 16px 16px; border-top:1px solid var(--bord); }
+.fiche-card.open .fiche-body { display:block; }
+.fiche-section-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin:12px 0 7px; }
+.fiche-do { color:var(--vert); }
+.fiche-dont { color:var(--rouge); }
+.fiche-list { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.fiche-list li { font-size:13px; color:var(--blanc); line-height:1.55; padding-left:18px; position:relative; }
+.fiche-list li::before { position:absolute; left:0; font-weight:700; }
+.fiche-do-list li::before { content:'✓'; color:var(--vert); }
+.fiche-dont-list li::before { content:'✕'; color:var(--rouge); }
+.fiche-number-btn { display:flex; align-items:center; justify-content:space-between; background:rgba(63,185,80,.1); border:1px solid rgba(63,185,80,.3); border-radius:var(--r); padding:11px 14px; margin-top:14px; text-decoration:none; }
+.fiche-number-btn.urgent-btn { background:rgba(224,85,85,.1); border-color:rgba(224,85,85,.3); }
+.fiche-number { font-family:'Cinzel',serif; font-size:18px; font-weight:700; color:var(--vert); }
+.fiche-number-btn.urgent-btn .fiche-number { color:var(--rouge); }
+.fiche-number-label { font-size:11px; color:var(--gris); margin-top:2px; }
+.fiche-or-btn { background:rgba(201,168,76,.1); border-color:var(--bord2); cursor:default; }
+.fiche-or-btn .fiche-number { font-size:14px; color:var(--or); }
+
+/* ══════════════════════════════════════════
+   MCG – MAIN COURANTE GENDARMERIE
+══════════════════════════════════════════ */
+.mcg-header { background:linear-gradient(135deg,#0d1f3a,#1a3a6b); border:1px solid rgba(74,109,167,.4); border-radius:var(--r2); padding:16px; margin-bottom:12px; }
+.mcg-header-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+.mcg-header-title { font-family:'Cinzel',serif; font-size:14px; font-weight:700; color:#fff; line-height:1.3; }
+.mcg-header-sub { font-size:11px; color:rgba(255,255,255,.6); margin-top:3px; }
+.mcg-badge { font-size:9px; font-weight:700; padding:3px 7px; border-radius:4px; background:rgba(74,109,167,.3); border:1px solid rgba(74,109,167,.5); color:#7ba0d4; letter-spacing:.05em; white-space:nowrap; flex-shrink:0; }
+.mcg-header-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:10px; border-top:1px solid rgba(255,255,255,.1); }
+.mcg-info-label { font-size:9px; font-weight:700; color:rgba(255,255,255,.45); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.mcg-info-val { font-size:12px; color:#fff; font-weight:600; }
+.mcg-entry { background:var(--nuit2); border:1px solid var(--bord); border-radius:var(--r); margin-bottom:8px; overflow:hidden; }
+.mcg-entry-header { padding:12px 14px; display:flex; gap:10px; align-items:center; cursor:pointer; transition:background .15s; }
+.mcg-entry-header:active { background:var(--nuit3); }
+.mcg-entry-num { font-family:'Cinzel',serif; font-size:10px; font-weight:700; color:var(--or); background:rgba(201,168,76,.1); border:1px solid var(--bord2); border-radius:4px; padding:3px 7px; white-space:nowrap; flex-shrink:0; }
+.mcg-entry-main { flex:1; min-width:0; }
+.mcg-entry-nature { font-size:12px; font-weight:700; color:var(--blanc); margin-bottom:2px; }
+.mcg-entry-meta { font-size:11px; color:var(--gris2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mcg-entry-suite { font-size:10px; font-weight:700; padding:3px 8px; border-radius:10px; flex-shrink:0; white-space:nowrap; }
+.mcg-entry-suite.en-cours   { background:rgba(240,159,0,.15); color:#f59e0b; }
+.mcg-entry-suite.patrouille { background:rgba(63,185,80,.15); color:var(--vert); }
+.mcg-entry-suite.transmis   { background:rgba(74,109,167,.2); color:#7ba0d4; }
+.mcg-entry-suite.classe     { background:rgba(139,148,158,.15); color:var(--gris); }
+.mcg-entry-body { display:none; padding:12px 14px 14px; border-top:1px solid var(--bord); }
+.mcg-entry.open .mcg-entry-body { display:block; }
+.mcg-field { margin-bottom:10px; }
+.mcg-field:last-child { margin-bottom:0; }
+.mcg-field-label { font-size:9px; font-weight:700; color:var(--gris); text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
+.mcg-field-val { font-size:12.5px; color:var(--blanc); line-height:1.5; }
+.mcg-field-val.declarant-val { color:#7ba0d4; }
+.mcg-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.mcg-suite-select { background:var(--nuit3); border:1.5px solid var(--bord); border-radius:var(--r); padding:8px 12px; font-family:'Outfit',sans-serif; font-size:12px; color:var(--blanc); outline:none; width:100%; appearance:none; margin-top:4px; }
+.mcg-suite-select:focus { border-color:var(--or); }
+.mcg-suite-select option { background:var(--nuit2); }
+.mcg-legal { font-size:10px; color:var(--gris2); border-top:1px solid var(--bord); padding-top:10px; margin-top:12px; line-height:1.6; font-style:italic; }
 </style>
 </head>
 <body>
@@ -372,6 +459,13 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
         <div class="ftag" onclick="filterFeed(this,'prevention')">📢 Prévention</div>
       </div>
 
+      <div class="conduite-quick" onclick="goTab('conduite')">
+        <div class="conduite-quick-left">
+          <span>🛡</span>
+          <div><div class="conduite-quick-label">Que faire en cas d'incident ?</div><div class="conduite-quick-sub">Fiches situationnelles · Doctrine Participation citoyenne</div></div>
+        </div>
+        <span class="conduite-quick-arrow">›</span>
+      </div>
       <div class="section-label">Alertes récentes</div>
       <div id="feed-list"></div>
     </div>
@@ -395,6 +489,23 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
       <div id="referents-list"></div>
     </div>
 
+    <!-- ── VIEW : CONDUITE À TENIR ── -->
+    <div class="view" id="view-conduite">
+      <div class="conduite-banner">
+        <div class="conduite-banner-icon">⚠️</div>
+        <div class="conduite-banner-text">Le rôle du citoyen vigilant est <strong>exclusivement préventif et informatif</strong>. Vous ne remplacez en aucun cas les forces de l'ordre&nbsp;: pas de ronde, pas de patrouille, pas d'intervention. Votre rôle est d'<strong>observer et de signaler</strong>.</div>
+      </div>
+      <div class="filter-row" id="conduite-filters">
+        <div class="ftag active" onclick="filterConduite(this,'tous')">Tous</div>
+        <div class="ftag" onclick="filterConduite(this,'intrusion')">🚨 Intrusion</div>
+        <div class="ftag" onclick="filterConduite(this,'rodeur')">👤 Rôdeur</div>
+        <div class="ftag" onclick="filterConduite(this,'vehicule')">🚗 Véhicule</div>
+        <div class="ftag" onclick="filterConduite(this,'degradation')">🔨 Dégradation</div>
+        <div class="ftag" onclick="filterConduite(this,'escroquerie')">⚠️ Escroquerie</div>
+      </div>
+      <div id="fiches-list"></div>
+    </div>
+
     <!-- ── VIEW : MON ESPACE ── -->
     <div class="view" id="view-espace">
       <div id="espace-content"></div>
@@ -412,6 +523,9 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
     </button>
     <button class="nav-btn" id="nav-quartiers" onclick="goTab('quartiers')">
       <span class="nav-icon">🏘</span>Quartiers
+    </button>
+    <button class="nav-btn" id="nav-conduite" onclick="goTab('conduite')">
+      <span class="nav-icon">🛡</span>Conduite
     </button>
     <button class="nav-btn" id="nav-espace" onclick="goTab('espace')">
       <span class="nav-icon" id="espace-icon">👤</span><span id="espace-label">Espace</span>
@@ -449,7 +563,10 @@ body { font-family:'Outfit',sans-serif; background:var(--nuit); color:var(--blan
         <label class="form-label">Description</label>
         <textarea class="form-textarea" id="f-desc" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation…"></textarea>
       </div>
-      <div class="note-box">⚠️ Urgence immédiate → <strong>17</strong> (Police) ou <strong>112</strong></div>
+      <div class="note-box">
+        <div>⚠️ Urgence immédiate&nbsp;→ <strong>17</strong> (Police) ou <strong>112</strong></div>
+        <div style="font-size:11px;color:rgba(248,113,113,.8);border-top:1px solid rgba(224,85,85,.2);padding-top:6px;margin-top:6px">Votre rôle est d'<strong>observer et de signaler</strong>, jamais d'intervenir. <span style="color:var(--or);cursor:pointer;text-decoration:underline" onclick="goConduite()">Voir les consignes →</span></div>
+      </div>
       <button class="btn btn-gold" id="analyze-btn" onclick="analyzeAlert()">
         <span id="analyze-label">✨ Analyser avec l'IA →</span>
       </button>
@@ -556,6 +673,41 @@ const CAT_ICONS  = { intrusion:"🚨", rodeur:"👤", vehicule:"🚗", degradati
 const CAT_LABELS = { intrusion:"Intrusion", rodeur:"Rôdeur", vehicule:"Véhicule suspect", degradation:"Dégradation", prevention:"Prévention", escroquerie:"Escroquerie", autre:"Autre" };
 const URG_COLORS = { haute:"#E05555", moyenne:"#C9A84C", basse:"#3FB950", info:"#58A6FF" };
 
+const FICHES = [
+  { id:'flagrant', icon:'🚨', title:'Crime ou délit flagrant', subtitle:'Vol, agression, effraction en cours', cats:['intrusion','rodeur'],
+    todo:["Appeler immédiatement le <strong>17</strong> (ou <strong>112</strong> depuis un mobile)","Donner l'adresse précise, décrire la situation, rester en ligne","Restez à l'abri et observez depuis un lieu sécurisé"],
+    dont:["N'intervenez jamais seul","Ne tentez pas d'interpeller ou de poursuivre une personne"],
+    number:'17 / 112', numberLabel:'Police / Urgences', numberHref:'tel:17', urgent:true },
+  { id:'suspect', icon:'👁', title:'Individu ou véhicule suspect', subtitle:'Comportement anormal — pas de délit constaté', cats:['rodeur','vehicule'],
+    todo:["Observez sans vous exposer","Notez si possible&nbsp;: description physique, vêtements, plaque d'immatriculation, direction","Signalez via HORUS ou contactez votre référent de quartier"],
+    dont:["N'abordez pas la personne","Ne la photographiez pas de manière intrusive"],
+    number:'HORUS / 17', numberLabel:'Signalement ou 17 si le doute persiste', numberHref:null, urgent:false },
+  { id:'demarchage', icon:'🚪', title:'Démarchage suspect à domicile', subtitle:'Faux agents, fournisseurs non sollicités', cats:['escroquerie'],
+    todo:["Vérifiez l'identité (carte professionnelle)","N'ouvrez pas si un doute subsiste","Contactez l'organisme officiel pour confirmer avant d'agir (EDF, etc.)"],
+    dont:["Ne laissez jamais entrer une personne non identifiée avec certitude"],
+    number:'17', numberLabel:'Si pression ou insistance suspecte', numberHref:'tel:17', urgent:false },
+  { id:'vacances', icon:'🏖', title:'Absence prolongée (vacances)', subtitle:'Dispositif Opération Tranquillité Vacances', cats:['prevention'],
+    todo:["Signalez votre absence à la gendarmerie — Opération Tranquillité Vacances (OTV)","Demandez à un voisin de relever le courrier","Laissez vos coordonnées à un proche de confiance"],
+    dont:["N'annoncez pas vos dates d'absence publiquement (réseaux sociaux)"],
+    number:'Brigade locale', numberLabel:'Dispositif OTV – Opération Tranquillité', numberHref:null, urgent:false },
+  { id:'voisinage', icon:'🏘', title:'Troubles de voisinage', subtitle:'Bruit, nuisances répétées', cats:['degradation'],
+    todo:["Privilégiez le dialogue si possible","Si répété, contactez la mairie (pouvoir de police du maire)","Déposez une main courante pour dater les faits"],
+    dont:["N'intervenez pas seul en cas de tension","Ce n'est pas le rôle du référent de médiation"],
+    number:'Mairie / Police Mun.', numberLabel:'Selon gravité des troubles', numberHref:null, urgent:false },
+  { id:'vulnerable', icon:'🧓', title:'Personne âgée ou vulnérable isolée', subtitle:'Absence de signe de vie, isolement', cats:['prevention'],
+    todo:["Signalez toute inquiétude (volets fermés anormalement) au référent ou à la mairie (CCAS)","Notez la date et l'heure de vos observations","Contactez la mairie si aucune réponse sous 24h"],
+    dont:["N'entrez pas au domicile sans autorisation"],
+    number:'Mairie / CCAS / 17', numberLabel:'Mairie, CCAS ou 17 si urgence vitale', numberHref:'tel:17', urgent:false },
+];
+
+let conduiteFilter = 'tous';
+
+let MCG_COUNTER = 2;
+let MCG_ENTRIES = [
+  { mcgNum:'MCG-2026-00001', alertId:2, dateEvent:new Date(Date.now()-3600000).toISOString(), dateEnregistrement:new Date(Date.now()-3000000).toISOString(), uniteTraitante:'Gendarmerie Nationale', agentTraitant:'Adj. Martinet', declarant:{id:'paul',tel:'06 98 76 54 32'}, natureFaits:'Véhicule suspect', lieuPrecis:'Centre-Bourg – Grande Rue', resumeFaits:'Camionnette blanche immatriculée 31 garée depuis 3 jours.', elementsComplementaires:'Plaque partiellement relevée : 31-***-***', suiteDonnee:'Patrouille effectuée' },
+  { mcgNum:'MCG-2026-00002', alertId:3, dateEvent:new Date(Date.now()-7200000).toISOString(), dateEnregistrement:new Date(Date.now()-6900000).toISOString(), uniteTraitante:'Gendarmerie Nationale', agentTraitant:'Adj. Martinet', declarant:{id:'thierry',tel:'06 11 22 33 44'}, natureFaits:'Intrusion', lieuPrecis:'Tartaloche – Ch. de Tartaloche', resumeFaits:'Traces de forçage sur portail au n°7. Plaque relevée: 31-AZ-xxx.', elementsComplementaires:'Plaque relevée : 31-AZ-xxx. Aucun témoin déclaré.', suiteDonnee:'En cours' },
+];
+
 /* ═══════════════════════════════════════════
    NAVIGATION
 ═══════════════════════════════════════════ */
@@ -567,6 +719,7 @@ function goTab(tab) {
   document.getElementById('scroll-area').scrollTop = 0;
   if (tab === 'map' && !mapInited) initMap();
   if (tab === 'quartiers') renderQuartiers();
+  if (tab === 'conduite') renderConduite();
   if (tab === 'espace') renderEspace();
 }
 
@@ -683,8 +836,10 @@ function takeCharge(id) {
   ALERTS = ALERTS.map(a => a.id === id ? {...a, takenBy:key, fdo:currentRole==='gendarmerie'?'gend':'pm'} : a);
   renderFeed();
   const cfg = ROLES_CFG[currentRole];
-  toast(`${cfg.badge} Prise en charge enregistrée`);
-  pushNotif({ text:`${cfg.label} a pris en charge une alerte`, sub: ALERTS.find(a=>a.id===id)?.rue||'', icon:cfg.badge });
+  const alert = ALERTS.find(a => a.id === id);
+  if (alert) createMCGEntry(alert);
+  toast(`${cfg.badge} Prise en charge · Entrée MCG créée`);
+  pushNotif({ text:`${cfg.label} a pris en charge une alerte`, sub: alert?.rue||'', icon:cfg.badge });
 }
 
 // Avis officiel inline
@@ -1036,6 +1191,7 @@ function renderEspace() {
       ${pending.length > 0 ? pending.map(a=>alertCard(a,cfg)).join('') : '<div style="color:var(--gris);font-size:14px;padding:8px 0">Aucun signalement en attente ✓</div>'}
       <div class="section-label" style="margin-top:8px">Validés récemment</div>
       ${ALERTS.filter(a=>a.status==='approved').slice(0,3).map(a=>alertCard(a,cfg)).join('')}`;
+    html += renderMCGSection(false);
   }
 
   else if (cfg.isFdo) {
@@ -1057,6 +1213,7 @@ function renderEspace() {
       </div>
       ${pending.length > 0 ? `<div class="section-label">⏳ En attente</div>${pending.map(a=>alertCard(a,cfg)).join('')}<div class="section-label" style="margin-top:8px">` : '<div class="section-label">'}Toutes les alertes actives</div>
       ${active.map(a=>alertCard(a,cfg)).join('')}`;
+    html += renderMCGSection(true);
   }
 
   document.getElementById('espace-content').innerHTML = html;
@@ -1124,6 +1281,222 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ═══════════════════════════════════════════
+   CONDUITE À TENIR
+═══════════════════════════════════════════ */
+function renderConduite() {
+  const filtered = conduiteFilter === 'tous' ? FICHES : FICHES.filter(f => f.cats.includes(conduiteFilter));
+  document.getElementById('fiches-list').innerHTML = filtered.map(f => `
+    <div class="fiche-card" id="fiche-${f.id}">
+      <div class="fiche-header" onclick="toggleFiche('${f.id}')">
+        <div class="fiche-icon">${f.icon}</div>
+        <div class="fiche-header-text">
+          <div class="fiche-title">${f.title}</div>
+          <div class="fiche-subtitle">${f.subtitle}</div>
+        </div>
+        <div class="fiche-chevron">▼</div>
+      </div>
+      <div class="fiche-body">
+        <div class="fiche-section-title fiche-do">✓ À faire</div>
+        <ul class="fiche-list fiche-do-list">${f.todo.map(t => `<li>${t}</li>`).join('')}</ul>
+        <div class="fiche-section-title fiche-dont">✕ À ne PAS faire</div>
+        <ul class="fiche-list fiche-dont-list">${f.dont.map(d => `<li>${d}</li>`).join('')}</ul>
+        ${f.numberHref
+          ? `<a href="${f.numberHref}" class="fiche-number-btn ${f.urgent ? 'urgent-btn' : ''}">
+               <div><div class="fiche-number">${f.number}</div><div class="fiche-number-label">${f.numberLabel}</div></div>
+               <span style="font-size:20px">📞</span>
+             </a>`
+          : `<div class="fiche-number-btn fiche-or-btn">
+               <div><div class="fiche-number">${f.number}</div><div class="fiche-number-label">${f.numberLabel}</div></div>
+             </div>`}
+      </div>
+    </div>`).join('');
+}
+
+function filterConduite(el, filter) {
+  document.querySelectorAll('#conduite-filters .ftag').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+  conduiteFilter = filter;
+  renderConduite();
+}
+
+function toggleFiche(id) {
+  const el = document.getElementById('fiche-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function goConduite() {
+  document.querySelectorAll('.overlay').forEach(o => o.classList.remove('open'));
+  goTab('conduite');
+}
+
+/* ═══════════════════════════════════════════
+   MCG – MAIN COURANTE GENDARMERIE
+═══════════════════════════════════════════ */
+function createMCGEntry(alert) {
+  MCG_COUNTER++;
+  const year = new Date().getFullYear();
+  const mcgNum = `MCG-${year}-${String(MCG_COUNTER).padStart(5, '0')}`;
+  const agentNames = { gendarmerie:'Adj. Martinet', pm:'Agent Duval', asvp:'Ag. Bernard' };
+  const unites = { gendarmerie:'Gendarmerie Nationale', pm:'Police Municipale', asvp:'ASVP' };
+  const entry = {
+    mcgNum,
+    alertId: alert.id,
+    dateEvent: new Date(alert.ts).toISOString(),
+    dateEnregistrement: new Date().toISOString(),
+    uniteTraitante: unites[currentRole] || 'Gendarmerie Nationale',
+    agentTraitant: agentNames[currentRole] || 'Agent',
+    declarant: { id: alert.userId, tel: '06 XX XX XX XX' },
+    natureFaits: CAT_LABELS[alert.cat] || alert.cat,
+    lieuPrecis: `${alert.quartier} – ${alert.rue}`,
+    resumeFaits: alert.desc,
+    elementsComplementaires: '',
+    suiteDonnee: 'En cours',
+  };
+  MCG_ENTRIES = [entry, ...MCG_ENTRIES];
+  return entry;
+}
+
+function renderMCGSection(canEdit) {
+  const suiteClassMap = { 'En cours':'en-cours', 'Patrouille effectuée':'patrouille', 'Transmis au procureur':'transmis', 'Classé sans suite':'classe' };
+
+  const entriesHtml = MCG_ENTRIES.length === 0
+    ? '<div style="color:var(--gris);font-size:13px;padding:12px 0;text-align:center">Aucune entrée enregistrée</div>'
+    : MCG_ENTRIES.map((e, i) => {
+        const suiteClass = suiteClassMap[e.suiteDonnee] || 'en-cours';
+        const dateEvent = new Date(e.dateEvent).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        const dateEnr   = new Date(e.dateEnregistrement).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+        const suiteField = canEdit
+          ? `<select class="mcg-suite-select" onchange="updateSuiteDonnee(${i},this.value)">
+               ${['En cours','Patrouille effectuée','Transmis au procureur','Classé sans suite'].map(s =>
+                 `<option value="${s}" ${e.suiteDonnee===s?'selected':''}>${s}</option>`).join('')}
+             </select>`
+          : `<div class="mcg-field-val">${e.suiteDonnee}</div>`;
+        return `
+          <div class="mcg-entry" id="mcg-${i}">
+            <div class="mcg-entry-header" onclick="toggleMCGEntry(${i})">
+              <div class="mcg-entry-num">${e.mcgNum}</div>
+              <div class="mcg-entry-main">
+                <div class="mcg-entry-nature">${e.natureFaits}</div>
+                <div class="mcg-entry-meta">${e.lieuPrecis} · ${dateEvent}</div>
+              </div>
+              <div class="mcg-entry-suite ${suiteClass}" id="mcg-suite-badge-${i}">${e.suiteDonnee}</div>
+            </div>
+            <div class="mcg-entry-body">
+              <div class="mcg-grid2" style="margin-bottom:10px">
+                <div class="mcg-field"><div class="mcg-field-label">Date des faits</div><div class="mcg-field-val">${dateEvent}</div></div>
+                <div class="mcg-field"><div class="mcg-field-label">Enregistrement</div><div class="mcg-field-val">${dateEnr}</div></div>
+                <div class="mcg-field"><div class="mcg-field-label">Unité traitante</div><div class="mcg-field-val">${e.uniteTraitante}</div></div>
+                <div class="mcg-field"><div class="mcg-field-label">Agent traitant</div><div class="mcg-field-val">${e.agentTraitant}</div></div>
+              </div>
+              <div class="mcg-field"><div class="mcg-field-label">Déclarant</div><div class="mcg-field-val declarant-val">👤 ${e.declarant.id} · ${e.declarant.tel}</div></div>
+              <div class="mcg-field"><div class="mcg-field-label">Lieu précis</div><div class="mcg-field-val">📍 ${e.lieuPrecis}</div></div>
+              <div class="mcg-field"><div class="mcg-field-label">Résumé des faits</div><div class="mcg-field-val">${e.resumeFaits}</div></div>
+              ${e.elementsComplementaires ? `<div class="mcg-field"><div class="mcg-field-label">Éléments complémentaires</div><div class="mcg-field-val">${e.elementsComplementaires}</div></div>` : ''}
+              <div class="mcg-field"><div class="mcg-field-label">Suite donnée</div>${suiteField}</div>
+              <div class="mcg-legal">Cette main courante ne constitue pas une plainte. Elle ne déclenche pas d'enquête judiciaire systématique. Conservée conformément à l'arrêté du 22 juin 2011 (5 ans).</div>
+            </div>
+          </div>`;
+      }).join('');
+
+  const exportBtn = canEdit
+    ? `<button class="btn btn-outline btn-sm" style="margin-bottom:12px;color:var(--bleu);border-color:rgba(88,166,255,.35)" onclick="exportMCGPDF()">📄 Exporter PDF</button>`
+    : `<div style="font-size:11px;color:var(--gris2);margin-bottom:12px;padding:6px 10px;background:rgba(139,148,158,.08);border-radius:var(--r)">👁 Lecture seule — compte rendu conseil municipal</div>`;
+
+  return `
+    <div class="section-label" style="margin-top:20px">Main Courante</div>
+    <div class="mcg-header">
+      <div class="mcg-header-top">
+        <div>
+          <div class="mcg-header-title">Main Courante Gendarmerie – NMCI</div>
+          <div class="mcg-header-sub">Brigade de Toulouse-Est · Rouffiac-Tolosan (31180)</div>
+        </div>
+        <div class="mcg-badge">NMCI</div>
+      </div>
+      <div class="mcg-header-info">
+        <div><div class="mcg-info-label">Commune</div><div class="mcg-info-val">Rouffiac-Tolosan</div></div>
+        <div><div class="mcg-info-label">Entrées</div><div class="mcg-info-val">${MCG_ENTRIES.length}</div></div>
+      </div>
+    </div>
+    ${exportBtn}
+    ${entriesHtml}`;
+}
+
+function toggleMCGEntry(idx) {
+  const el = document.getElementById('mcg-' + idx);
+  if (el) el.classList.toggle('open');
+}
+
+function updateSuiteDonnee(idx, value) {
+  if (!MCG_ENTRIES[idx]) return;
+  MCG_ENTRIES[idx].suiteDonnee = value;
+  const suiteClassMap = { 'En cours':'en-cours', 'Patrouille effectuée':'patrouille', 'Transmis au procureur':'transmis', 'Classé sans suite':'classe' };
+  const badge = document.getElementById('mcg-suite-badge-' + idx);
+  if (badge) {
+    badge.className = 'mcg-entry-suite ' + (suiteClassMap[value] || 'en-cours');
+    badge.textContent = value;
+  }
+  toast('✓ Suite mise à jour : ' + value);
+}
+
+function exportMCGPDF() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const rows = MCG_ENTRIES.map(e => {
+    const dateEvent = new Date(e.dateEvent).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const resume = (e.resumeFaits||'').substring(0,80) + (e.resumeFaits.length > 80 ? '…' : '');
+    return `<tr>
+      <td style="font-family:monospace;color:#1e3a5f;font-weight:bold;white-space:nowrap">${e.mcgNum}</td>
+      <td style="white-space:nowrap">${dateEvent}</td>
+      <td>${e.lieuPrecis}</td>
+      <td>${e.natureFaits}</td>
+      <td>${resume}</td>
+      <td style="white-space:nowrap">${e.suiteDonnee}</td>
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>MCG – HORUS Rouffiac-Tolosan</title>
+<style>
+body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:20mm}
+.hdr{text-align:center;border-bottom:2px solid #1e3a5f;padding-bottom:12px;margin-bottom:16px}
+.hdr h1{font-size:13px;font-weight:900;text-transform:uppercase;margin:0 0 4px;letter-spacing:.05em}
+.hdr h2{font-size:11px;font-weight:bold;margin:0 0 3px}
+.hdr h3{font-size:10px;font-weight:normal;margin:0;color:#444}
+.meta{display:flex;justify-content:space-between;margin-top:10px;font-size:9px;color:#666;border-top:1px solid #ddd;padding-top:6px}
+table{width:100%;border-collapse:collapse;margin-top:8px}
+th{background:#1e3a5f;color:#fff;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+td{padding:5px 8px;border-bottom:1px solid #e0e0e0;font-size:9px;vertical-align:top}
+tr:nth-child(even){background:#f7f7f7}
+.footer{margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:8px;font-style:italic;color:#777;line-height:1.5}
+@media print{body{margin:10mm}}
+</style></head>
+<body>
+<div class="hdr">
+  <h1>République Française – Gendarmerie Nationale</h1>
+  <h2>Brigade de Toulouse-Est · HORUS Rouffiac-Tolosan (31180)</h2>
+  <h3>Main Courante Gendarmerie (MCG) – Système NMCI – Extraction du ${dateStr}</h3>
+  <div class="meta">
+    <span>Commune&nbsp;: Rouffiac-Tolosan (31180) – Haute-Garonne</span>
+    <span>Nombre d'entrées&nbsp;: ${MCG_ENTRIES.length}</span>
+  </div>
+</div>
+<table>
+  <thead><tr><th>N° MCG</th><th>Date/heure faits</th><th>Lieu</th><th>Nature</th><th>Résumé</th><th>Suite donnée</th></tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+<div class="footer">
+  Cette main courante ne constitue pas une plainte. Elle ne déclenche pas d'enquête judiciaire systématique.
+  Conservée conformément à l'arrêté du 22 juin 2011 (5 ans). – Document généré le ${now.toLocaleString('fr-FR')} par le système HORUS · Rouffiac-Tolosan.
+</div>
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { toast('⚠️ Autorisez les popups pour exporter'); return; }
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 400);
+}
+
+/* ═══════════════════════════════════════════
    DEEP LINK (shortcut support)
 ═══════════════════════════════════════════ */
 const params = new URLSearchParams(location.search);
@@ -1135,6 +1508,7 @@ if (params.get('tab') === 'feed') goTab('feed');
 ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   renderFeed();
+  renderConduite();
   updateNotifBadge();
   requestNotifPermission();
 });
