@@ -3,7 +3,7 @@
    Rouffiac-Tolosan · v1.0
 ═══════════════════════════════════════════════ */
 
-const CACHE_NAME    = 'horus-v2';
+const CACHE_NAME    = 'horus-v3';
 const OFFLINE_URL   = '/offline.html';
 
 const PRECACHE = [
@@ -25,12 +25,14 @@ self.addEventListener('install', event => {
   );
 });
 
-/* ── Activate : purge old caches ── */
+/* ── Activate : purge old caches + notify clients ── */
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window' }))
+      .then(clients => clients.forEach(c => c.postMessage({ type: 'SW_UPDATED' })))
   );
 });
 
