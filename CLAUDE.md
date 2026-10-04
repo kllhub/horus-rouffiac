@@ -2,7 +2,7 @@
 
 > Ce fichier est lu automatiquement par Claude Code à chaque session.
 > Il doit être mis à jour à la fin de chaque session de travail importante.
-> Dernière mise à jour : 21 juin 2026
+> Dernière mise à jour : 5 octobre 2026
 
 ---
 
@@ -21,7 +21,7 @@ Le projet vise à s'aligner sur le dispositif officiel **"Participation citoyenn
 - **Frontend** : HTML/CSS/JS vanilla, deux fichiers HTML (pas de framework, pas de build tool)
 - **Carte** : Leaflet.js + tuiles OpenStreetMap standard (`tile.openstreetmap.org`), pas de clé API requise
 - **IA** : API Anthropic (Claude Sonnet) pour l'analyse automatique des signalements (catégorie, urgence, conseil)
-- **PWA** : Service Worker (`sw.js`) avec cache offline (`horus-v3`), auto-reload sur mise à jour, notifications push, manifest installable
+- **PWA** : Service Worker (`sw.js`) avec cache offline (`horus-v4`), auto-reload sur mise à jour, notifications push, manifest installable
 - **Déploiement** : Fly.io, app name `horus-rouffiac`, via Dockerfile nginx + `nginx.conf` personnalisé
 - **Polices** : Open Sans (corps) + Roboto Mono (données) + Muse Sans (display) — chargées via Google Fonts
 - **Palette** : nuit `#0D1117`, or `#C9A84C`, accent rouge `#E05555`
@@ -45,7 +45,7 @@ horus-pwa/                        ← racine git (CWD pour flyctl deploy)
     └── horus-pwa/                ← ⬅ FICHIERS DÉPLOYÉS (ce qui tourne sur horus-rouffiac.fly.dev)
         ├── index.html            ← page publique citoyens (desktop-first)
         ├── fdo.html              ← espace FDO (PIN : 1234)
-        ├── sw.js                 ← Service Worker (cache horus-v3, postMessage SW_UPDATED)
+        ├── sw.js                 ← Service Worker (cache horus-v4, postMessage SW_UPDATED)
         ├── manifest.json
         ├── offline.html
         └── icons/
@@ -96,6 +96,7 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 | `horus_mcg_counter` | compteur auto-incrémenté pour numéros MCG |
 | `horus_messages` | messagerie référents ↔ FDO |
 | `horus_theme` | préférence thème clair/sombre |
+| `horus_intro` (sessionStorage) | intro cinématique déjà jouée dans la session |
 
 ---
 
@@ -124,7 +125,7 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 4. **PWA deux fichiers** : `index.html` (public) + `fdo.html` (FDO, PIN 1234) — architecture intentionnelle pour séparer les accès.
 5. **Doctrine gendarmerie** : alignement sur "Participation citoyenne" (circulaire 2006). Main courante au format MCG/NMCI (arrêté 22 juin 2011).
 6. **Déploiement** : le contexte Docker doit être la racine git (`horus-pwa/`). Lancer `flyctl deploy` depuis ailleurs casse le chemin COPY et sert la page par défaut nginx.
-7. **Service Worker** : cache `horus-v3`. Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
+7. **Service Worker** : cache `horus-v4` (v1.1, oct. 2026). Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
 
 ---
 
@@ -146,6 +147,7 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 - [x] Annuaire référents + FDO
 - [x] Notifications in-app + push natif
 - [x] PWA installable + Service Worker + mode offline + auto-reload sur mise à jour
+- [x] **Effets visuels v1.1** (index.html uniquement, oct. 2026) : intro cinématique 1×/session (sessionStorage `horus_intro`), œil du hero qui suit la souris + clignements + radar, particules dorées (canvas `#hero-fx`), bandeau « EN DIRECT », apparitions au défilement (`.reveal` / `.reveal-stagger`, classe `fx` sur `<html>`), cartes 3D avec reflet, carte « salle de crise » (marqueurs pulsants, contour commune via Nominatim, HUD, bouton « Survol des incidents »). Tout est désactivé si `prefers-reduced-motion`.
 
 ## Prochaines étapes envisagées
 

@@ -3,7 +3,7 @@
    Rouffiac-Tolosan · v1.0
 ═══════════════════════════════════════════════ */
 
-const CACHE_NAME    = 'horus-v3';
+const CACHE_NAME    = 'horus-v4';
 const OFFLINE_URL   = '/offline.html';
 
 const PRECACHE = [
