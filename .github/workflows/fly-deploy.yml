@@ -1,10 +1,11 @@
 # See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
 
-name: Fly Deploy
+# Fly.io sert désormais une DÉMONSTRATION figée de HORUS (config.js = null).
+# La production est sur le serveur de la mairie (horus.mairiederouffiac.fr), voir docs/DEPLOIEMENT.md.
+# ⛔ Plus de déploiement automatique : lancer ce workflow À LA MAIN (onglet Actions → Run workflow).
+name: Fly Deploy (démo, manuel)
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 jobs:
   deploy:
     name: Deploy app
