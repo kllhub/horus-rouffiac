@@ -114,10 +114,11 @@ chmod +x ~/horus/infra/backup.sh && ~/horus/infra/backup.sh      # 1er passage :
 ⚠ Copier `~/horus/backups/.cle` en lieu sûr, et brancher une copie hors serveur (`HORUS_BACKUP_COPIE`).
 Faire **un test de restauration** avant l'ouverture.
 
-### 7. Recette, puis arrêt de Fly.io
-Recette habitant / référent / FDO / admin sur `horus.mairiederouffiac.fr`. Puis rediriger
-`horus-rouffiac.fly.dev` quelques semaines, `flyctl apps destroy horus-rouffiac`, supprimer le
-workflow GitHub Actions. Les PWA installées depuis Fly sont à réinstaller.
+### 7. Recette
+Recette habitant / référent / FDO / admin sur `horus.mairiederouffiac.fr`.
+Fly.io (`horus-rouffiac.fly.dev`) reste une **démonstration figée** (bandeau « aucun signalement n'est
+transmis », déploiement manuel uniquement) : ne pas le détruire. Les PWA installées depuis Fly sont
+la démo, pas la production.
 
 ## Mises à jour ultérieures
 `./infra/deploy.sh` (tout) ou `./infra/deploy.sh --front` (pages seules). Bumper `CACHE_NAME` dans

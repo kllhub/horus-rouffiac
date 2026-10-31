@@ -632,12 +632,12 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 const VALID_PIN = "1234";
 
 const QUARTIERS = [
-  {key:"centre",    label:"Centre-Bourg",color:"#7c3aed",lat:43.6655,lng:1.5175,ref:"Paul D.",    phone:"06 98 76 54 32"},
-  {key:"louradou",  label:"Louradou",    color:"#2563eb",lat:43.6710,lng:1.5220,ref:"Marie L.",   phone:"06 12 34 56 78"},
-  {key:"castelviel",label:"Castelviel", color:"#0891b2",lat:43.6585,lng:1.5255,ref:"Sophie R.",  phone:"06 55 44 33 22"},
-  {key:"charlary",  label:"Charlary",   color:"#16a34a",lat:43.6685,lng:1.5095,ref:"Nadine B.",  phone:"06 77 88 99 00"},
-  {key:"tartaloche",label:"Tartaloche", color:"#d97706",lat:43.6605,lng:1.5105,ref:"Thierry M.", phone:"06 11 22 33 44"},
-  {key:"pigassou",  label:"Pigassou",   color:"#e11d48",lat:43.6555,lng:1.5185,ref:"Karim A.",   phone:"06 00 00 00 00"},
+  {key:"centre",    label:"Centre-Bourg",color:"#7c3aed",lat:43.6652,lng:1.5238,ref:"Paul D.",    phone:"06 98 76 54 32"},
+  {key:"louradou",  label:"Louradou",    color:"#2563eb",lat:43.6718,lng:1.5145,ref:"Marie L.",   phone:"06 12 34 56 78"},
+  {key:"castelviel",label:"Castelviel", color:"#0891b2",lat:43.6735,lng:1.5205,ref:"Sophie R.",  phone:"06 55 44 33 22"},
+  {key:"charlary",  label:"Charlary",   color:"#16a34a",lat:43.6672,lng:1.5118,ref:"Nadine B.",  phone:"06 77 88 99 00"},
+  {key:"tartaloche",label:"Tartaloche", color:"#d97706",lat:43.6628,lng:1.5375,ref:"Thierry M.", phone:"06 11 22 33 44"},
+  {key:"pigassou",  label:"Pigassou",   color:"#e11d48",lat:43.6585,lng:1.5195,ref:"Karim A.",   phone:"06 00 00 00 00"},
 ];
 
 const RUES = [
@@ -1325,6 +1325,7 @@ function renderStatsMap(data) {
   if (statsMapInstance) { statsMapInstance.remove(); statsMapInstance = null; }
 
   statsMapInstance = L.map("stats-map", {center:[43.6639,1.5249],zoom:14,zoomControl:true,attributionControl:true});
+  statsMapInstance.fitBounds(QUARTIERS.map(q => [q.lat, q.lng]), {padding:[40,40]});
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; OpenStreetMap',maxZoom:19}).addTo(statsMapInstance);
 
   // Cercles pondérés par nombre d'incidents par quartier
