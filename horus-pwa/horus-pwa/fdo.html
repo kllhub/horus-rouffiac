@@ -632,12 +632,12 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 const VALID_PIN = "1234";
 
 const QUARTIERS = [
-  {key:"centre",    label:"Centre-Bourg",color:"#7c3aed",lat:43.6652,lng:1.5238,ref:"Paul D.",    phone:"06 98 76 54 32"},
-  {key:"louradou",  label:"Louradou",    color:"#2563eb",lat:43.6718,lng:1.5145,ref:"Marie L.",   phone:"06 12 34 56 78"},
-  {key:"castelviel",label:"Castelviel", color:"#0891b2",lat:43.6735,lng:1.5205,ref:"Sophie R.",  phone:"06 55 44 33 22"},
-  {key:"charlary",  label:"Charlary",   color:"#16a34a",lat:43.6672,lng:1.5118,ref:"Nadine B.",  phone:"06 77 88 99 00"},
-  {key:"tartaloche",label:"Tartaloche", color:"#d97706",lat:43.6628,lng:1.5375,ref:"Thierry M.", phone:"06 11 22 33 44"},
-  {key:"pigassou",  label:"Pigassou",   color:"#e11d48",lat:43.6585,lng:1.5195,ref:"Karim A.",   phone:"06 00 00 00 00"},
+  {key:"centre",    label:"Centre-Bourg",color:"#7c3aed",lat:43.6652,lng:1.5238,ref:"Paul D."},
+  {key:"louradou",  label:"Louradou",    color:"#2563eb",lat:43.6718,lng:1.5145,ref:"Marie L."},
+  {key:"castelviel",label:"Castelviel", color:"#0891b2",lat:43.6735,lng:1.5205,ref:"Sophie R."},
+  {key:"charlary",  label:"Charlary",   color:"#16a34a",lat:43.6672,lng:1.5118,ref:"Nadine B."},
+  {key:"tartaloche",label:"Tartaloche", color:"#d97706",lat:43.6628,lng:1.5375,ref:"Thierry M."},
+  {key:"pigassou",  label:"Pigassou",   color:"#e11d48",lat:43.6585,lng:1.5195,ref:"Karim A."},
 ];
 
 const RUES = [
@@ -1492,7 +1492,7 @@ function selectThread(key, silent) {
   panel.innerHTML = `
     <div class="msg-panel-header">
       <div class="msg-panel-title" style="color:${q.color}">${q.label}</div>
-      <div class="msg-panel-sub">Référent : ${q.ref} · ${q.phone}</div>
+      <div class="msg-panel-sub">Référent : ${q.ref}</div>
     </div>
     <div class="msg-list" id="msg-list-${key}">
       ${thread.length ? thread.map(m => `

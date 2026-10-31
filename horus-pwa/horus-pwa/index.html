@@ -141,8 +141,6 @@
   .ref-role { font-size:12px; color:var(--gris); line-height:1.5; margin-bottom:12px; }
   .ref-actions { display:flex; gap:8px; flex-wrap:wrap; }
   .ref-btn { white-space:nowrap; display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:6px 12px; border-radius:12px; border:1px solid; text-decoration:none; transition:background .15s; }
-  .ref-btn-call { color:var(--or); border-color:var(--bord2); background:transparent; }
-  .ref-btn-call:hover { background:rgba(201,168,76,.1); }
   .ref-btn-signal { color:var(--blanc); border-color:transparent; background:rgba(201,168,76,.15); }
   .ref-btn-signal:hover { background:rgba(201,168,76,.25); }
   .ref-btn-msg { position:relative; color:var(--bleu); border-color:rgba(88,166,255,.3); background:rgba(88,166,255,.08); }
@@ -194,13 +192,6 @@
   .fdo-card.gend .fdo-sub { color:#7ba0d4; }
   .fdo-card.pm   .fdo-sub { color:var(--bleu); }
   .fdo-card.asvp .fdo-sub { color:#fbbf24; }
-  .fdo-stats { display:flex; gap:10px; margin-bottom:16px; }
-  .fdo-stat { flex:1; background:rgba(0,0,0,.25); border-radius:var(--r); padding:10px 8px; text-align:center; }
-  .fdo-stat-n { font-family:var(--font-display); font-size:20px; font-weight:700; line-height:1; }
-  .fdo-stat-l { font-size:9px; color:var(--gris2); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
-  .fdo-card.gend .fdo-stat-n { color:#7ba0d4; }
-  .fdo-card.pm   .fdo-stat-n { color:var(--bleu); }
-  .fdo-card.asvp .fdo-stat-n { color:#fbbf24; }
   .fdo-desc { font-size:12px; color:var(--gris); line-height:1.6; margin-bottom:16px; }
   .fdo-contacts { display:flex; flex-direction:column; gap:8px; }
   .fdo-contact-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
@@ -564,24 +555,6 @@ document.documentElement.classList.add("fx");
   <div class="secteurs-grid reveal-stagger" id="quartiers-grid"></div>
 </section>
 
-<!-- RÉFÉRENTS -->
-<section class="referents-section reveal" id="referents">
-  <div class="section-header">
-    <h2 class="section-title">Référents de quartier</h2>
-    <a class="section-link" href="#alertes">Voir les alertes →</a>
-  </div>
-  <div class="referents-grid reveal-stagger" id="referents-grid"></div>
-</section>
-
-<!-- FDO -->
-<section class="fdo-section reveal" id="fdo">
-  <div class="section-header">
-    <h2 class="section-title">Forces de l'ordre</h2>
-    <span style="font-size:12px;color:var(--gris2)">Urgence : <strong style="color:var(--rouge)">17</strong></span>
-  </div>
-  <div class="fdo-grid reveal-stagger" id="fdo-grid"></div>
-</section>
-
 <!-- ALERTES -->
 <section class="horus-widget reveal" id="alertes">
   <div class="section-header">
@@ -619,6 +592,24 @@ document.documentElement.classList.add("fx");
       <div class="legend-item"><div class="legend-dot" style="background:#4a6da7;border:2px solid #7ba0d4"></div> Pris en charge FDO</div>
     </div>
   </div>
+</section>
+
+<!-- RÉFÉRENTS -->
+<section class="referents-section reveal" id="referents">
+  <div class="section-header">
+    <h2 class="section-title">Référents de quartier</h2>
+    <a class="section-link" href="#alertes">Voir les alertes →</a>
+  </div>
+  <div class="referents-grid reveal-stagger" id="referents-grid"></div>
+</section>
+
+<!-- FDO -->
+<section class="fdo-section reveal" id="fdo">
+  <div class="section-header">
+    <h2 class="section-title">Forces de l'ordre</h2>
+    <span style="font-size:12px;color:var(--gris2)">Urgence : <strong style="color:var(--rouge)">17</strong></span>
+  </div>
+  <div class="fdo-grid reveal-stagger" id="fdo-grid"></div>
 </section>
 
 <!-- CTA -->
@@ -889,12 +880,12 @@ const RUES = [
 ];
 
 const QUARTIERS = [
-  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6652, lng:1.5238, alertes:5, ref:"Paul D.",    phone:"06 98 76 54 32" },
-  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6718, lng:1.5145, alertes:3, ref:"Marie L.",   phone:"06 12 34 56 78" },
-  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6735, lng:1.5205, alertes:4, ref:"Sophie R.",  phone:"06 55 44 33 22" },
-  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6672, lng:1.5118, alertes:2, ref:"Nadine B.",  phone:"06 77 88 99 00" },
-  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6628, lng:1.5375, alertes:6, ref:"Thierry M.", phone:"06 11 22 33 44" },
-  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6585, lng:1.5195, alertes:4, ref:"Karim A.",   phone:"06 00 00 00 00" },
+  { key:"centre",      label:"Centre-Bourg", color:"#7c3aed", lat:43.6652, lng:1.5238, alertes:5, ref:"Paul D." },
+  { key:"louradou",    label:"Louradou",     color:"#2563eb", lat:43.6718, lng:1.5145, alertes:3, ref:"Marie L." },
+  { key:"castelviel",  label:"Castelviel",   color:"#0891b2", lat:43.6735, lng:1.5205, alertes:4, ref:"Sophie R." },
+  { key:"charlary",    label:"Charlary",     color:"#16a34a", lat:43.6672, lng:1.5118, alertes:2, ref:"Nadine B." },
+  { key:"tartaloche",  label:"Tartaloche",   color:"#d97706", lat:43.6628, lng:1.5375, alertes:6, ref:"Thierry M." },
+  { key:"pigassou",    label:"Pigassou",     color:"#e11d48", lat:43.6585, lng:1.5195, alertes:4, ref:"Karim A." },
 ];
 
 const ALERTS = [
@@ -989,7 +980,6 @@ const FDO = [
     sub: "Brigade de L'Union",
     desc: "Compétente sur le territoire de Rouffiac-Tolosan. Intervient sur les crimes, délits, accidents et troubles à l'ordre public.",
     contacts: [
-      { label: "Urgences",       num: "17",            tel: "17" },
       { label: "Brigade",        num: "05 61 09 10 17", tel: "0561091017" },
     ],
     fdoKey: "gend",
@@ -1002,7 +992,6 @@ const FDO = [
     sub: "CC Coteaux de Bellevue",
     desc: "Police Municipale Intercommunale de la Communauté de Communes des Coteaux de Bellevue. Assure la tranquillité, la sécurité et la salubrité publique sur le territoire.",
     contacts: [
-      { label: "Urgences",              num: "17",            tel: "17" },
       { label: "PM Coteaux de Bellevue", num: "06 45 16 33 74", tel: "0645163374" },
     ],
     fdoKey: "pm",
@@ -1016,7 +1005,6 @@ const FDO = [
     desc: "Contrôle du stationnement, sécurité aux abords des écoles, médiation de proximité et signalement aux autorités compétentes.",
     contacts: [
       { label: "Mairie",         num: "05 61 09 01 82", tel: "0561090182" },
-      { label: "Urgences",       num: "17",             tel: "17" },
     ],
     fdoKey: "asvp",
   },
@@ -1026,9 +1014,7 @@ function renderFdo() {
   const grid = document.getElementById("fdo-grid");
   grid.innerHTML = FDO.map(f => {
     const taken    = currentAlerts().filter(a => a.fdo === f.fdoKey);
-    const resolved = taken.filter(a => a.resolved ?? false).length;
     const active   = taken.filter(a => !(a.resolved ?? false)).length;
-    const total    = taken.length;
 
     const activeAlerts = taken.filter(a => !(a.resolved ?? false)).slice(0,3).map(a =>
       `<div class="fdo-alert-item">📍 ${escHtml(a.rue)} · <strong>${escHtml(a.quartier)}</strong> — ${escHtml(a.time)}</div>`
@@ -1049,11 +1035,6 @@ function renderFdo() {
           <div class="fdo-name">${f.name}</div>
           <div class="fdo-sub">${f.sub}</div>
         </div>
-      </div>
-      <div class="fdo-stats">
-        <div class="fdo-stat"><div class="fdo-stat-n">${active}</div><div class="fdo-stat-l">En cours</div></div>
-        <div class="fdo-stat"><div class="fdo-stat-n">${resolved}</div><div class="fdo-stat-l">Résolus</div></div>
-        <div class="fdo-stat"><div class="fdo-stat-n">${total}</div><div class="fdo-stat-l">Total</div></div>
       </div>
       <div class="fdo-desc">${f.desc}</div>
       <div class="fdo-contacts">${contactsHTML}</div>
@@ -1083,7 +1064,6 @@ function renderReferents() {
           </span>
         </div>
         <div class="ref-actions">
-          <a class="ref-btn ref-btn-call" href="tel:${q.phone.replace(/\s/g,'')}">📞 ${q.phone}</a>
           <button class="ref-btn ref-btn-signal" onclick="openModal()">🚨 Signaler</button>
           ${PROD
             ? `<a class="ref-btn ref-btn-msg" href="fdo.html" title="Espace sécurisé des référents">🔐 Espace référent</a>`

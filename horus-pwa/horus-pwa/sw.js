@@ -9,7 +9,7 @@
    - tuiles de carte et géocodage : réseau uniquement.
 ═══════════════════════════════════════════════ */
 
-const CACHE_NAME  = 'horus-v8';
+const CACHE_NAME  = 'horus-v9';
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE_LOCAL = [

@@ -127,4 +127,4 @@ la démo, pas la production.
 ## Reste à décider par la mairie
 - **SMTP** pour « mot de passe oublié » (sinon : réinitialisation par l'administrateur, déjà en place).
 - **Durée de conservation** des signalements et des coordonnées des déclarants (RGPD).
-- **Référents réels** (noms, téléphones affichés sur la page publique) avec leur accord.
+- **Référents réels** (prénom + initiale affichés sur la page publique, **aucun téléphone**) avec leur accord.
