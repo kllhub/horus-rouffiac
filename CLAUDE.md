@@ -21,8 +21,8 @@ Le projet vise à s'aligner sur le dispositif officiel **"Participation citoyenn
 - **Frontend** : HTML/CSS/JS vanilla, deux fichiers HTML (pas de framework, pas de build tool)
 - **Carte** : Leaflet.js + tuiles OpenStreetMap standard (`tile.openstreetmap.org`), pas de clé API requise
 - **IA** : API Anthropic (Claude Sonnet) pour l'analyse automatique des signalements (catégorie, urgence, conseil)
-- **PWA** : Service Worker (`sw.js`, cache `horus-v6`) — API jamais en cache, pages réseau d'abord, CDN en cache ; manifest (icônes any + maskable, raccourcis, captures) ; les 3 pages sont installables
-- **Déploiement** : Fly.io (`horus-rouffiac`) = **mode démo** ; production cible = serveur de la mairie **92.222.89.206** (celui de plateforme-commune), `horus.mairiederouffiac.fr` — runbook **`docs/DEPLOIEMENT.md`**
+- **PWA** : Service Worker (`sw.js`, cache `horus-v7`) — API jamais en cache, pages réseau d'abord, CDN en cache ; manifest (icônes any + maskable, raccourcis, captures) ; les 3 pages sont installables
+- **Déploiement** : Fly.io (`horus-rouffiac`) = **démonstration figée**, bandeau « aucun signalement n'est transmis » (`demo.js`), **plus de déploiement automatique** (workflow en déclenchement manuel) ; production cible = serveur de la mairie **92.222.89.206** (celui de plateforme-commune), `horus.mairiederouffiac.fr` — runbook **`docs/DEPLOIEMENT.md`**
 - **Backend production** (aligné sur plateforme-commune, **sans Supabase**) : API **NestJS + Prisma** (`api/`), **PostgreSQL 16 dédié** (conteneur `horus-postgres`, aucun port), **Keycloak de la mairie, realm `horus` séparé** (2FA obligatoire). Stack compose `horus`, réseau `horus_net`, API sur `127.0.0.1:3110` derrière le nginx de l'hôte
 - **Mode démo / production** : `config.js` à `null` dans le dépôt = démo (localStorage, PIN 1234) ; réécrit par `infra/deploy.sh` avec l'URL Keycloak = production
 - ⛔ L'ancien VPS `51.91.122.239` (Supabase, elus-app) est l'ANCIENNE infra : n'y rien installer pour HORUS
@@ -54,6 +54,7 @@ horus-pwa/                        ← racine git (CWD pour flyctl deploy)
         ├── admin.html            ← administration des comptes (rôle admin)
         ├── config.js             ← null = démo ; réécrit en prod par infra/deploy.sh
         ├── horus-auth.js         ← connexion Keycloak (PKCE) + appels /api
+        ├── demo.js               ← bandeau « démonstration » quand config.js = null (Fly)
         ├── vendor/keycloak.js    ← keycloak-js 26 embarqué (pas de CDN)
         ├── sw.js                 ← Service Worker (cache horus-v6, SW_UPDATED seulement si mise à jour)
         ├── screenshots/          ← captures du manifeste
@@ -66,7 +67,7 @@ horus-pwa/                        ← racine git (CWD pour flyctl deploy)
 
 **Déploiement manuel** : `flyctl deploy` depuis `horus-pwa/` (racine git). Ne jamais lancer depuis le dossier parent `Rouffiac-Tolosan/`.
 
-**CI/CD GitHub Actions** : se déclenche automatiquement sur push `master`. Utilise la même racine git comme contexte Docker. Si le workflow échoue, vérifier que le Dockerfile utilise bien `COPY horus-pwa/horus-pwa/` (deux niveaux depuis la racine git).
+**CI/CD GitHub Actions** : ⛔ **plus de déploiement automatique** depuis le 31/10/2026 — le workflow Fly ne se lance qu'à la main (Actions → « Fly Deploy (démo, manuel) » → Run workflow). Fly sert une démo figée. Contexte Docker = racine git (`COPY horus-pwa/horus-pwa/`).
 
 ---
 
@@ -139,7 +140,8 @@ L'administrateur gère uniquement les comptes (`admin.html`) : aucun accès aux 
 4. **PWA deux fichiers** : `index.html` (public) + `fdo.html` (FDO, PIN 1234) — architecture intentionnelle pour séparer les accès.
 5. **Doctrine gendarmerie** : alignement sur "Participation citoyenne" (circulaire 2006). Main courante au format MCG/NMCI (arrêté 22 juin 2011).
 6. **Déploiement** : le contexte Docker doit être la racine git (`horus-pwa/`). Lancer `flyctl deploy` depuis ailleurs casse le chemin COPY et sert la page par défaut nginx.
-7. **Service Worker** : cache `horus-v6` (oct. 2026). Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
+7. **Service Worker** : cache `horus-v7` (oct. 2026). Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
+9. **Fly.io = démo (31/10/2026)** : conservé comme démonstration (présentations), bandeau permanent, déploiement manuel uniquement.
 8. **Architecture de production (11/10/2026)** : alignée sur **plateforme-commune** (pas de Supabase) — conteneur PostgreSQL dédié, realm Keycloak `horus` séparé, API NestJS dans ce dépôt, hébergée sur 92.222.89.206.
 
 ---

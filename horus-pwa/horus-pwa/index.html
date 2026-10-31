@@ -814,6 +814,7 @@ document.documentElement.classList.add("fx");
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="config.js"></script>
+<script src="demo.js"></script>
 <script>
 // ── Base rues → quartier (source : OpenStreetMap / Overpass) ──────
 const RUES = [
@@ -1300,7 +1301,7 @@ async function submitSignalement() {
   localStorage.setItem("horus_signalements", JSON.stringify([signalement, ...existing]));
 
   resetSignalementForm();
-  showToast("✓ Signalement transmis — en attente de validation par les FDO.");
+  showToast("🧪 Démonstration : ce signalement n'a été transmis à personne. Urgence : 17.");
 }
 
 function resetSignalementForm() {

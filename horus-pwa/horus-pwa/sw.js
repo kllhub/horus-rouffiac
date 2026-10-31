@@ -9,12 +9,12 @@
    - tuiles de carte et géocodage : réseau uniquement.
 ═══════════════════════════════════════════════ */
 
-const CACHE_NAME  = 'horus-v6';
+const CACHE_NAME  = 'horus-v7';
 const OFFLINE_URL = '/offline.html';
 
 const PRECACHE_LOCAL = [
   '/', '/index.html', '/fdo.html', '/admin.html', '/offline.html', '/config.js', '/manifest.json',
-  '/horus-auth.js', '/vendor/keycloak.js',
+  '/horus-auth.js', '/demo.js', '/vendor/keycloak.js',
   '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png',
   '/icons/icon-maskable-192.png', '/icons/apple-touch-icon.png', '/icons/badge-72.png',
 ];
