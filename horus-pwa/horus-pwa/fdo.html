@@ -2,8 +2,16 @@
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HORUS · Espace Forces de l'Ordre</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HORUS">
+<title>HORUS · Espace sécurisé</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -39,6 +47,10 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 .pin-digit:focus{border-color:var(--or)}
 .login-btn{width:100%;background:var(--or);color:var(--nuit);border:none;border-radius:var(--r3);padding:13px;font-family:var(--font-sans);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
 .login-btn:hover{background:var(--or2)}
+.login-input{width:100%;background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:11px 14px;font-family:var(--font-sans);font-size:14px;color:var(--blanc);outline:none}
+.login-input:focus{border-color:var(--or)}
+.role-pill.pn{border-color:#4a6da7;color:#7ba0d4;background:rgba(74,109,167,.15)}
+.role-pill.referent,.role-pill.moderateur{border-color:var(--or);color:var(--or);background:rgba(201,168,76,.12)}
 .login-error{color:var(--rouge);font-size:12px;margin-top:12px;min-height:18px}
 .login-hint{font-size:11px;color:var(--gris2);margin-top:16px}
 .login-theme{position:fixed;top:16px;right:16px}
@@ -334,15 +346,15 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
     </svg>
     <div class="login-title">HORUS FDO</div>
     <div class="login-sub">Espace Forces de l'Ordre<br>Rouffiac-Tolosan · 31180</div>
-    <div class="pin-row">
+    <div class="pin-row" id="pin-row">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p0" onkeyup="pinKey(event,0)">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p1" onkeyup="pinKey(event,1)">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p2" onkeyup="pinKey(event,2)">
       <input class="pin-digit" type="password" maxlength="1" inputmode="numeric" id="p3" onkeyup="pinKey(event,3)">
     </div>
-    <button class="login-btn" onclick="tryLogin()">Accéder au tableau de bord</button>
+    <button class="login-btn" id="login-btn" onclick="tryLogin()">Accéder au tableau de bord</button>
     <div class="login-error" id="login-error"></div>
-    <div class="login-hint">Code PIN à 4 chiffres · Contacter la mairie en cas d'oubli</div>
+    <div class="login-hint" id="login-hint">Code PIN à 4 chiffres · Contacter la mairie en cas d'oubli</div>
   </div>
 </div>
 
@@ -355,6 +367,7 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
     </div>
     <div class="topbar-right">
       <span class="role-pill" id="role-pill">—</span>
+      <button class="icon-btn" id="pwd-btn" onclick="changePassword()" style="display:none" title="Changer mon mot de passe">🔑</button>
       <button class="icon-btn" onclick="openGuide()">❓ Guide</button>
       <button class="icon-btn" onclick="toggleTheme()">🌓</button>
       <button class="logout-btn" onclick="logout()">Déconnexion</button>
@@ -380,8 +393,8 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
     <!-- Onglets de page -->
     <div class="page-tabs">
       <button class="page-tab active" onclick="switchPage('signalements',this)">📋 Signalements</button>
-      <button class="page-tab" onclick="switchPage('maincourante',this)">📒 Main courante</button>
-      <button class="page-tab" onclick="switchPage('stats',this)">📊 Statistiques</button>
+      <button class="page-tab fdo-only" onclick="switchPage('maincourante',this)">📒 Main courante</button>
+      <button class="page-tab fdo-only" onclick="switchPage('stats',this)">📊 Statistiques</button>
       <button class="page-tab" id="msg-tab-btn" onclick="switchPage('messages',this)">💬 Messages</button>
     </div>
 
@@ -563,7 +576,7 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
   <div class="modal modal-lg">
     <button class="modal-close" onclick="closeRapport()">×</button>
     <div class="modal-title">✨ Rapport mensuel IA</div>
-    <div class="api-key-row">
+    <div class="api-key-row" id="api-key-row">
       <label>Clé API Anthropic :</label>
       <input type="password" id="rapport-apikey" placeholder="sk-ant-…" oninput="saveApiKey(this.value)">
     </div>
@@ -611,6 +624,8 @@ body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-
 <!-- ══ SCRIPTS ════════════════════════════════════════════════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="config.js"></script>
+<script src="horus-auth.js"></script>
 <script>
 // ── CONSTANTES ───────────────────────────────────────────────────────
 const VALID_PIN = "1234";
@@ -643,7 +658,97 @@ const DEMO_ALERTS = [
 ];
 
 const FDO_NAMES  = {gend:"Adj. Martinet", pm:"Agent Duval", asvp:"Agent Roussel"};
-const FDO_LABELS = {gend:"Gendarmerie",   pm:"Police Municipale", asvp:"ASVP"};
+const FDO_LABELS = {gend:"Gendarmerie",   pm:"Police Municipale", asvp:"ASVP", pn:"Police Nationale"};
+const ROLE_LABELS = {...FDO_LABELS, referent:"Référent de quartier", moderateur:"Modérateur"};
+
+// ── MODE PRODUCTION (base HORUS) / DÉMO (stockage local) ─────────────
+// config.js définit HORUS_CONFIG en production ; sinon la page reste en démo.
+const PROD = !!(window.HORUS_CONFIG && window.HorusAuth && HorusAuth.actif);
+const api = (m, chemin, corps) => HorusAuth.api(m, chemin, corps);
+let ME = null;                 // profil connecté (production)
+let SIGS = [], MC = [], MSGS = [];
+let pollTimer = null;
+
+const isFdoRole = r => ["gend","pn","pm","asvp"].includes(r);
+const iAmFdo = () => !PROD || isFdoRole(ME?.role);
+const iAmRef = () => PROD && ME?.role === "referent";
+
+// Toute donnée saisie par un habitant est échappée avant d'entrer dans le HTML.
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+const ERREURS = {
+  compte_desactive:"Ce compte a été désactivé. Contactez la mairie.",
+  sans_role:"Ce compte n'a aucun rôle HORUS. Contactez la mairie.",
+  session_expiree:"Session expirée : reconnexion…",
+  non_autorise:"Action non autorisée pour votre rôle.",
+  hors_quartier:"Ce signalement n'est pas dans votre quartier.",
+  statut_invalide:"Ce signalement a changé entre-temps — liste actualisée.",
+  introuvable:"Signalement introuvable.",
+};
+function errMsg(error) {
+  const k = Object.keys(ERREURS).find(k => (error?.message || "").includes(k));
+  return k ? ERREURS[k] : "Erreur : " + (error?.message || "inconnue");
+}
+
+function mapSig(r) {
+  const d = r.declarant;
+  return {
+    id:r.id, rue: r.numero ? `${r.numero} ${r.rue}` : r.rue, rueSeule:r.rue, quartier:r.quartier,
+    type:r.type, desc:r.description, createdAt:r.creeLe, status:r.statut,
+    fdoKey:r.fdoKey, fdoName:r.fdoNom, resolvedAt:r.clotureLe,
+    plaque:r.plaque, nb_temoins:r.nbTemoins, suites:r.suites,
+    declarant: d ? [d.nom, d.contact].filter(Boolean).join(" · ") : null,
+  };
+}
+function mapMc(e) {
+  return { id:e.id, mcgNum:e.mcgNum, ts:e.creeLe, dateEvent:e.dateFaits, quartier:e.quartier, type:e.type,
+           rue:e.lieu, desc:e.resume, agent:e.agent, service:e.service, uniteTraitante:e.unite,
+           declarant:e.declarant, suiteDonnee:e.suiteDonnee, action:e.action };
+}
+function mapMsg(m) {
+  const q = QUARTIERS.find(x => x.label === m.quartier);
+  return { id:m.id, quartierKey:q?.key, quartierLabel:m.quartier, from:m.role === "referent" ? "referent" : m.role,
+           fromLabel:m.auteurNom, content:m.contenu, ts:m.creeLe, readByFdo:m.luFdo, readByRef:m.luRef };
+}
+
+async function reloadAll(notify) {
+  if (!PROD) return;
+  const before = SIGS.filter(s => s.status === "pending").length;
+  let s, mc, msg;
+  try {
+    [s, mc, msg] = await Promise.all([
+      api("GET", "/signalements"),
+      iAmFdo() ? api("GET", "/main-courante") : [],
+      ME?.role === "moderateur" ? [] : api("GET", "/messages"),
+    ]);
+  } catch (e) { toast(errMsg(e)); return; }
+  SIGS = s.map(mapSig);
+  MC   = mc.map(mapMc);
+  MSGS = msg.map(mapMsg);
+  if (notify && SIGS.filter(x => x.status === "pending").length > before) toast("🆕 Nouveau signalement reçu");
+  render(); updateMsgBadge();
+  if (currentPage === "maincourante") renderMainCourante();
+  if (currentPage === "messages") renderMessages();
+}
+
+// Écriture : en cas de refus, on affiche la raison et on recharge (l'état a pu changer).
+async function ecrire(methode, chemin, corps) {
+  try { await api(methode, chemin, corps); return true; }
+  catch (e) { toast(errMsg(e)); await reloadAll(); return false; }
+}
+
+function applyRoleUi() {
+  document.querySelector(".role-selector").style.display = PROD ? "none" : "";
+  document.getElementById("pwd-btn").style.display = PROD ? "" : "none";
+  document.querySelectorAll(".fdo-only").forEach(el => el.style.display = iAmFdo() ? "" : "none");
+  document.getElementById("msg-tab-btn").style.display = PROD && ME?.role === "moderateur" ? "none" : "";
+  updateRolePill();
+}
+
+// Mot de passe et second facteur : écrans de Keycloak.
+function changePassword() { HorusAuth.changerMotDePasse(); }
 
 const TYPE_TO_CAT = {
   "🚨 Intrusion / Effraction":"intrusion",
@@ -671,19 +776,43 @@ function pinKey(e, idx) {
   if (e.key === "Enter") tryLogin();
 }
 function getPin() { return [0,1,2,3].map(i => document.getElementById("p"+i).value).join(""); }
-function tryLogin() {
+function loginError(msg) {
+  document.getElementById("login-error").textContent = msg;
+  setTimeout(() => document.getElementById("login-error").textContent = "", 4000);
+}
+function showDashboard() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+  applyRoleUi(); render(); renderMainCourante(); updateMsgBadge();
+}
+async function tryLogin() {
+  if (PROD) { HorusAuth.login(); return; }
   if (getPin() === VALID_PIN) {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
-    updateRolePill(); render(); renderMainCourante(); updateMsgBadge();
+    showDashboard();
   } else {
-    document.getElementById("login-error").textContent = "Code incorrect. Réessayez.";
+    loginError("Code incorrect. Réessayez.");
     [0,1,2,3].forEach(i => document.getElementById("p"+i).value = "");
     document.getElementById("p0").focus();
-    setTimeout(() => document.getElementById("login-error").textContent = "", 3000);
   }
 }
-function logout() {
+async function afterLogin() {
+  let data;
+  try { data = await api("GET", "/moi"); }
+  catch (e) { loginError(errMsg(e)); return; }
+  if (data.role === "admin") { location.href = "admin.html"; return; } // l'administrateur n'a pas accès aux signalements
+  ME = data; currentRole = data.role;
+  showDashboard();
+  await reloadAll();
+  clearInterval(pollTimer);
+  pollTimer = setInterval(() => { if (!document.hidden) reloadAll(true); }, 30000);
+}
+async function logout() {
+  if (PROD) {
+    clearInterval(pollTimer);
+    ME = null; SIGS = []; MC = []; MSGS = [];
+    HorusAuth.logout();
+    return;
+  }
   document.getElementById("login-screen").style.display = "flex";
   document.getElementById("dashboard").style.display = "none";
   [0,1,2,3].forEach(i => document.getElementById("p"+i).value = "");
@@ -706,7 +835,8 @@ function setRole(role, btn) {
 }
 function updateRolePill() {
   const pill = document.getElementById("role-pill");
-  pill.textContent = FDO_LABELS[currentRole];
+  pill.textContent = PROD ? `${ME?.nom || ""} · ${ROLE_LABELS[currentRole] || currentRole}${ME?.quartier ? " · " + ME.quartier : ""}`
+                          : FDO_LABELS[currentRole];
   pill.className = "role-pill " + currentRole;
 }
 
@@ -731,6 +861,7 @@ function setTab(btn, tab) {
 
 // ── DONNÉES ───────────────────────────────────────────────────────────
 function getAll() {
+  if (PROD) return SIGS;
   const local = JSON.parse(localStorage.getItem("horus_signalements") || "[]");
   return [...local, ...DEMO_ALERTS].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
@@ -756,21 +887,37 @@ function doAction(id, patch) {
   render();
 }
 
+// En production, la base applique la grille des rôles et tient la main courante.
+async function act(id, action, demoPatch, msg) {
+  if (PROD) {
+    if (!(await ecrire("POST", `/signalements/${Number(id)}/actions`, { action }))) return;
+    toast(msg); await reloadAll();
+    return;
+  }
+  doAction(id, demoPatch); toast(msg);
+}
 function validate(id) {
-  doAction(id, {status:"approved", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Validé"});
-  toast("✓ Signalement validé et publié");
+  act(id, "validate", {status:"approved", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Validé"}, "✓ Signalement validé et publié");
 }
 function reject(id) {
-  doAction(id, {status:"rejected", action:"Rejeté"});
-  toast("✕ Signalement rejeté");
+  act(id, "reject", {status:"rejected", action:"Rejeté"}, "✕ Signalement rejeté");
 }
 function takeCharge(id) {
-  doAction(id, {status:"taken", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Pris en charge"});
-  toast(`${FDO_LABELS[currentRole]} a pris en charge ce signalement`);
+  act(id, "take", {status:"taken", fdoKey:currentRole, fdoName:FDO_NAMES[currentRole], action:"Pris en charge"},
+      `${FDO_LABELS[currentRole]} a pris en charge ce signalement`);
 }
 function resolve(id) {
-  doAction(id, {resolvedAt:new Date().toISOString(), action:"Clôturé"});
-  toast("🏁 Incident clôturé");
+  act(id, "resolve", {resolvedAt:new Date().toISOString(), action:"Clôturé"}, "🏁 Incident clôturé");
+}
+
+// Boutons affichés selon le rôle (la base revérifie chaque action).
+function can(action) {
+  if (!PROD) return true;
+  const r = ME?.role, fdo = isFdoRole(r);
+  if (action === "take") return fdo;
+  if (action === "resolve") return r !== "asvp";
+  if (action === "edit") return fdo || r === "moderateur";
+  return true; // validate / reject / fiche (lecture)
 }
 
 // ── RENDER SIGNALEMENTS ───────────────────────────────────────────────
@@ -795,13 +942,13 @@ function render() {
     const isDemo = String(s.id).startsWith("d");
     const canEdit = s.status === "pending" || s.status === "taken";
     const actions = [];
-    if (canEdit)              actions.push(`<button class="btn-action btn-edit"     onclick="openEdit('${s.id}')">✏️ Modifier</button>`);
-    if (s.status==="pending") actions.push(`<button class="btn-action btn-take"     onclick="takeCharge('${s.id}')">🔵 Prendre en charge</button>`);
+    if (canEdit && can("edit"))              actions.push(`<button class="btn-action btn-edit"     onclick="openEdit('${s.id}')">✏️ Modifier</button>`);
+    if (s.status==="pending" && can("take")) actions.push(`<button class="btn-action btn-take"     onclick="takeCharge('${s.id}')">🔵 Prendre en charge</button>`);
     if (s.status==="pending"||s.status==="taken") {
       actions.push(`<button class="btn-action btn-validate" onclick="validate('${s.id}')">✓ Valider</button>`);
       actions.push(`<button class="btn-action btn-reject"   onclick="reject('${s.id}')">✕ Rejeter</button>`);
     }
-    if (s.status==="approved" && !s.resolvedAt) actions.push(`<button class="btn-action btn-resolve" onclick="resolve('${s.id}')">🏁 Clôturer</button>`);
+    if (s.status==="approved" && !s.resolvedAt && can("resolve")) actions.push(`<button class="btn-action btn-resolve" onclick="resolve('${s.id}')">🏁 Clôturer</button>`);
     actions.push(`<button class="btn-action btn-fiche" onclick="openFiche('${s.id}')">📋 Fiche</button>`);
 
     return `
@@ -809,14 +956,15 @@ function render() {
       <div class="sig-head">
         <div class="sig-head-left">
           <span class="pill ${s.status}">${STATUS_EMOJI[s.status]} ${STATUS_LABEL[s.status]}</span>
-          <span class="pill ${isDemo?'demo':'new'}">${isDemo?'Démo':'Nouveau'}</span>
+          ${PROD ? "" : `<span class="pill ${isDemo?'demo':'new'}">${isDemo?'Démo':'Nouveau'}</span>`}
         </div>
         <span class="sig-time">${fmtDate(s.createdAt)}</span>
       </div>
-      <div class="sig-rue" onclick="openFiche('${s.id}')">📍 ${s.rue} · <span style="color:var(--or)">${s.quartier}</span></div>
-      <div class="sig-meta">${s.type}</div>
-      <div class="sig-desc">${s.desc}</div>
-      ${s.fdoName ? `<div class="fdo-avis">⚖️ <strong>${s.fdoName}</strong> · ${FDO_LABELS[s.fdoKey]||s.fdoKey} · ${s.status==="taken"?"prise en charge":"traité"}</div>` : ""}
+      <div class="sig-rue" onclick="openFiche('${s.id}')">📍 ${esc(s.rue)} · <span style="color:var(--or)">${esc(s.quartier)}</span></div>
+      <div class="sig-meta">${esc(s.type)}</div>
+      <div class="sig-desc">${esc(s.desc)}</div>
+      ${s.declarant ? `<div style="margin-top:6px;font-size:12px;color:var(--gris)">👤 Déclarant : ${esc(s.declarant)}</div>` : ""}
+      ${s.fdoName ? `<div class="fdo-avis">⚖️ <strong>${esc(s.fdoName)}</strong> · ${FDO_LABELS[s.fdoKey]||esc(s.fdoKey)} · ${s.status==="taken"?"prise en charge":"traité"}</div>` : ""}
       ${s.resolvedAt ? `<div style="margin-top:8px;font-size:12px;color:var(--vert)">🏁 Clôturé le ${new Date(s.resolvedAt).toLocaleString("fr-FR")}</div>` : ""}
       ${actions.length ? `<div class="sig-actions">${actions.join("")}</div>` : ""}
     </div>`;
@@ -841,7 +989,7 @@ function openEdit(id) {
   const s = getAll().find(x => String(x.id) === String(id));
   if (!s) return;
   document.getElementById("edit-id").value       = id;
-  document.getElementById("edit-rue").value      = s.rue;
+  document.getElementById("edit-rue").value      = s.rueSeule || s.rue;
   document.getElementById("edit-quartier").value = s.quartier;
   document.getElementById("edit-type").value     = s.type;
   document.getElementById("edit-desc").value     = s.desc;
@@ -853,11 +1001,16 @@ function onEditRueChange() {
 }
 function closeEdit() { document.getElementById("overlay-edit").classList.remove("open"); }
 function closeEditOnBg(e) { if (e.target===document.getElementById("overlay-edit")) closeEdit(); }
-function saveEdit() {
+async function saveEdit() {
   const id = document.getElementById("edit-id").value;
   const rue=document.getElementById("edit-rue").value, quartier=document.getElementById("edit-quartier").value;
   const type=document.getElementById("edit-type").value, desc=document.getElementById("edit-desc").value.trim();
   if (!rue||!type||!desc) { toast("Tous les champs sont requis."); return; }
+  if (PROD) {
+    if (!(await ecrire("PATCH", `/signalements/${Number(id)}`, { rue, quartier, type, description:desc }))) return;
+    closeEdit(); toast("✏️ Signalement modifié"); await reloadAll();
+    return;
+  }
   doAction(id, {rue,quartier,type,desc});
   closeEdit(); toast("✏️ Signalement modifié");
 }
@@ -873,22 +1026,28 @@ function openFiche(id) {
 
   const STATUS_LABEL = {pending:"En attente",taken:"Pris en charge",approved:"Validé",rejected:"Rejeté"};
   document.getElementById("fiche-readonly").innerHTML = `
-    <div class="fiche-field fiche-full"><div class="fiche-label">Adresse</div><div class="fiche-value">${s.rue} · <strong>${s.quartier}</strong></div></div>
-    <div class="fiche-field"><div class="fiche-label">Catégorie</div><div class="fiche-value">${s.type}</div></div>
-    <div class="fiche-field"><div class="fiche-label">Statut</div><div class="fiche-value">${STATUS_LABEL[s.status]||s.status}</div></div>
-    <div class="fiche-field fiche-full"><div class="fiche-label">Description</div><div class="fiche-value">${s.desc}</div></div>
+    <div class="fiche-field fiche-full"><div class="fiche-label">Adresse</div><div class="fiche-value">${esc(s.rue)} · <strong>${esc(s.quartier)}</strong></div></div>
+    <div class="fiche-field"><div class="fiche-label">Catégorie</div><div class="fiche-value">${esc(s.type)}</div></div>
+    <div class="fiche-field"><div class="fiche-label">Statut</div><div class="fiche-value">${STATUS_LABEL[s.status]||esc(s.status)}</div></div>
+    <div class="fiche-field fiche-full"><div class="fiche-label">Description</div><div class="fiche-value">${esc(s.desc)}</div></div>
     <div class="fiche-field"><div class="fiche-label">Date</div><div class="fiche-value">${new Date(s.createdAt).toLocaleString("fr-FR")}</div></div>
-    <div class="fiche-field"><div class="fiche-label">Agent</div><div class="fiche-value">${s.fdoName ? `${s.fdoName} · ${FDO_LABELS[s.fdoKey]}` : '<span class="placeholder">Non assigné</span>'}</div></div>
+    <div class="fiche-field"><div class="fiche-label">Agent</div><div class="fiche-value">${s.fdoName ? `${esc(s.fdoName)} · ${FDO_LABELS[s.fdoKey]||""}` : '<span class="placeholder">Non assigné</span>'}</div></div>
+    ${s.declarant ? `<div class="fiche-field fiche-full"><div class="fiche-label">Déclarant</div><div class="fiche-value">${esc(s.declarant)}</div></div>` : ""}
   `;
   document.getElementById("overlay-fiche").classList.add("open");
 }
 function closeFiche() { document.getElementById("overlay-fiche").classList.remove("open"); }
 function closeFicheOnBg(e) { if (e.target===document.getElementById("overlay-fiche")) closeFiche(); }
-function saveFiche() {
+async function saveFiche() {
   const id     = document.getElementById("fiche-id").value;
   const plaque = document.getElementById("fiche-plaque").value.trim();
   const nb     = parseInt(document.getElementById("fiche-temoins").value)||0;
   const suites = document.getElementById("fiche-suites").value;
+  if (PROD) {
+    if (!(await ecrire("PATCH", `/signalements/${Number(id)}/fiche`, { plaque, nbTemoins:nb, suites }))) return;
+    closeFiche(); toast("📋 Fiche enregistrée"); await reloadAll();
+    return;
+  }
   doAction(id, {plaque, nb_temoins:nb, suites});
   closeFiche(); toast("📋 Fiche enregistrée");
 }
@@ -907,6 +1066,7 @@ function copyForPlainte() {
     `FAITS CONSTATÉS :`,
     s.desc,
     ``,
+    s.declarant ? `Déclarant : ${s.declarant}` : "",
     s.plaque ? `Plaque relevée : ${s.plaque}` : "",
     s.nb_temoins ? `Nombre de témoins : ${s.nb_temoins}` : "",
     s.suites ? `Suites données : ${s.suites}` : "",
@@ -925,7 +1085,10 @@ function generateMCGNum() {
 
 const UNITES = {gend:"Gendarmerie Nationale", pm:"Police Municipale", asvp:"ASVP"};
 
+function getMC() { return PROD ? MC : JSON.parse(localStorage.getItem("horus_mc") || "[]"); }
+
 function logMainCourante(sig, action) {
+  if (PROD) return; // tenue par la base (fonction traiter_signalement)
   const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
   mc.unshift({
     id: Date.now(),
@@ -960,7 +1123,7 @@ function suiteClass(s) {
 }
 
 function renderMainCourante() {
-  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  const mc = getMC();
   const now = new Date();
   document.getElementById("mc-month-label").textContent =
     `${now.toLocaleString("fr-FR",{month:"long",year:"numeric"})} · ${mc.length} enregistrement${mc.length!==1?"s":""}`;
@@ -975,8 +1138,8 @@ function renderMainCourante() {
       <div class="mcg-entry-hdr" onclick="toggleMCEntry(${idx})">
         <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
           <span class="mcg-num-tag">${e.mcgNum || '—'}</span>
-          <span class="mcg-entry-nature">${e.type || '—'}</span>
-          <span style="font-size:.78rem;color:var(--gris2)">${e.rue ? e.rue + (e.quartier ? ' · ' + e.quartier : '') : '—'}</span>
+          <span class="mcg-entry-nature">${esc(e.type || '—')}</span>
+          <span style="font-size:.78rem;color:var(--gris2)">${esc(e.rue ? e.rue + (e.quartier ? ' · ' + e.quartier : '') : '—')}</span>
         </div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="mcg-suite-tag ${suiteClass(e.suiteDonnee)}">${e.suiteDonnee || 'En cours'}</span>
@@ -989,15 +1152,15 @@ function renderMainCourante() {
           <div><span class="mcg-field-label">N° enregistrement</span><span class="mcg-field-val">${e.mcgNum || '—'}</span></div>
           <div><span class="mcg-field-label">Date / heure des faits</span><span class="mcg-field-val">${fmtDate(e.dateEvent)}</span></div>
           <div><span class="mcg-field-label">Date enregistrement</span><span class="mcg-field-val">${fmtDate(e.ts)}</span></div>
-          <div><span class="mcg-field-label">Unité traitante</span><span class="mcg-field-val">${e.uniteTraitante || '—'}</span></div>
-          <div><span class="mcg-field-label">Agent traitant</span><span class="mcg-field-val">${e.agent || '—'}</span></div>
-          <div><span class="mcg-field-label">Identité déclarant</span><span class="mcg-field-val">${e.declarant || '—'}</span></div>
-          <div><span class="mcg-field-label">Nature des faits</span><span class="mcg-field-val">${e.type || '—'}</span></div>
-          <div><span class="mcg-field-label">Lieu précis</span><span class="mcg-field-val">${e.rue || '—'}${e.quartier ? ', ' + e.quartier : ''}</span></div>
+          <div><span class="mcg-field-label">Unité traitante</span><span class="mcg-field-val">${esc(e.uniteTraitante || '—')}</span></div>
+          <div><span class="mcg-field-label">Agent traitant</span><span class="mcg-field-val">${esc(e.agent || '—')}</span></div>
+          <div><span class="mcg-field-label">Identité déclarant</span><span class="mcg-field-val">${esc(e.declarant || '—')}</span></div>
+          <div><span class="mcg-field-label">Nature des faits</span><span class="mcg-field-val">${esc(e.type || '—')}</span></div>
+          <div><span class="mcg-field-label">Lieu précis</span><span class="mcg-field-val">${esc(e.rue || '—')}${e.quartier ? ', ' + esc(e.quartier) : ''}</span></div>
         </div>
         <div style="margin:.75rem 0">
           <div class="mcg-field-label" style="margin-bottom:.3rem">Résumé des faits</div>
-          <div class="mcg-field-val" style="line-height:1.5">${e.desc || '—'}</div>
+          <div class="mcg-field-val" style="line-height:1.5">${esc(e.desc || '—')}</div>
         </div>
         <div style="margin:.75rem 0;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
           <span class="mcg-field-label">Suite donnée :</span>
@@ -1018,27 +1181,31 @@ function toggleMCEntry(idx) {
   if (el) el.classList.toggle("open");
 }
 
-function updateMCSuite(idx, value) {
-  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+async function updateMCSuite(idx, value) {
+  if (PROD) {
+    if (!MC[idx] || !(await ecrire("PATCH", `/main-courante/${MC[idx].id}`, { suiteDonnee:value }))) return;
+    MC[idx].suiteDonnee = value;
+  }
+  const mc = getMC();
   if (mc[idx]) {
     mc[idx].suiteDonnee = value;
-    localStorage.setItem("horus_mc", JSON.stringify(mc));
+    if (!PROD) localStorage.setItem("horus_mc", JSON.stringify(mc));
     const tag = document.querySelector(`#mcg-entry-${idx} .mcg-suite-tag`);
     if (tag) { tag.className = "mcg-suite-tag " + suiteClass(value); tag.textContent = value; }
   }
 }
 
 function exportMCGPDF() {
-  const mc = JSON.parse(localStorage.getItem("horus_mc") || "[]");
+  const mc = getMC();
   const now = new Date();
   const moisLabel = now.toLocaleString("fr-FR",{month:"long",year:"numeric"});
   const rows = mc.map(e => `
     <tr>
       <td>${e.mcgNum || '—'}</td>
       <td>${fmtDate(e.dateEvent)}</td>
-      <td>${e.rue || '—'}${e.quartier ? '<br><small>' + e.quartier + '</small>' : ''}</td>
-      <td>${e.type || '—'}</td>
-      <td>${e.desc || '—'}</td>
+      <td>${esc(e.rue || '—')}${e.quartier ? '<br><small>' + esc(e.quartier) + '</small>' : ''}</td>
+      <td>${esc(e.type || '—')}</td>
+      <td>${esc(e.desc || '—')}</td>
       <td><b>${e.suiteDonnee || 'En cours'}</b></td>
     </tr>`).join("");
   document.getElementById("print-zone").innerHTML = `
@@ -1179,7 +1346,8 @@ function renderStatsMap(data) {
 
 // ── RAPPORT MENSUEL ───────────────────────────────────────────────────
 function openRapportModal() {
-  const key = localStorage.getItem("horus_apikey") || "";
+  document.getElementById("api-key-row").style.display = PROD ? "none" : "";
+  const key = PROD ? "" : (localStorage.getItem("horus_apikey") || "");
   document.getElementById("rapport-apikey").value = key;
   document.getElementById("rapport-text").textContent = "Cliquez sur \"Générer\" pour rédiger le rapport.";
   document.getElementById("overlay-rapport").classList.add("open");
@@ -1190,7 +1358,7 @@ function saveApiKey(v) { localStorage.setItem("horus_apikey", v); }
 
 async function generateRapport() {
   const apiKey = document.getElementById("rapport-apikey").value.trim();
-  if (!apiKey) { toast("Saisissez votre clé API Anthropic"); return; }
+  if (!PROD && !apiKey) { toast("Saisissez votre clé API Anthropic"); return; }
 
   const data = filterStatsData();
   const now = new Date();
@@ -1201,7 +1369,7 @@ async function generateRapport() {
     const c = TYPE_TO_CAT[s.type]||"autre";
     catCounts[c] = (catCounts[c]||0)+1;
   });
-  const mc = JSON.parse(localStorage.getItem("horus_mc")||"[]");
+  const mc = getMC();
   mc.forEach(e => { actionCounts[e.action]=(actionCounts[e.action]||0)+1; });
 
   const statsText = [
@@ -1216,6 +1384,16 @@ async function generateRapport() {
   const btn = document.getElementById("rapport-generate-btn");
   btn.textContent = "⏳ Génération…"; btn.disabled = true;
   document.getElementById("rapport-text").textContent = "Rédaction en cours…";
+
+  if (PROD) {
+    // Production : la clé Anthropic reste sur le serveur (fonction « ia »).
+    let texte;
+    try { texte = (await api("POST", "/ia/rapport", { stats:statsText })).texte || "Erreur : réponse vide."; }
+    catch (e) { texte = e.code === "ia_non_configuree" ? "Le rapport IA n'est pas encore activé sur ce serveur." : "Erreur lors de la génération du rapport. Réessayez plus tard."; }
+    document.getElementById("rapport-text").textContent = texte;
+    btn.textContent = "✨ Générer"; btn.disabled = false;
+    return;
+  }
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1248,16 +1426,19 @@ function printRapport() {
       <h2>HORUS Rouffiac-Tolosan — Rapport mensuel IA</h2>
       <div class="print-meta">Généré le ${new Date().toLocaleString("fr-FR")}</div>
     </div>
-    <div style="font-size:12px;line-height:1.9;white-space:pre-wrap">${txt}</div>`;
+    <div style="font-size:12px;line-height:1.9;white-space:pre-wrap">${esc(txt)}</div>`;
   window.print();
 }
 
 // ── MESSAGERIE ────────────────────────────────────────────────────────
-function getMsgs() { return JSON.parse(localStorage.getItem("horus_messages")||"[]"); }
-function saveMsgs(msgs) { localStorage.setItem("horus_messages", JSON.stringify(msgs)); }
+function getMsgs() { return PROD ? MSGS : JSON.parse(localStorage.getItem("horus_messages")||"[]"); }
+function saveMsgs(msgs) { if (!PROD) localStorage.setItem("horus_messages", JSON.stringify(msgs)); }
+// Non lu « pour moi » : un référent lit les messages des FDO, les FDO ceux des référents.
+function isUnreadForMe(m) { return iAmRef() ? (m.from !== "referent" && !m.readByRef) : (m.from === "referent" && !m.readByFdo); }
+function visibleQuartiers() { return iAmRef() ? QUARTIERS.filter(q => q.label === ME.quartier) : QUARTIERS; }
 
 function updateMsgBadge() {
-  const unread = getMsgs().filter(m => m.from === "referent" && !m.readByFdo).length;
+  const unread = getMsgs().filter(isUnreadForMe).length;
   const btn = document.getElementById("msg-tab-btn");
   const existing = btn.querySelector(".tab-badge");
   if (existing) existing.remove();
@@ -1267,16 +1448,16 @@ function updateMsgBadge() {
 function renderMessages() {
   const msgs = getMsgs();
   // Thread list
-  document.getElementById("msg-threads").innerHTML = QUARTIERS.map(q => {
+  document.getElementById("msg-threads").innerHTML = visibleQuartiers().map(q => {
     const thread = msgs.filter(m => m.quartierKey === q.key);
     const lastMsg = thread[thread.length-1];
-    const unread = thread.filter(m => m.from==="referent" && !m.readByFdo).length;
+    const unread = thread.filter(isUnreadForMe).length;
     return `
     <div class="msg-thread-item ${currentMsgThread===q.key?'active':''}" onclick="selectThread('${q.key}')">
       <div class="msg-thread-dot" style="background:${q.color}"></div>
       <div class="msg-thread-info">
         <div class="msg-thread-name">${q.label}</div>
-        <div class="msg-thread-sub">${lastMsg ? lastMsg.content.substring(0,28)+"…" : q.ref}</div>
+        <div class="msg-thread-sub">${lastMsg ? esc(lastMsg.content.substring(0,28))+"…" : esc(q.ref)}</div>
       </div>
       ${unread>0?`<div class="msg-unread">${unread}</div>`:''}
     </div>`;
@@ -1293,12 +1474,14 @@ function selectThread(key, silent) {
   // Marquer lu
   const msgs = getMsgs();
   let changed = false;
-  msgs.forEach(m => { if (m.quartierKey===key && m.from==="referent" && !m.readByFdo) { m.readByFdo=true; changed=true; } });
-  if (changed) { saveMsgs(msgs); updateMsgBadge(); }
+  msgs.forEach(m => {
+    if (m.quartierKey===key && isUnreadForMe(m)) { if (iAmRef()) m.readByRef = true; else m.readByFdo = true; changed = true; }
+  });
+  if (changed) { saveMsgs(msgs); updateMsgBadge(); if (PROD) api("POST", "/messages/lus", { quartier:q.label }).catch(() => {}); }
 
   if (!silent) {
     document.querySelectorAll(".msg-thread-item").forEach(el => el.classList.remove("active"));
-    const idx = QUARTIERS.findIndex(x=>x.key===key);
+    const idx = visibleQuartiers().findIndex(x=>x.key===key);
     document.querySelectorAll(".msg-thread-item")[idx]?.classList.add("active");
   }
 
@@ -1312,8 +1495,8 @@ function selectThread(key, silent) {
     <div class="msg-list" id="msg-list-${key}">
       ${thread.length ? thread.map(m => `
         <div class="msg-bubble from-${m.from==="referent"?"ref":"fdo"}">
-          <div class="msg-content">${m.content}</div>
-          <div class="msg-meta">${m.fromLabel} · ${new Date(m.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+          <div class="msg-content">${esc(m.content)}</div>
+          <div class="msg-meta">${esc(m.fromLabel)} · ${new Date(m.ts).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
         </div>`).join("") : '<div class="msg-empty">Aucun message. Commencez la conversation.</div>'}
     </div>
     <div class="msg-compose">
@@ -1328,11 +1511,17 @@ function selectThread(key, silent) {
   }, 50);
 }
 
-function sendFdoMessage(key) {
+async function sendFdoMessage(key) {
   const input = document.getElementById(`msg-input-${key}`);
   const content = input?.value?.trim();
   if (!content) return;
   const q = QUARTIERS.find(x=>x.key===key);
+  if (PROD) {
+    if (!(await ecrire("POST", "/messages", { quartier:q.label, contenu:content }))) return;
+    input.value = "";
+    await reloadAll(); selectThread(key, true);
+    return;
+  }
   const msgs = getMsgs();
   msgs.push({
     id: Date.now(), quartierKey:key, quartierLabel:q?.label||key,
@@ -1362,6 +1551,17 @@ window.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("horus_theme");
   if (saved) document.documentElement.dataset.theme = saved;
   buildRueSelect();
+  if (PROD) {
+    document.getElementById("pin-row").style.display = "none";
+    document.querySelector(".login-title").textContent = "HORUS";
+    document.querySelector(".login-sub").innerHTML = "Espace sécurisé · référents et forces de l'ordre<br>Rouffiac-Tolosan · 31180";
+    document.getElementById("login-hint").textContent = "Compte créé par la mairie · double authentification obligatoire";
+    document.getElementById("login-btn").textContent = "Se connecter";
+    HorusAuth.init()
+      .then(({ connecte }) => { if (connecte) afterLogin(); })
+      .catch(() => loginError("Service de connexion injoignable. Réessayez dans un instant."));
+    return;
+  }
   document.getElementById("p0").focus();
   window.addEventListener("storage", e => {
     if (e.key === "horus_signalements" && document.getElementById("dashboard").style.display !== "none") {
@@ -1370,6 +1570,14 @@ window.addEventListener("DOMContentLoaded", () => {
     if (e.key === "horus_messages") { updateMsgBadge(); if (currentPage==="messages") renderMessages(); }
   });
 });
+
+// ── PWA ──────────────────────────────────────────────────────────────
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.addEventListener("message", e => { if (e.data?.type === "SW_UPDATED") location.reload(); });
+  });
+}
 </script>
 </body>
 </html>

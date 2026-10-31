@@ -10,7 +10,8 @@
 <meta name="description" content="Plateforme de vigilance citoyenne – Rouffiac-Tolosan">
 <title>HORUS – Vigilance citoyenne · Rouffiac-Tolosan</title>
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -260,7 +261,7 @@
   /* MODAL */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:2000; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(4px); }
   .modal-overlay.open { display:flex; }
-  .modal { background:var(--nuit2); border:1px solid var(--bord2); border-radius:var(--r2); padding:32px; width:100%; max-width:480px; position:relative; animation:modal-in .2s ease; }
+  .modal { background:var(--nuit2); border:1px solid var(--bord2); border-radius:var(--r2); padding:32px; width:100%; max-width:480px; max-height:calc(100dvh - 32px); overflow-y:auto; overscroll-behavior:contain; position:relative; animation:modal-in .2s ease; }
   @keyframes modal-in { from{transform:scale(.96) translateY(8px);opacity:0} to{transform:scale(1) translateY(0);opacity:1} }
   .modal-title { font-family:var(--font-display); font-size:20px; font-weight:700; color:var(--blanc); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
   .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; color:var(--gris); font-size:22px; cursor:pointer; line-height:1; }
@@ -370,7 +371,7 @@
   .hx-ticker-label { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:9px 18px; font-family:var(--font-mono); font-weight:600; letter-spacing:.12em; color:var(--or); background:rgba(201,168,76,.08); border-right:1px solid var(--bord); }
   .live-dot { width:8px; height:8px; border-radius:50%; background:var(--rouge); box-shadow:0 0 0 0 rgba(224,85,85,.7); animation:live-pulse 1.6s infinite; flex-shrink:0; }
   @keyframes live-pulse { 0% { box-shadow:0 0 0 0 rgba(224,85,85,.7); } 70% { box-shadow:0 0 0 8px rgba(224,85,85,0); } 100% { box-shadow:0 0 0 0 rgba(224,85,85,0); } }
-  .hx-ticker-track { flex:1; overflow:hidden; -webkit-mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent); mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent); }
+  .hx-ticker-track { flex:1; min-width:0; overflow:hidden; -webkit-mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent); mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent); }
   .hx-ticker-move { display:inline-flex; white-space:nowrap; padding:9px 0; animation:ticker 60s linear infinite; }
   .hx-ticker:hover .hx-ticker-move { animation-play-state:paused; }
   @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
@@ -378,6 +379,9 @@
   .hx-tick:hover { color:var(--or2); }
   .hx-tick em { font-style:normal; color:var(--gris2); }
   .hx-tick .dot { width:7px; height:7px; border-radius:50%; }
+
+  /* Ancres : ne pas passer sous la barre supérieure collante */
+  section[id] { scroll-margin-top:64px; }
 
   /* ═══ FX — APPARITIONS AU DÉFILEMENT ═══ */
   .fx .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1); }
@@ -460,7 +464,7 @@
   var el = document.getElementById("horus-intro");
   var seen = false;
   try { seen = !!sessionStorage.getItem("horus_intro"); sessionStorage.setItem("horus_intro", "1"); } catch (e) {}
-  if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.remove(); return; }
+  if (seen || /[?&]action=/.test(location.search) || matchMedia("(prefers-reduced-motion: reduce)").matches) { el.remove(); return; }
   window.HORUS_INTRO = true;
   function skip() { el.classList.add("skip"); setTimeout(function () { el.remove(); }, 400); }
   el.addEventListener("click", skip);
@@ -691,7 +695,15 @@ document.documentElement.classList.add("fx");
     <div id="modal-conduite-tip" style="display:none"></div>
     <div class="form-group">
       <label class="form-label">Description</label>
-      <textarea class="form-textarea" id="f-desc" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation si véhicule…"></textarea>
+      <textarea class="form-textarea" id="f-desc" maxlength="2000" placeholder="Décrivez ce que vous avez observé — heure, description physique, immatriculation si véhicule…"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Vos coordonnées <span style="text-transform:none;letter-spacing:0;font-weight:400">(facultatif)</span></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input class="form-input" id="f-nom" maxlength="80" placeholder="Nom" autocomplete="name">
+        <input class="form-input" id="f-contact" maxlength="120" placeholder="Téléphone ou e-mail" autocomplete="tel">
+      </div>
+      <div style="font-size:11px;color:var(--gris2);margin-top:6px;line-height:1.5">Visibles uniquement des forces de l'ordre, pour vous recontacter si besoin. Jamais publiées.</div>
     </div>
     <div class="modal-note">
       <div>⚠️ En cas d'urgence immédiate, appelez le <strong style="color:var(--or)">17</strong> (Police) ou le <strong style="color:var(--or)">112</strong>. Ce formulaire est pour les signalements non urgents. Votre rôle est d'<strong>observer et de signaler</strong>, jamais d'intervenir.</div>
@@ -801,6 +813,7 @@ document.documentElement.classList.add("fx");
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="config.js"></script>
 <script>
 // ── Base rues → quartier (source : OpenStreetMap / Overpass) ──────
 const RUES = [
@@ -932,6 +945,40 @@ function localToAlert(s) {
 let currentFilter = "tous";
 let map = null;
 
+// ── MODE PRODUCTION (base HORUS) / DÉMO (données fictives) ───────────
+// La page publique n'a pas de compte : elle n'appelle que /api/public/* (même domaine).
+const PROD = !!window.HORUS_CONFIG;
+let PUBLIC_ALERTS = [];
+let ALERTS_INDISPONIBLES = false;
+
+function publicToAlert(r) {
+  const cat = TYPE_TO_CAT[r.type] || "autre";
+  return {
+    ...localToAlert({ id:r.id, type:r.type, desc:r.description, quartier:r.quartier, rue:r.rue,
+                      createdAt:r.creeLe, fdoKey:r.fdoKey }),
+    urg: cat === "intrusion" ? "haute" : "moyenne",
+  };
+}
+async function loadPublicAlerts() {
+  if (!PROD) return;
+  try {
+    const res = await fetch("/api/public/alertes");
+    if (!res.ok) throw new Error(res.status);
+    PUBLIC_ALERTS = (await res.json()).map(publicToAlert);
+    ALERTS_INDISPONIBLES = false;
+  } catch (e) {
+    ALERTS_INDISPONIBLES = true;
+  }
+}
+// Alertes affichées : base publique en production ; démo + validations locales sinon.
+function currentAlerts() {
+  if (PROD) return PUBLIC_ALERTS;
+  const validated = JSON.parse(localStorage.getItem("horus_signalements") || "[]")
+    .filter(s => s.status === "approved" && !s.resolvedAt)
+    .map(localToAlert);
+  return [...validated, ...ALERTS];
+}
+
 const FDO = [
   {
     key: "gend",
@@ -977,13 +1024,13 @@ const FDO = [
 function renderFdo() {
   const grid = document.getElementById("fdo-grid");
   grid.innerHTML = FDO.map(f => {
-    const taken    = ALERTS.filter(a => a.fdo === f.fdoKey);
+    const taken    = currentAlerts().filter(a => a.fdo === f.fdoKey);
     const resolved = taken.filter(a => a.resolved ?? false).length;
     const active   = taken.filter(a => !(a.resolved ?? false)).length;
     const total    = taken.length;
 
     const activeAlerts = taken.filter(a => !(a.resolved ?? false)).slice(0,3).map(a =>
-      `<div class="fdo-alert-item">📍 ${a.rue} · <strong>${a.quartier}</strong> — ${a.time}</div>`
+      `<div class="fdo-alert-item">📍 ${escHtml(a.rue)} · <strong>${escHtml(a.quartier)}</strong> — ${escHtml(a.time)}</div>`
     ).join('');
 
     const contactsHTML = f.contacts.map(c =>
@@ -1019,7 +1066,7 @@ function renderFdo() {
 
 function renderReferents() {
   const alertCounts = {};
-  ALERTS.forEach(a => { alertCounts[a.quartier] = (alertCounts[a.quartier] || 0) + 1; });
+  currentAlerts().forEach(a => { alertCounts[a.quartier] = (alertCounts[a.quartier] || 0) + 1; });
   document.getElementById("referents-grid").innerHTML = QUARTIERS.map(q => {
     const initials = q.ref.split(' ').map(w => w[0]).join('');
     const count = alertCounts[q.label] || 0;
@@ -1037,7 +1084,9 @@ function renderReferents() {
         <div class="ref-actions">
           <a class="ref-btn ref-btn-call" href="tel:${q.phone.replace(/\s/g,'')}">📞 ${q.phone}</a>
           <button class="ref-btn ref-btn-signal" onclick="openModal()">🚨 Signaler</button>
-          <button class="ref-btn ref-btn-msg" id="ref-msg-btn-${q.key}" onclick="openRefMessages('${q.key}')">💬 Messages${refUnreadCount(q.key)>0?`<span class="ref-msg-badge">${refUnreadCount(q.key)}</span>`:''}</button>
+          ${PROD
+            ? `<a class="ref-btn ref-btn-msg" href="fdo.html" title="Espace sécurisé des référents">🔐 Espace référent</a>`
+            : `<button class="ref-btn ref-btn-msg" id="ref-msg-btn-${q.key}" onclick="openRefMessages('${q.key}')">💬 Messages${refUnreadCount(q.key)>0?`<span class="ref-msg-badge">${refUnreadCount(q.key)}</span>`:''}</button>`}
         </div>
       </div>
     </div>`;
@@ -1050,7 +1099,7 @@ function renderQuartiers() {
     <div class="secteur-card" onclick="focusQuartier('${q.key}')">
       <div class="secteur-dot" style="background:${q.color}"></div>
       <div class="secteur-label">${q.label}</div>
-      <div class="secteur-count" style="color:${q.color}">${q.alertes}</div>
+      <div class="secteur-count" style="color:${q.color}">${PROD ? currentAlerts().filter(a => a.quartier === q.label).length : q.alertes}</div>
       <div class="secteur-sub">alertes</div>
       <div class="secteur-ref">Réf. <span>${q.ref}</span></div>
     </div>
@@ -1059,28 +1108,27 @@ function renderQuartiers() {
 
 function renderAlerts() {
   const grid = document.getElementById("alerts-grid");
-  const validated = JSON.parse(localStorage.getItem("horus_signalements") || "[]")
-    .filter(s => s.status === "approved" && !s.resolvedAt)
-    .map(localToAlert);
-  const allAlerts = [...validated, ...ALERTS];
+  const allAlerts = currentAlerts();
   const list = currentFilter === "tous" ? allAlerts : allAlerts.filter(a => a.cat === currentFilter);
-  grid.innerHTML = list.map(a => `
+  grid.innerHTML = list.length ? list.map(a => `
     <div class="alert-card ${a.urg}">
       <div class="card-top">
         <span class="card-cat">${CAT_ICONS[a.cat]||"📌"} ${CAT_LABELS[a.cat]}</span>
-        <span class="card-time">${a.time}</span>
+        <span class="card-time">${escHtml(a.time)}</span>
       </div>
-      <div class="card-title">${a.title}</div>
-      <div class="card-desc">${a.desc}</div>
+      <div class="card-title">${escHtml(a.title)}</div>
+      <div class="card-desc">${escHtml(a.desc)}</div>
       <div class="card-footer">
-        <span class="card-loc">📍 ${a.rue} · <span style="color:${QUARTIERS.find(q=>q.label===a.quartier)?.color||'#C9A84C'};font-weight:600">${a.quartier}</span></span>
+        <span class="card-loc">📍 ${escHtml(a.rue)} · <span style="color:${QUARTIERS.find(q=>q.label===a.quartier)?.color||'#C9A84C'};font-weight:600">${escHtml(a.quartier)}</span></span>
         <div class="card-badges">
           ${a.fdo ? `<span class="fdo-badge ${a.fdo}">${a.fdoLabel}</span>` : ""}
           <span class="urgency-dot ${a.urg}"></span>
         </div>
       </div>
     </div>
-  `).join("");
+  `).join("") : `<div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--gris2)">${ALERTS_INDISPONIBLES
+        ? "Alertes momentanément indisponibles (connexion au serveur impossible)."
+        : `Aucune alerte en cours${currentFilter !== "tous" ? " dans cette catégorie" : ""}.`}</div>`;
 }
 
 function filterAlerts(btn, filter) {
@@ -1119,11 +1167,11 @@ function addAlertMarker(alert, lat, lng) {
   alertMarkers.push({ marker, alert });
   marker
     .bindPopup(`<div style="min-width:200px">
-      <div style="font-size:11px;font-weight:700;color:${qColor};margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">${alert.quartier}</div>
-      <div style="font-weight:700;font-size:14px;color:#F0EDE6;margin-bottom:4px">${alert.title}</div>
-      <div style="font-size:12px;color:#8B949E;margin-bottom:6px">📍 ${alert.rue} · ${alert.time}</div>
+      <div style="font-size:11px;font-weight:700;color:${qColor};margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em">${escHtml(alert.quartier)}</div>
+      <div style="font-weight:700;font-size:14px;color:#F0EDE6;margin-bottom:4px">${escHtml(alert.title)}</div>
+      <div style="font-size:12px;color:#8B949E;margin-bottom:6px">📍 ${escHtml(alert.rue)} · ${escHtml(alert.time)}</div>
       ${alert.fdo ? `<div style="font-size:11px;font-weight:700;color:#7ba0d4;margin-bottom:6px">⚖️ Pris en charge : ${alert.fdoLabel}</div>` : ""}
-      <div style="font-size:12px;color:#8B949E;line-height:1.5">${alert.desc.substring(0,100)}…</div>
+      <div style="font-size:12px;color:#8B949E;line-height:1.5">${escHtml(alert.desc.substring(0,100))}…</div>
     </div>`);
 }
 
@@ -1151,7 +1199,7 @@ async function initMap() {
   await new Promise(r => setTimeout(r, 1100));
 
   // Géocodage des alertes via Nominatim (1 requête/seconde)
-  for (const alert of ALERTS) {
+  for (const alert of currentAlerts().slice(0, 15)) {
     const fallback = QUARTIERS.find(q => q.label === alert.quartier);
     const coords = await geocodeRue(alert.rue);
     const lat = coords ? coords[0] : (fallback?.lat ?? alert.lat);
@@ -1206,13 +1254,39 @@ function openModal() {
 function closeModal(e) { if (e.target === document.getElementById("modal")) closeModalBtn(); }
 function closeModalBtn() { document.getElementById("modal").classList.remove("open"); document.body.style.overflow = ""; }
 
-function submitSignalement() {
+async function submitSignalement() {
   const rue    = document.getElementById("f-rue").value;
   const numero = document.getElementById("f-numero").value.trim();
   const q      = document.getElementById("f-quartier").value;
   const t      = document.getElementById("f-type").value;
   const d      = document.getElementById("f-desc").value.trim();
   if (!rue || !q || !t || !d) { showToast("Veuillez remplir tous les champs."); return; }
+
+  const nom     = document.getElementById("f-nom").value.trim();
+  const contact = document.getElementById("f-contact").value.trim();
+  if (d.length < 5) { showToast("Description trop courte."); return; }
+
+  if (PROD) {
+    let statut = 0;
+    try {
+      const res = await fetch("/api/public/signalements", {
+        method:"POST", headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ rue, numero:numero || undefined, quartier:q, type:t, description:d,
+                              nom:nom || undefined, contact:contact || undefined }),
+      });
+      statut = res.status;
+    } catch (e) {}
+    if (statut !== 201) {
+      showToast(statut === 429 || statut === 409
+        ? "Trop de signalements envoyés, réessayez dans quelques minutes."
+        : !navigator.onLine ? "Pas de connexion : signalement non envoyé. En cas d'urgence, composez le 17."
+        : "Échec de l'envoi. En cas d'urgence, composez le 17.");
+      return;
+    }
+    resetSignalementForm();
+    showToast("✓ Signalement transmis — en attente de validation par les forces de l'ordre.");
+    return;
+  }
 
   const rueComplete = numero ? `${numero} ${rue}` : rue;
   const signalement = {
@@ -1225,14 +1299,14 @@ function submitSignalement() {
   const existing = JSON.parse(localStorage.getItem("horus_signalements") || "[]");
   localStorage.setItem("horus_signalements", JSON.stringify([signalement, ...existing]));
 
-  closeModalBtn();
-  document.getElementById("f-rue").value = "";
-  document.getElementById("f-numero").value = "";
-  document.getElementById("f-quartier").value = "";
-  document.getElementById("f-type").value = "";
-  document.getElementById("f-desc").value = "";
-  updateModalConduite();
+  resetSignalementForm();
   showToast("✓ Signalement transmis — en attente de validation par les FDO.");
+}
+
+function resetSignalementForm() {
+  closeModalBtn();
+  ["f-rue","f-numero","f-quartier","f-type","f-desc","f-nom","f-contact"].forEach(id => document.getElementById(id).value = "");
+  updateModalConduite();
 }
 
 function showToast(msg) {
@@ -1271,12 +1345,38 @@ document.getElementById('install-btn').addEventListener('click', async () => {
   document.getElementById('install-bar').classList.remove('visible');
 });
 
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
 function triggerInstall() {
+  if (IS_STANDALONE) { showToast('✓ HORUS est déjà installé sur cet appareil.'); return; }
   if (deferredPrompt) {
     document.getElementById('install-btn').click();
+  } else if (IS_IOS) {
+    showToast('Sur iPhone : touchez « Partager » ⬆️ puis « Sur l\'écran d\'accueil ».');
   } else {
     showToast('Utilisez le menu de votre navigateur pour installer l\'app.');
   }
+}
+
+// iPhone / iPad : bandeau d'aide une fois par session, puisque Safari n'affiche pas d'invite.
+if (IS_IOS && !IS_STANDALONE) {
+  let vu = false;
+  try { vu = !!sessionStorage.getItem("horus_ios_hint"); sessionStorage.setItem("horus_ios_hint", "1"); } catch (e) {}
+  if (!vu) window.addEventListener("load", () => {
+    const bar = document.getElementById("install-bar");
+    bar.querySelector("p").innerHTML = "Installez <strong>HORUS</strong> : touchez <strong>Partager</strong> ⬆️ puis <strong>« Sur l'écran d'accueil »</strong>.";
+    document.getElementById("install-btn").style.display = "none";
+    bar.classList.add("visible");
+  });
+}
+
+// Raccourcis de l'application installée (manifest.json → shortcuts)
+function handleLaunchAction() {
+  const action = new URLSearchParams(location.search).get("action");
+  if (action === "signaler") openModal();
+  if (action === "alertes") document.getElementById("alertes").scrollIntoView({ behavior:"smooth" });
+  if (action) history.replaceState(null, "", location.pathname);
 }
 
 window.addEventListener('appinstalled', () => showToast('✓ HORUS installé'));
@@ -1297,11 +1397,24 @@ function closeGuide() {
   document.getElementById("guide-overlay").style.display = "none";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const saved = localStorage.getItem("horus_theme");
   if (saved) document.documentElement.dataset.theme = saved;
 
   buildRueSelect();
+  if (PROD) {
+    // Pas de chiffres fictifs sur la version officielle.
+    document.getElementById("stat-membres").parentElement.style.display = "none";
+    document.getElementById("stat-resolus").parentElement.style.display = "none";
+    document.querySelector("#stat-alertes + .stat-lab").textContent = "alertes en cours";
+    document.querySelector(".cta-sub").textContent = "6 référents de quartier · Gendarmerie et Police Municipale connectées";
+    await loadPublicAlerts();
+    setInterval(async () => {
+      if (document.hidden) return;
+      await loadPublicAlerts();
+      renderAlerts(); renderTicker(); renderQuartiers(); renderReferents(); renderFdo();
+    }, 60000);
+  }
   renderFdo();
   renderReferents();
   renderQuartiers();
@@ -1309,15 +1422,15 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTicker();
   initMap();
   initFx();
+  handleLaunchAction();
 
   window.addEventListener("storage", e => {
     if (e.key === "horus_signalements") { renderAlerts(); renderTicker(); }
     if (e.key === "horus_messages") renderReferents();
   });
   setTimeout(() => {
-    animateStat("stat-alertes", 24);
-    animateStat("stat-membres", 247);
-    animateStat("stat-resolus", 18);
+    animateStat("stat-alertes", PROD ? PUBLIC_ALERTS.length : 24);
+    if (!PROD) { animateStat("stat-membres", 247); animateStat("stat-resolus", 18); }
   }, window.HORUS_INTRO ? 2700 : 300);
 });
 
@@ -1334,17 +1447,16 @@ function escHtml(s) {
 function renderTicker() {
   const el = document.getElementById("hx-ticker-move");
   if (!el) return;
-  const validated = JSON.parse(localStorage.getItem("horus_signalements") || "[]")
-    .filter(s => s.status === "approved" && !s.resolvedAt)
-    .map(localToAlert);
-  const items = [...validated, ...ALERTS].map(a => `
+  const all = currentAlerts();
+  const items = all.map(a => `
     <a class="hx-tick" href="#alertes">
       <span class="dot" style="background:${URG_COLORS[a.urg] || "#C9A84C"}"></span>
       ${CAT_ICONS[a.cat] || "📌"} ${escHtml(a.title)}
       <em>${escHtml(a.quartier)} · ${escHtml(a.time)}</em>
     </a>`).join("");
-  el.innerHTML = items + items; // dupliqué pour une boucle continue
-  el.style.animationDuration = Math.max(30, (validated.length + ALERTS.length) * 7) + "s";
+  el.innerHTML = all.length ? items + items // dupliqué pour une boucle continue
+    : `<span class="hx-tick"><em>Aucune alerte en cours dans la commune.</em></span>`;
+  el.style.animationDuration = Math.max(30, all.length * 7) + "s";
 }
 
 async function drawCommune() {

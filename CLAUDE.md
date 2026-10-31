@@ -2,7 +2,7 @@
 
 > Ce fichier est lu automatiquement par Claude Code à chaque session.
 > Il doit être mis à jour à la fin de chaque session de travail importante.
-> Dernière mise à jour : 5 octobre 2026
+> Dernière mise à jour : 11 octobre 2026
 
 ---
 
@@ -21,8 +21,11 @@ Le projet vise à s'aligner sur le dispositif officiel **"Participation citoyenn
 - **Frontend** : HTML/CSS/JS vanilla, deux fichiers HTML (pas de framework, pas de build tool)
 - **Carte** : Leaflet.js + tuiles OpenStreetMap standard (`tile.openstreetmap.org`), pas de clé API requise
 - **IA** : API Anthropic (Claude Sonnet) pour l'analyse automatique des signalements (catégorie, urgence, conseil)
-- **PWA** : Service Worker (`sw.js`) avec cache offline (`horus-v4`), auto-reload sur mise à jour, notifications push, manifest installable
-- **Déploiement** : Fly.io, app name `horus-rouffiac`, via Dockerfile nginx + `nginx.conf` personnalisé
+- **PWA** : Service Worker (`sw.js`, cache `horus-v6`) — API jamais en cache, pages réseau d'abord, CDN en cache ; manifest (icônes any + maskable, raccourcis, captures) ; les 3 pages sont installables
+- **Déploiement** : Fly.io (`horus-rouffiac`) = **mode démo** ; production cible = serveur de la mairie **92.222.89.206** (celui de plateforme-commune), `horus.mairiederouffiac.fr` — runbook **`docs/DEPLOIEMENT.md`**
+- **Backend production** (aligné sur plateforme-commune, **sans Supabase**) : API **NestJS + Prisma** (`api/`), **PostgreSQL 16 dédié** (conteneur `horus-postgres`, aucun port), **Keycloak de la mairie, realm `horus` séparé** (2FA obligatoire). Stack compose `horus`, réseau `horus_net`, API sur `127.0.0.1:3110` derrière le nginx de l'hôte
+- **Mode démo / production** : `config.js` à `null` dans le dépôt = démo (localStorage, PIN 1234) ; réécrit par `infra/deploy.sh` avec l'URL Keycloak = production
+- ⛔ L'ancien VPS `51.91.122.239` (Supabase, elus-app) est l'ANCIENNE infra : n'y rien installer pour HORUS
 - **Polices** : Open Sans (corps) + Roboto Mono (données) + Muse Sans (display) — chargées via Google Fonts
 - **Palette** : nuit `#0D1117`, or `#C9A84C`, accent rouge `#E05555`
 
@@ -39,13 +42,21 @@ horus-pwa/                        ← racine git (CWD pour flyctl deploy)
 ├── fly.toml                      ← app = 'horus-rouffiac', region = cdg
 ├── nginx.conf                    ← Cache-Control no-cache pour sw.js, fallback SPA
 ├── index.html                    ← version mobile/prototype (NON déployée — ne pas modifier)
+├── docs/DEPLOIEMENT.md           ← architecture + mise en production pas à pas
+├── api/                          ← API NestJS + Prisma (règles : src/domaine/regles.ts, testées)
+├── infra/                        ← compose prod + dev, realm Keycloak, nginx hôte, deploy/backup, tests e2e (infra/dev)
 ├── .github/workflows/
 │   └── fly-deploy.yml            ← CI/CD : flyctl deploy --remote-only (depuis racine git)
 └── horus-pwa/                    ← niveau intermédiaire (ne contient que le sous-dossier)
     └── horus-pwa/                ← ⬅ FICHIERS DÉPLOYÉS (ce qui tourne sur horus-rouffiac.fly.dev)
         ├── index.html            ← page publique citoyens (desktop-first)
-        ├── fdo.html              ← espace FDO (PIN : 1234)
-        ├── sw.js                 ← Service Worker (cache horus-v4, postMessage SW_UPDATED)
+        ├── fdo.html              ← espace sécurisé référents/FDO (démo : PIN 1234 ; prod : e-mail + mot de passe)
+        ├── admin.html            ← administration des comptes (rôle admin)
+        ├── config.js             ← null = démo ; réécrit en prod par infra/deploy.sh
+        ├── horus-auth.js         ← connexion Keycloak (PKCE) + appels /api
+        ├── vendor/keycloak.js    ← keycloak-js 26 embarqué (pas de CDN)
+        ├── sw.js                 ← Service Worker (cache horus-v6, SW_UPDATED seulement si mise à jour)
+        ├── screenshots/          ← captures du manifeste
         ├── manifest.json
         ├── offline.html
         └── icons/
@@ -110,6 +121,9 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 | Gendarmerie / PN | ⚖️ | ✓ | ✓ | — | ✓ | ✓ | ✓ | ✓ |
 | Police Municipale | 🔵 | ✓ | ✓ | — | ✓ | ✓ | ✓ | — |
 | ASVP | 🟡 | ✓ | ✓ | — | — | — | ✓ | — |
+| Administrateur (mairie) | ⚙️ | — | — | — | — | — | — | — |
+
+L'administrateur gère uniquement les comptes (`admin.html`) : aucun accès aux signalements. En production, la grille est appliquée **par l'API** (`api/src/domaine/regles.ts`, gardes globaux, refus par défaut) ; les boutons du front ne sont qu'un reflet. Rôle = rôle de realm Keycloak ; nom affiché, quartier et état actif = table `membres` de la base HORUS.
 
 **6 quartiers** : Centre-Bourg, Louradou, Castelviel, Charlary, Tartaloche, Pigassou.
 
@@ -125,7 +139,8 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 4. **PWA deux fichiers** : `index.html` (public) + `fdo.html` (FDO, PIN 1234) — architecture intentionnelle pour séparer les accès.
 5. **Doctrine gendarmerie** : alignement sur "Participation citoyenne" (circulaire 2006). Main courante au format MCG/NMCI (arrêté 22 juin 2011).
 6. **Déploiement** : le contexte Docker doit être la racine git (`horus-pwa/`). Lancer `flyctl deploy` depuis ailleurs casse le chemin COPY et sert la page par défaut nginx.
-7. **Service Worker** : cache `horus-v4` (v1.1, oct. 2026). Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
+7. **Service Worker** : cache `horus-v6` (oct. 2026). Auto-reload via `postMessage SW_UPDATED` depuis l'événement `activate`. Bumper la version à chaque déploiement fonctionnel majeur.
+8. **Architecture de production (11/10/2026)** : alignée sur **plateforme-commune** (pas de Supabase) — conteneur PostgreSQL dédié, realm Keycloak `horus` séparé, API NestJS dans ce dépôt, hébergée sur 92.222.89.206.
 
 ---
 
@@ -147,6 +162,8 @@ Accessible sur `horus-rouffiac.fly.dev/fdo.html`, protégé par PIN (`1234`). Co
 - [x] Annuaire référents + FDO
 - [x] Notifications in-app + push natif
 - [x] PWA installable + Service Worker + mode offline + auto-reload sur mise à jour
+- [x] **Production (prête, testée en local, non déployée)** : API NestJS/Prisma + PostgreSQL dédié + Keycloak realm `horus` (2FA), rapport IA côté serveur, coordonnées du déclarant visibles des seules FDO, échappement HTML de toutes les saisies. Tests : `api` (unitaires), `infra/dev/test-api.py` (43 vérifications), `infra/dev/parcours.js` (navigateur)
+- [x] **Administration des comptes** (`admin.html`) : création, rôle/quartier, désactivation (coupe les sessions), mot de passe provisoire, journal
 - [x] **Effets visuels v1.1** (index.html uniquement, oct. 2026) : intro cinématique 1×/session (sessionStorage `horus_intro`), œil du hero qui suit la souris + clignements + radar, particules dorées (canvas `#hero-fx`), bandeau « EN DIRECT », apparitions au défilement (`.reveal` / `.reveal-stagger`, classe `fx` sur `<html>`), cartes 3D avec reflet, carte « salle de crise » (marqueurs pulsants, contour commune via Nominatim, HUD, bouton « Survol des incidents »). Tout est désactivé si `prefers-reduced-motion`.
 
 ## Prochaines étapes envisagées

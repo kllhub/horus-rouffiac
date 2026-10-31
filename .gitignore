@@ -1,3 +1,9 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# HORUS — secrets, dépendances et artefacts (jamais dans git)
+infra/.env
+api/node_modules/
+api/dist/
+infra/dev/node_modules/

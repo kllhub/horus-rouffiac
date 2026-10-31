@@ -1,0 +1,116 @@
+{
+  "realm": "horus",
+  "displayName": "HORUS · Rouffiac-Tolosan",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "verifyEmail": false,
+  "rememberMe": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "waitIncrementSeconds": 60,
+  "maxFailureWaitSeconds": 900,
+  "passwordPolicy": "length(12) and notUsername(undefined) and notEmail(undefined) and passwordHistory(3)",
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyDigits": 6,
+  "otpPolicyPeriod": 30,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "fr"
+  ],
+  "defaultLocale": "fr",
+  "eventsEnabled": true,
+  "eventsExpiration": 7776000,
+  "enabledEventTypes": [
+    "LOGIN",
+    "LOGIN_ERROR",
+    "LOGOUT",
+    "UPDATE_PASSWORD",
+    "UPDATE_TOTP",
+    "REMOVE_TOTP"
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Gère les comptes HORUS — aucun accès aux signalements"
+      },
+      {
+        "name": "referent",
+        "description": "Référent de quartier (son quartier uniquement)"
+      },
+      {
+        "name": "moderateur",
+        "description": "Modérateur : tous les signalements"
+      },
+      {
+        "name": "gend",
+        "description": "Gendarmerie nationale"
+      },
+      {
+        "name": "pn",
+        "description": "Police nationale"
+      },
+      {
+        "name": "pm",
+        "description": "Police municipale"
+      },
+      {
+        "name": "asvp",
+        "description": "ASVP"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "horus-pwa",
+      "name": "HORUS (PWA)",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://horus.mairiederouffiac.fr/*"
+      ],
+      "webOrigins": [
+        "https://horus.mairiederouffiac.fr"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://horus.mairiederouffiac.fr/*"
+      }
+    },
+    {
+      "clientId": "horus-admin",
+      "name": "HORUS — compte de service d'administration",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-horus-admin",
+      "enabled": true,
+      "serviceAccountClientId": "horus-admin",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "manage-users",
+          "view-realm"
+        ]
+      }
+    }
+  ]
+}

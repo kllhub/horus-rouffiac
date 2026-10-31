@@ -1,38 +1,51 @@
 {
-  "name": "HORUS – Vigilance Rouffiac-Tolosan",
+  "id": "/",
+  "name": "HORUS – Vigilance citoyenne Rouffiac-Tolosan",
   "short_name": "HORUS",
-  "description": "Plateforme de vigilance citoyenne de Rouffiac-Tolosan",
-  "start_url": "/index.html",
+  "description": "Plateforme de vigilance citoyenne de Rouffiac-Tolosan : signalements, alertes de quartier et coordination avec les forces de l'ordre.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
   "background_color": "#0D1117",
   "theme_color": "#0D1117",
   "lang": "fr",
-  "categories": ["utilities", "government"],
+  "dir": "ltr",
+  "categories": ["utilities", "government", "news"],
   "icons": [
-    { "src": "icons/icon-72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-128.png",  "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icons/icon-72.png",           "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-96.png",           "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-128.png",          "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png",          "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png",          "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon.svg",              "sizes": "any",     "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
     {
       "name": "Signaler un incident",
       "short_name": "Signaler",
-      "description": "Ouvrir le formulaire de signalement",
-      "url": "/index.html?action=signaler",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "description": "Ouvrir directement le formulaire de signalement",
+      "url": "/?action=signaler",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
-      "name": "Alertes récentes",
+      "name": "Alertes en cours",
       "short_name": "Alertes",
-      "url": "/index.html?tab=feed",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
+      "url": "/?action=alertes",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Espace sécurisé (référents, forces de l'ordre)",
+      "short_name": "Espace sécurisé",
+      "url": "/fdo.html",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
   "screenshots": [
-    { "src": "screenshots/feed.png", "sizes": "390x844", "type": "image/png", "label": "Fil des alertes" },
-    { "src": "screenshots/map.png",  "sizes": "390x844", "type": "image/png", "label": "Carte des incidents" }
+    { "src": "screenshots/accueil-large.png",  "sizes": "1280x800", "type": "image/png", "form_factor": "wide",   "label": "Accueil : alertes de la commune et quartiers" },
+    { "src": "screenshots/carte-large.png",    "sizes": "1280x800", "type": "image/png", "form_factor": "wide",   "label": "Carte des incidents en temps réel" },
+    { "src": "screenshots/accueil-mobile.png", "sizes": "390x844",  "type": "image/png", "form_factor": "narrow", "label": "HORUS sur mobile" },
+    { "src": "screenshots/alertes-mobile.png", "sizes": "390x844",  "type": "image/png", "form_factor": "narrow", "label": "Fil des alertes" }
   ]
 }

@@ -1,0 +1,77 @@
+# HORUS — stack de production (serveur de la mairie, à côté de plateforme-commune).
+#
+#   cd ~/horus/infra && docker compose up -d --build
+#
+# Cloisonnement :
+#   - projet compose « horus », conteneurs « horus-* », réseau « horus_net » dédié ;
+#   - PostgreSQL 16 DÉDIÉ, sans aucun port publié (joignable par l'API seule) ;
+#   - l'API n'écoute que sur 127.0.0.1 : le nginx de l'hôte est le seul point d'entrée ;
+#   - aucune liaison avec les réseaux, la base ou les volumes de plateforme-commune.
+#   Le seul point commun est Keycloak, et dans un realm séparé (« horus »).
+
+name: horus
+
+x-api-env: &api-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://horus:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant}@postgres:5432/horus
+  KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL:?KEYCLOAK_ISSUER_URL manquant}
+  KEYCLOAK_INTERNAL_URL: ${KEYCLOAK_INTERNAL_URL:-${KEYCLOAK_ISSUER_URL}}
+  KEYCLOAK_CLIENT_ID: horus-pwa
+  KEYCLOAK_ADMIN_CLIENT_ID: horus-admin
+  KEYCLOAK_ADMIN_CLIENT_SECRET: ${HORUS_ADMIN_SECRET:?HORUS_ADMIN_SECRET manquant}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  CORS_ORIGIN: ${HORUS_URL:?HORUS_URL manquant}
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: horus-postgres
+    restart: unless-stopped
+    mem_limit: 512m
+    environment:
+      POSTGRES_DB: horus
+      POSTGRES_USER: horus
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant}
+    volumes:
+      - horus-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U horus -d horus"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [horus_net]
+
+  # Migrations Prisma, une fois par déploiement (one-shot).
+  migrate:
+    image: horus-api:${VERSION:-local}
+    build: ../api
+    container_name: horus-migrate
+    command: ["node_modules/.bin/prisma", "migrate", "deploy"]
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks: [horus_net]
+
+  api:
+    image: horus-api:${VERSION:-local}
+    build: ../api
+    container_name: horus-api
+    restart: unless-stopped
+    mem_limit: 384m
+    environment: *api-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${API_PORT:-3110}:3000"
+    networks: [horus_net]
+
+networks:
+  horus_net:
+    name: horus_net
+
+volumes:
+  horus-pgdata:
+    name: horus-pgdata

@@ -1,0 +1,126 @@
+// HORUS — modèle de données (PostgreSQL 16, base dédiée et cloisonnée).
+// Les identités vivent dans Keycloak (realm `horus`) ; `membres` en est le miroir (id = sub OIDC),
+// complété de ce que Keycloak ne porte pas : nom affiché, quartier, état actif.
+// Les contraintes CHECK (rôles, statuts, quartiers) sont posées dans la migration SQL.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Membre {
+  id                String    @id // sub Keycloak
+  email             String?
+  nom               String
+  quartier          String?
+  actif             Boolean   @default(true)
+  derniereConnexion DateTime? @map("derniere_connexion") @db.Timestamptz
+  creeLe            DateTime  @default(now()) @map("cree_le") @db.Timestamptz
+
+  signalementsTraites Signalement[]  @relation("traitePar")
+  mainCourante        MainCourante[]
+  messages            Message[]
+
+  @@map("membres")
+}
+
+model Signalement {
+  id          Int       @id @default(autoincrement())
+  creeLe      DateTime  @default(now()) @map("cree_le") @db.Timestamptz
+  rue         String
+  numero      String?
+  quartier    String
+  type        String
+  description String
+  statut      String    @default("pending")
+  fdoKey      String?   @map("fdo_key")
+  fdoNom      String?   @map("fdo_nom")
+  traiteParId String?   @map("traite_par")
+  traitePar   Membre?   @relation("traitePar", fields: [traiteParId], references: [id])
+  clotureLe   DateTime? @map("cloture_le") @db.Timestamptz
+  plaque      String?
+  nbTemoins   Int?      @map("nb_temoins")
+  suites      String?
+
+  declarant    Declarant?
+  mainCourante MainCourante[]
+
+  @@index([statut, creeLe(sort: Desc)])
+  @@index([quartier])
+  @@map("signalements")
+}
+
+// Coordonnées du déclarant : table à part, servie aux seules forces de l'ordre.
+model Declarant {
+  signalementId Int         @id @map("signalement_id")
+  signalement   Signalement @relation(fields: [signalementId], references: [id], onDelete: Cascade)
+  nom           String?
+  contact       String?
+
+  @@map("declarants")
+}
+
+model McgCompteur {
+  annee   Int @id
+  dernier Int
+
+  @@map("mcg_compteurs")
+}
+
+model MainCourante {
+  id            Int          @id @default(autoincrement())
+  mcgNum        String       @unique @map("mcg_num")
+  creeLe        DateTime     @default(now()) @map("cree_le") @db.Timestamptz
+  dateFaits     DateTime     @map("date_faits") @db.Timestamptz
+  signalementId Int?         @map("signalement_id")
+  signalement   Signalement? @relation(fields: [signalementId], references: [id], onDelete: SetNull)
+  quartier      String?
+  type          String?
+  lieu          String?
+  resume        String?
+  agent         String
+  service       String
+  unite         String
+  declarant     String?
+  action        String
+  suiteDonnee   String       @default("En cours") @map("suite_donnee")
+  auteurId      String?      @map("auteur")
+  auteur        Membre?      @relation(fields: [auteurId], references: [id])
+
+  @@index([creeLe(sort: Desc)])
+  @@map("main_courante")
+}
+
+model Message {
+  id       Int      @id @default(autoincrement())
+  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz
+  quartier String
+  auteurId String   @map("auteur")
+  auteur   Membre   @relation(fields: [auteurId], references: [id])
+  role     String
+  auteurNom String  @map("auteur_nom")
+  contenu  String
+  luFdo    Boolean  @default(false) @map("lu_fdo")
+  luRef    Boolean  @default(false) @map("lu_ref")
+
+  @@index([quartier, creeLe])
+  @@map("messages")
+}
+
+model AdminJournal {
+  id       Int      @id @default(autoincrement())
+  creeLe   DateTime @default(now()) @map("cree_le") @db.Timestamptz
+  adminId  String?  @map("admin_id")
+  adminNom String   @map("admin_nom")
+  action   String
+  cible    String
+  details  Json     @default("{}")
+
+  @@index([creeLe(sort: Desc)])
+  @@map("admin_journal")
+}

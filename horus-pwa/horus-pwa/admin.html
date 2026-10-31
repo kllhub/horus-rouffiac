@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HORUS">
+<title>HORUS · Administration</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --font-sans:'Open Sans',sans-serif;
+  --font-display:'Muse Sans',sans-serif;
+  --font-mono:'Roboto Mono',monospace;
+  --nuit:#0D1117;--nuit2:#161B22;--nuit3:#21262D;
+  --or:#C9A84C;--or2:#E8C97A;
+  --blanc:#F0EDE6;--gris:#8B949E;--gris2:#6E7681;
+  --rouge:#E05555;--vert:#3FB950;--bleu:#58A6FF;
+  --bord:rgba(201,168,76,.18);--bord2:rgba(201,168,76,.35);
+  --r:8px;--r2:14px;--r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+[data-theme="light"]{
+  --nuit:#F2F0EB;--nuit2:#FFFFFF;--nuit3:#E8E5DF;
+  --blanc:#1A1A2A;--gris:#4B5563;--gris2:#374151;
+  --bord:rgba(201,168,76,.22);--bord2:rgba(201,168,76,.45);
+  --shadow:0 4px 24px rgba(0,0,0,.12);
+}
+body{font-family:var(--font-sans);background:var(--nuit);color:var(--blanc);min-height:100vh;transition:background .25s,color .25s}
+button{font-family:var(--font-sans)}
+
+/* CONNEXION */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.08) 0%,transparent 60%)}
+.login-box{background:var(--nuit2);border:1px solid var(--bord2);border-radius:var(--r2);padding:44px 36px;width:100%;max-width:380px;text-align:center;box-shadow:var(--shadow)}
+.login-title{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--or);margin:14px 0 4px}
+.login-sub{font-size:13px;color:var(--gris);margin-bottom:24px;line-height:1.5}
+.login-box form{display:flex;flex-direction:column;gap:10px}
+.login-error{color:var(--rouge);font-size:12px;margin-top:12px;min-height:18px}
+.login-hint{font-size:11px;color:var(--gris2);margin-top:14px}
+
+/* CHAMPS & BOUTONS */
+.input,.select{width:100%;background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:10px 13px;font-family:var(--font-sans);font-size:14px;color:var(--blanc);outline:none;transition:border-color .15s}
+.input:focus,.select:focus{border-color:var(--or)}
+.select option{background:var(--nuit2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:var(--r3);padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:background .15s,border-color .15s}
+.btn-primary{background:var(--or);color:var(--nuit)}
+.btn-primary:hover{background:var(--or2)}
+.btn-ghost{background:transparent;color:var(--gris);border-color:var(--bord)}
+.btn-ghost:hover{border-color:var(--or);color:var(--or)}
+.btn:disabled{opacity:.5;cursor:wait}
+.icon-btn{background:var(--nuit3);border:1px solid var(--bord);border-radius:var(--r);padding:6px 12px;color:var(--gris);font-size:12px;cursor:pointer}
+
+/* EN-TÊTE */
+.topbar{position:sticky;top:0;z-index:50;background:var(--nuit2);border-bottom:1px solid var(--bord);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--font-display);font-weight:700;color:var(--or);letter-spacing:.08em;display:flex;align-items:center;gap:8px;font-size:15px}
+.brand small{color:var(--gris);font-weight:500;letter-spacing:0;font-family:var(--font-sans);font-size:12px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.me-pill{font-size:11px;font-weight:700;padding:4px 12px;border-radius:10px;border:1px solid var(--or);color:var(--or);background:rgba(201,168,76,.12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.demo-banner{background:rgba(88,166,255,.1);border-bottom:1px solid rgba(88,166,255,.3);color:var(--bleu);font-size:12px;text-align:center;padding:8px 16px}
+
+.page{max-width:1100px;margin:0 auto;padding:28px 24px 64px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--bord);margin-bottom:22px}
+.tab{padding:10px 16px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--gris);font-size:13px;font-weight:600;cursor:pointer}
+.tab.active{color:var(--or);border-bottom-color:var(--or)}
+
+/* STATISTIQUES */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);padding:14px 16px}
+.stat-n{font-family:var(--font-mono);font-size:26px;font-weight:700;color:var(--or);line-height:1}
+.stat-l{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* BARRE D'OUTILS */
+.toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar .input{flex:1;min-width:200px}
+.toolbar .select{width:auto;min-width:170px}
+
+/* TABLEAU DES COMPTES */
+.table-wrap{background:var(--nuit2);border:1px solid var(--bord);border-radius:var(--r2);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gris2);padding:12px 14px;border-bottom:1px solid var(--bord);background:rgba(201,168,76,.04)}
+td{padding:12px 14px;border-bottom:1px solid rgba(201,168,76,.08);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.inactif td{opacity:.55}
+.nom{font-weight:700}
+.email{font-size:12px;color:var(--gris);font-family:var(--font-mono);word-break:break-all}
+.role{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;border:1px solid;white-space:nowrap}
+.role.admin{color:#f87171;border-color:rgba(224,85,85,.4);background:rgba(224,85,85,.1)}
+.role.referent,.role.moderateur{color:var(--or);border-color:var(--bord2);background:rgba(201,168,76,.1)}
+.role.gend,.role.pn{color:#7ba0d4;border-color:rgba(74,109,167,.45);background:rgba(74,109,167,.15)}
+.role.pm{color:var(--bleu);border-color:rgba(53,117,196,.45);background:rgba(53,117,196,.15)}
+.role.asvp{color:#fbbf24;border-color:rgba(180,83,9,.45);background:rgba(180,83,9,.15)}
+.etat{font-size:12px;font-weight:600;white-space:nowrap}
+.etat.on{color:var(--vert)}.etat.off{color:var(--rouge)}
+.muted{color:var(--gris2);font-size:12px}
+.row-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:nowrap}
+td.nowrap{white-space:nowrap}
+.act{background:var(--nuit3);border:1px solid var(--bord);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--blanc);cursor:pointer;white-space:nowrap}
+.act:hover{border-color:var(--or)}
+.act.danger:hover{border-color:var(--rouge);color:var(--rouge)}
+.empty{padding:36px;text-align:center;color:var(--gris2)}
+
+/* JOURNAL */
+.journal-item{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:12px 16px;border-bottom:1px solid rgba(201,168,76,.08);font-size:13px}
+.journal-item:last-child{border-bottom:none}
+.journal-date{font-family:var(--font-mono);font-size:12px;color:var(--gris)}
+.journal-action{font-weight:700;color:var(--or)}
+
+/* FENÊTRES */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--nuit2);border:1px solid var(--bord2);border-radius:var(--r2);padding:28px;width:100%;max-width:440px;position:relative;animation:modal-in .2s ease}
+@keyframes modal-in{from{transform:scale(.96) translateY(8px);opacity:0}}
+.modal-title{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:18px}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--gris);font-size:22px;cursor:pointer}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.field .help{font-size:11px;color:var(--gris2);margin-top:5px;line-height:1.5}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.secret{font-family:var(--font-mono);font-size:20px;font-weight:700;letter-spacing:.06em;color:var(--or);background:var(--nuit3);border:1px dashed var(--or);border-radius:var(--r);padding:14px;text-align:center;margin:14px 0;user-select:all;word-break:break-all}
+.warn{font-size:12px;color:var(--gris);line-height:1.6;background:rgba(224,85,85,.08);border:1px solid rgba(224,85,85,.3);border-radius:var(--r);padding:10px 12px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--nuit2);border:1px solid var(--or);border-radius:var(--r3);padding:11px 22px;font-size:13px;color:var(--or);opacity:0;transition:opacity .3s,transform .3s;z-index:300;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MOBILE : le tableau devient une liste de cartes */
+@media(max-width:760px){
+  .topbar{padding:10px 16px}
+  .brand small,.me-pill{display:none}
+  .page{padding:20px 16px 48px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tr{padding:12px 14px;border-bottom:1px solid var(--bord)}
+  td{padding:3px 0;border:none}
+  .row-actions{justify-content:flex-start;margin-top:8px;flex-wrap:wrap}
+  .journal-item{grid-template-columns:1fr;gap:4px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ CONNEXION ═══════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <svg width="52" height="52" viewBox="0 0 280 280" fill="none" aria-hidden="true">
+      <path d="M40 140 Q90 80 140 80 Q190 80 240 140 Q190 200 140 200 Q90 200 40 140Z" fill="var(--nuit)" stroke="#C9A84C" stroke-width="2"/>
+      <circle cx="140" cy="140" r="40" fill="#C9A84C" opacity=".9"/>
+      <circle cx="140" cy="140" r="16" fill="var(--nuit)"/>
+      <circle cx="140" cy="140" r="6" fill="#C9A84C"/>
+    </svg>
+    <div class="login-title">HORUS · Administration</div>
+    <div class="login-sub">Gestion des comptes<br>Mairie de Rouffiac-Tolosan</div>
+    <button class="btn btn-primary" id="login-btn" onclick="login()" style="width:100%">Se connecter</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-hint">Réservé aux administrateurs · double authentification · <a href="fdo.html" style="color:var(--or)">Espace sécurisé</a></div>
+  </div>
+</div>
+
+<!-- ══ TABLEAU DE BORD ═════════════════════════════════════════════ -->
+<div id="app" style="display:none">
+  <div class="demo-banner" id="demo-banner" style="display:none">Mode démonstration — comptes fictifs, aucune modification n'est enregistrée.</div>
+  <div class="topbar">
+    <div class="brand">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2 12 Q7 5 12 5 Q17 5 22 12 Q17 19 12 19 Q7 19 2 12Z" stroke="#C9A84C" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" fill="#C9A84C"/></svg>
+      HORUS <small>Administration</small>
+    </div>
+    <div class="topbar-right">
+      <span class="me-pill" id="me-pill"></span>
+      <button class="icon-btn" onclick="changePassword()" id="pwd-btn" title="Changer mon mot de passe">🔑</button>
+      <button class="icon-btn" onclick="toggleTheme()" title="Mode clair/sombre">🌓</button>
+      <button class="icon-btn" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <div class="page">
+    <div class="tabs">
+      <button class="tab active" data-tab="comptes" onclick="setTab('comptes')">👥 Comptes</button>
+      <button class="tab" data-tab="journal" onclick="setTab('journal')">📜 Journal</button>
+    </div>
+
+    <section id="tab-comptes">
+      <div class="stats" id="stats"></div>
+      <div class="toolbar">
+        <input class="input" id="search" type="search" placeholder="Rechercher un nom ou un e-mail…" oninput="renderComptes()">
+        <select class="select" id="filter-role" onchange="renderComptes()">
+          <option value="">Tous les rôles</option>
+        </select>
+        <button class="btn btn-primary" onclick="openForm()">＋ Nouveau compte</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Quartier</th><th>État</th><th>Dernière connexion</th><th></th></tr></thead>
+          <tbody id="comptes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tab-journal" style="display:none">
+      <div class="table-wrap" id="journal"></div>
+    </section>
+  </div>
+</div>
+
+<!-- ══ FORMULAIRE COMPTE ═══════════════════════════════════════════ -->
+<div class="overlay" id="overlay-form" onclick="if(event.target===this)closeForm()">
+  <div class="modal" role="dialog" aria-labelledby="form-title">
+    <button class="modal-close" onclick="closeForm()" aria-label="Fermer">×</button>
+    <div class="modal-title" id="form-title">Nouveau compte</div>
+    <form onsubmit="event.preventDefault();saveForm()">
+      <input type="hidden" id="f-id">
+      <div class="field" id="field-email">
+        <label for="f-email">E-mail</label>
+        <input class="input" type="email" id="f-email" maxlength="120" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-nom">Nom affiché</label>
+        <input class="input" id="f-nom" maxlength="80" placeholder="ex. Adj. Martinet, Marie L.">
+        <div class="help">Visible dans la main courante et la messagerie.</div>
+      </div>
+      <div class="field">
+        <label for="f-role">Rôle</label>
+        <select class="select" id="f-role" onchange="onRoleChange()"></select>
+        <div class="help" id="role-help"></div>
+      </div>
+      <div class="field" id="field-quartier">
+        <label for="f-quartier">Quartier</label>
+        <select class="select" id="f-quartier"></select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" type="button" onclick="closeForm()">Annuler</button>
+        <button class="btn btn-primary" type="submit" id="form-submit">Créer le compte</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ══ MOT DE PASSE PROVISOIRE ═════════════════════════════════════ -->
+<div class="overlay" id="overlay-secret">
+  <div class="modal" role="dialog" aria-labelledby="secret-title">
+    <div class="modal-title" id="secret-title">Mot de passe provisoire</div>
+    <div style="font-size:13px;color:var(--gris)" id="secret-for"></div>
+    <div class="secret" id="secret-value"></div>
+    <div class="warn">⚠️ Affiché <strong>une seule fois</strong>. Transmettez-le en main propre ou par téléphone, jamais par e-mail. À la première connexion, la personne choisira son propre mot de passe et configurera la double authentification (application type FreeOTP, Google Authenticator).</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="copySecret()">📋 Copier</button>
+      <button class="btn btn-primary" onclick="closeSecret()">J'ai noté le mot de passe</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="config.js"></script>
+<script src="horus-auth.js"></script>
+<script>
+// ── RÉFÉRENTIELS ─────────────────────────────────────────────────────
+const ROLES = {
+  admin:      { label:"Administrateur",       help:"Gère les comptes. N'a accès à aucun signalement." },
+  referent:   { label:"Référent de quartier", help:"Voit, valide et clôture les signalements de son quartier ; messagerie avec les FDO." },
+  moderateur: { label:"Modérateur",           help:"Voit tous les signalements, peut les valider, corriger et clôturer." },
+  gend:       { label:"Gendarmerie",          help:"Accès complet : prise en charge, main courante, statistiques, coordonnées du déclarant." },
+  pn:         { label:"Police Nationale",     help:"Mêmes droits que la Gendarmerie." },
+  pm:         { label:"Police Municipale",    help:"Accès complet : prise en charge, main courante, statistiques, coordonnées du déclarant." },
+  asvp:       { label:"ASVP",                 help:"Prise en charge et main courante ; ne peut pas clôturer un incident." },
+};
+const QUARTIERS = ["Centre-Bourg","Louradou","Castelviel","Charlary","Tartaloche","Pigassou"];
+const ERREURS = {
+  email_existant:"Un compte existe déjà avec cet e-mail.",
+  email_invalide:"Adresse e-mail invalide.",
+  nom_invalide:"Le nom doit faire entre 2 et 80 caractères.",
+  quartier_requis:"Un référent doit être rattaché à un quartier.",
+  dernier_admin:"Impossible : ce serait le dernier administrateur actif.",
+  compte_desactive:"Votre compte a été désactivé.",
+  admin_non_configure:"Le compte de service Keycloak n'est pas configuré sur le serveur.",
+  keycloak_erreur:"Keycloak a refusé l'opération. Réessayez ou consultez les journaux.",
+  requete_invalide:"Champ invalide : vérifiez le formulaire.",
+  pas_soi_meme:"Vous ne pouvez pas faire cela sur votre propre compte.",
+  interdit:"Accès réservé aux administrateurs.",
+  non_connecte:"Session expirée, reconnectez-vous.",
+};
+
+// ── MODE PRODUCTION / DÉMO ───────────────────────────────────────────
+const PROD = !!(window.HORUS_CONFIG && window.HorusAuth && HorusAuth.actif);
+let ME = null, COMPTES = [], currentTab = "comptes";
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3500);
+}
+function fmt(iso) {
+  return iso ? new Date(iso).toLocaleString("fr-FR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" }) : "Jamais";
+}
+
+// Appel de la fonction serveur admin-users (production) ou d'un bac à sable (démo).
+const ROUTES = {
+  list:           ()  => ["GET",  "/admin/comptes"],
+  create:         ()  => ["POST", "/admin/comptes"],
+  update:         (b) => ["PATCH", `/admin/comptes/${encodeURIComponent(b.id)}`],
+  set_active:     (b) => ["POST", `/admin/comptes/${encodeURIComponent(b.id)}/actif`],
+  reset_password: (b) => ["POST", `/admin/comptes/${encodeURIComponent(b.id)}/mot-de-passe`],
+  journal:        ()  => ["GET",  "/admin/journal"],
+};
+async function api(action, body = {}) {
+  if (!PROD) return demoApi(action, body);
+  const [methode, chemin] = ROUTES[action](body);
+  const { id, ...corps } = body;
+  try {
+    return await HorusAuth.api(methode, chemin, methode === "GET" ? undefined : corps);
+  } catch (e) {
+    throw new Error(e.code || "erreur");
+  }
+}
+function errText(e) { return ERREURS[e.message] || "Erreur : " + e.message; }
+
+// ── CONNEXION ────────────────────────────────────────────────────────
+function login() { HorusAuth.login(); }
+function loginError(msg) {
+  document.getElementById("login-error").textContent = msg;
+  setTimeout(() => document.getElementById("login-error").textContent = "", 5000);
+}
+async function afterLogin() {
+  let data;
+  try { data = await HorusAuth.api("GET", "/moi"); }
+  catch (e) { loginError(ERREURS[e.code] || "Connexion impossible."); return; }
+  if (data.role !== "admin") {
+    loginError("Ce compte n'est pas administrateur. Utilisez l'espace sécurisé.");
+    return;
+  }
+  ME = data;
+  showApp();
+}
+function logout() {
+  if (PROD) HorusAuth.logout(); else location.reload();
+}
+function changePassword() {
+  if (!PROD) { toast("Indisponible en démonstration."); return; }
+  HorusAuth.changerMotDePasse();
+}
+
+function showApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  document.getElementById("me-pill").textContent = `${ME.nom} · Administrateur`;
+  document.getElementById("demo-banner").style.display = PROD ? "none" : "block";
+  loadComptes();
+}
+
+// ── COMPTES ──────────────────────────────────────────────────────────
+async function loadComptes() {
+  try {
+    COMPTES = await api("list");
+    renderComptes();
+  } catch (e) { toast(errText(e)); }
+}
+
+function renderStats() {
+  const actifs = COMPTES.filter(c => c.actif);
+  const n = r => actifs.filter(c => r.includes(c.role)).length;
+  document.getElementById("stats").innerHTML = [
+    [actifs.length, "comptes actifs"],
+    [n(["referent"]), "référents"],
+    [n(["gend","pn","pm","asvp"]), "forces de l'ordre"],
+    [COMPTES.length - actifs.length, "désactivés"],
+  ].map(([v, l]) => `<div class="stat"><div class="stat-n">${v}</div><div class="stat-l">${l}</div></div>`).join("");
+}
+
+function renderComptes() {
+  renderStats();
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const role = document.getElementById("filter-role").value;
+  const list = COMPTES
+    .filter(c => !role || c.role === role)
+    .filter(c => !q || (c.nom || "").toLowerCase().includes(q) || (c.email || "").toLowerCase().includes(q))
+    .sort((a, b) => (b.actif - a.actif) || a.nom.localeCompare(b.nom, "fr"));
+  const tbody = document.getElementById("comptes");
+  if (!list.length) { tbody.innerHTML = `<tr><td colspan="6" class="empty">Aucun compte ne correspond.</td></tr>`; return; }
+  tbody.innerHTML = list.map(c => {
+    const soi = c.id === ME.id;
+    return `
+    <tr class="${c.actif ? "" : "inactif"}">
+      <td><div class="nom">${esc(c.nom)}${soi ? ' <span class="muted">(vous)</span>' : ""}</div><div class="email">${esc(c.email)}</div></td>
+      <td>${c.role ? `<span class="role ${esc(c.role)}">${esc(ROLES[c.role]?.label || c.role)}</span>` : '<span class="muted">Aucun rôle</span>'}</td>
+      <td class="nowrap">${c.quartier ? esc(c.quartier) : '<span class="muted">—</span>'}</td>
+      <td><span class="etat ${c.actif ? "on" : "off"}">${c.actif ? "● Actif" : "● Désactivé"}</span>
+        <div class="muted" title="Double authentification">${c.deuxiemeFacteur ? "🔐 2FA active" : "⏳ 2FA à configurer"}</div></td>
+      <td class="muted">${fmt(c.derniereConnexion)}</td>
+      <td><div class="row-actions">
+        <button class="act" onclick="openForm('${c.id}')" title="Modifier le nom, le rôle ou le quartier">✏️ Modifier</button>
+        <button class="act" onclick="resetPassword('${c.id}')" title="Générer un mot de passe provisoire">🔑 Réinit.</button>
+        ${soi ? "" : `<button class="act ${c.actif ? "danger" : ""}" onclick="toggleActive('${c.id}')">${c.actif ? "⛔ Désactiver" : "✅ Réactiver"}</button>`}
+      </div></td>
+    </tr>`;
+  }).join("");
+}
+
+// ── FORMULAIRE ───────────────────────────────────────────────────────
+function onRoleChange() {
+  const r = document.getElementById("f-role").value;
+  document.getElementById("field-quartier").style.display = r === "referent" ? "" : "none";
+  document.getElementById("role-help").textContent = ROLES[r]?.help || "";
+}
+function openForm(id) {
+  const c = id ? COMPTES.find(x => x.id === id) : null;
+  document.getElementById("form-title").textContent = c ? "Modifier le compte" : "Nouveau compte";
+  document.getElementById("form-submit").textContent = c ? "Enregistrer" : "Créer le compte";
+  document.getElementById("f-id").value = c?.id || "";
+  document.getElementById("field-email").style.display = c ? "none" : "";
+  document.getElementById("f-email").value = "";
+  document.getElementById("f-nom").value = c?.nom || "";
+  document.getElementById("f-role").value = c?.role || "referent";
+  document.getElementById("f-quartier").value = c?.quartier || QUARTIERS[0];
+  onRoleChange();
+  document.getElementById("overlay-form").classList.add("open");
+  document.getElementById(c ? "f-nom" : "f-email").focus();
+}
+function closeForm() { document.getElementById("overlay-form").classList.remove("open"); }
+
+async function saveForm() {
+  const id = document.getElementById("f-id").value;
+  const role = document.getElementById("f-role").value;
+  const body = {
+    nom: document.getElementById("f-nom").value.trim(),
+    role,
+    quartier: role === "referent" ? document.getElementById("f-quartier").value : null,
+  };
+  const btn = document.getElementById("form-submit");
+  btn.disabled = true;
+  try {
+    if (id) {
+      await api("update", { id, ...body });
+      toast("✓ Compte modifié");
+    } else {
+      const email = document.getElementById("f-email").value.trim();
+      const r = await api("create", { email, ...body });
+      showSecret(`Compte créé pour ${email}.`, r.motDePasse);
+    }
+    closeForm();
+    await loadComptes();
+  } catch (e) { toast(errText(e)); }
+  btn.disabled = false;
+}
+
+async function resetPassword(id) {
+  const c = COMPTES.find(x => x.id === id);
+  if (!confirm(`Générer un nouveau mot de passe pour ${c.nom} ?\nL'ancien ne fonctionnera plus.`)) return;
+  try {
+    const r = await api("reset_password", { id });
+    showSecret(`Nouveau mot de passe pour ${c.email}.`, r.motDePasse);
+  } catch (e) { toast(errText(e)); }
+}
+
+async function toggleActive(id) {
+  const c = COMPTES.find(x => x.id === id);
+  const msg = c.actif
+    ? `Désactiver le compte de ${c.nom} ?\nSes sessions en cours seront coupées et il ne pourra plus se connecter.`
+    : `Réactiver le compte de ${c.nom} ?`;
+  if (!confirm(msg)) return;
+  try {
+    await api("set_active", { id, actif:!c.actif });
+    toast(c.actif ? "⛔ Compte désactivé" : "✅ Compte réactivé");
+    await loadComptes();
+  } catch (e) { toast(errText(e)); }
+}
+
+// ── MOT DE PASSE PROVISOIRE ──────────────────────────────────────────
+function showSecret(label, value) {
+  document.getElementById("secret-for").textContent = label;
+  document.getElementById("secret-value").textContent = value;
+  document.getElementById("overlay-secret").classList.add("open");
+}
+function closeSecret() {
+  document.getElementById("secret-value").textContent = "";
+  document.getElementById("overlay-secret").classList.remove("open");
+}
+function copySecret() {
+  navigator.clipboard.writeText(document.getElementById("secret-value").textContent)
+    .then(() => toast("📋 Copié")).catch(() => toast("Copie impossible — sélectionnez le texte."));
+}
+
+// ── JOURNAL ──────────────────────────────────────────────────────────
+async function loadJournal() {
+  const el = document.getElementById("journal");
+  try {
+    const entrees = await api("journal");
+    el.innerHTML = entrees.length ? entrees.map(e => `
+      <div class="journal-item">
+        <div class="journal-date">${fmt(e.creeLe)}</div>
+        <div><span class="journal-action">${esc(e.action)}</span> · ${esc(e.cible)}
+          <div class="muted">par ${esc(e.adminNom)}</div></div>
+      </div>`).join("") : `<div class="empty">Aucune action enregistrée.</div>`;
+  } catch (e) { toast(errText(e)); }
+}
+
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  document.getElementById("tab-comptes").style.display = tab === "comptes" ? "" : "none";
+  document.getElementById("tab-journal").style.display = tab === "journal" ? "" : "none";
+  if (tab === "journal") loadJournal();
+}
+
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("horus_theme", next); } catch {}
+}
+
+// ── DÉMO : bac à sable en mémoire (rien n'est enregistré) ────────────
+const DEMO = {
+  comptes: [
+    { id:"a1", nom:"Karim Lahtil",  email:"admin@mairiederouffiac.fr",     role:"admin",    quartier:null,          actif:true,  derniereConnexion:new Date().toISOString() },
+    { id:"g1", nom:"Adj. Martinet", email:"martinet@gendarmerie.interieur.gouv.fr", role:"gend", quartier:null,    actif:true,  derniereConnexion:"2026-10-09T08:12:00Z" },
+    { id:"p1", nom:"Agent Duval",   email:"duval@coteaux-bellevue.fr",     role:"pm",       quartier:null,          actif:true,  derniereConnexion:"2026-10-10T17:40:00Z" },
+    { id:"s1", nom:"Agent Roussel", email:"roussel@mairiederouffiac.fr",   role:"asvp",     quartier:null,          actif:true,  derniereConnexion:null },
+    { id:"r1", nom:"Marie L.",      email:"marie.l@exemple.fr",            role:"referent", quartier:"Louradou",    actif:true,  derniereConnexion:"2026-10-08T19:05:00Z" },
+    { id:"r2", nom:"Paul D.",       email:"paul.d@exemple.fr",             role:"referent", quartier:"Centre-Bourg",actif:true,  derniereConnexion:"2026-10-11T07:30:00Z" },
+    { id:"r3", nom:"Thierry M.",    email:"thierry.m@exemple.fr",          role:"referent", quartier:"Tartaloche",  actif:false, derniereConnexion:"2026-06-02T12:00:00Z" },
+    { id:"m1", nom:"Sophie R.",     email:"sophie.r@exemple.fr",           role:"moderateur",quartier:null,         actif:true,  derniereConnexion:"2026-10-07T21:15:00Z" },
+  ],
+  journal: [
+    { creeLe:"2026-10-10T09:00:00Z", action:"désactivation", cible:"thierry.m@exemple.fr", adminNom:"Karim Lahtil" },
+    { creeLe:"2026-10-01T14:20:00Z", action:"création", cible:"duval@coteaux-bellevue.fr", adminNom:"Karim Lahtil" },
+  ],
+};
+function demoApi(action, b) {
+  const log = (a, cible) => DEMO.journal.unshift({ creeLe:new Date().toISOString(), action:a, cible, adminNom:ME.nom });
+  const find = id => DEMO.comptes.find(c => c.id === id);
+  const mdp = () => Math.random().toString(36).slice(2, 9) + Math.random().toString(36).slice(2, 9);
+  switch (action) {
+    case "list": return DEMO.comptes.map(c => ({ deuxiemeFacteur: c.derniereConnexion !== null, ...c }));
+    case "journal": return DEMO.journal;
+    case "create":
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email || "")) throw new Error("email_invalide");
+      if (DEMO.comptes.some(c => c.email === b.email)) throw new Error("email_existant");
+      if ((b.nom || "").length < 2) throw new Error("nom_invalide");
+      DEMO.comptes.push({ id:"d" + Date.now(), email:b.email, nom:b.nom, role:b.role, quartier:b.quartier, actif:true, derniereConnexion:null });
+      log("création", b.email);
+      return { motDePasse: mdp() };
+    case "update": {
+      if ((b.nom || "").length < 2) throw new Error("nom_invalide");
+      const c = find(b.id); Object.assign(c, { nom:b.nom, role:b.role, quartier:b.quartier });
+      log("modification", c.email); return { ok:true };
+    }
+    case "set_active": { const c = find(b.id); c.actif = b.actif; log(b.actif ? "réactivation" : "désactivation", c.email); return { ok:true }; }
+    case "reset_password": { log("réinitialisation du mot de passe", find(b.id).email); return { motDePasse: mdp() }; }
+  }
+  throw new Error("action_inconnue");
+}
+
+// ── INITIALISATION ───────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  try { const t = localStorage.getItem("horus_theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  const opts = Object.entries(ROLES).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
+  document.getElementById("f-role").innerHTML = opts;
+  document.getElementById("filter-role").insertAdjacentHTML("beforeend", opts);
+  document.getElementById("f-quartier").innerHTML = QUARTIERS.map(q => `<option>${q}</option>`).join("");
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeForm(); });
+
+  if (!PROD) { ME = DEMO.comptes[0]; showApp(); return; }
+  HorusAuth.init()
+    .then(({ connecte }) => { if (connecte) afterLogin(); })
+    .catch(() => loginError("Service de connexion injoignable. Réessayez dans un instant."));
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.addEventListener("message", e => { if (e.data?.type === "SW_UPDATED") location.reload(); });
+  });
+}
+</script>
+</body>
+</html>
